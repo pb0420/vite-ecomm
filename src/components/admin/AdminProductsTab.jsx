@@ -119,6 +119,83 @@ const AdminProductsTab = ({ openDeleteDialog }) => {
     }
   };
 
+  const triggerFileUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) {
+      return;
+    }
+
+    // Basic file type check (optional but recommended)
+    if (file.type !== 'text/csv') {
+      console.error('Please upload a CSV file.');
+      // TODO: Show error message to user
+      return;
+    }
+  
+    const reader = new FileReader();
+  
+    reader.onload = async (e) => { // Made onload async to use await with Supabase
+      const text = e.target.result;
+      // Assuming CSV format: name,price,description,stock
+      // You might want to use a dedicated CSV parsing library for more complex cases
+      const lines = text.split('\n').filter(line => line.trim() !== '');
+  
+      if (lines.length === 0) {
+          console.warn('CSV file is empty.');
+          // TODO: Show warning to user
+          return;
+      }
+  
+      // Simple parsing: skip header, split by comma
+      const products = lines.slice(1).map(line => {
+        const [name, price, description, stock] = line.split(',');
+        return {
+          name: name ? name.trim() : '',
+          price: price ? parseFloat(price.trim()) : 0, // Convert price to number
+          description: description ? description.trim() : '',
+          stock: stock ? parseInt(stock.trim(), 10) : 0, // Convert stock to integer
+        };
+      }).filter(product => product.name); // Filter out lines that don't have a name
+  
+      console.log('Parsed Products:', products);
+  
+      if (products.length === 0) {
+          console.warn('No valid product data found in CSV.');
+          // TODO: Show warning to user
+          return;
+      }
+  
+      // Insert data into Supabase
+      // Assuming 'supabase' client is initialized and available in scope
+      // Replace 'products' with your actual Supabase table name if different
+      try {
+        const { data, error } = await supabase
+          .from('products') // <-- Replace 'products' with your table name
+          .insert(products);
+  
+        if (error) {
+          console.error('Error inserting data into Supabase:', error);
+          // TODO: Show error message to user
+        } else {
+          console.log('Bulk upload successful to Supabase:', data);
+          // TODO: Show success message to user (e.g., "Successfully uploaded X products")
+          // TODO: Potentially refresh the product list displayed in the admin panel
+        }
+      } catch (error) {
+        console.error('Unexpected error during Supabase insert:', error);
+        // TODO: Show unexpected error message to user
+      }
+    };
+  
+    reader.onerror = (e) => {
+      console.error('Error reading file:', e);
+      // TODO: Show file reading error to user
+    };
+  
+    // Read the file as text
+    reader.readAsText(file);
+  };
+
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="space-y-4">
