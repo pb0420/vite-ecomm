@@ -1,17 +1,55 @@
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Truck, Clock, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ProductCard from '@/components/products/ProductCard';
 import CategoryCard from '@/components/products/CategoryCard';
-import { categories } from '@/lib/data/categories'; // Updated import
-import { getFeaturedProducts } from '@/lib/data/helpers'; // Updated import
+import { supabase } from '@/lib/supabaseClient';
 
 const HomePage = () => {
-  const featuredProducts = getFeaturedProducts();
-  const featuredCategories = categories.slice(0, 3);
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch featured products with category information
+        const { data: productsData, error: productsError } = await supabase
+          .from('products')
+          .select(`
+            *,
+            categories (
+              id,
+              name
+            )
+          `)
+          .eq('featured', true)
+          .limit(4);
+
+        if (productsError) throw productsError;
+
+        // Fetch categories
+        const { data: categoriesData, error: categoriesError } = await supabase
+          .from('categories')
+          .select('*')
+          .order('name')
+          .limit(3);
+
+        if (categoriesError) throw categoriesError;
+
+        setFeaturedProducts(productsData || []);
+        setCategories(categoriesData || []);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
   
   return (
     <div className="flex flex-col min-h-screen">
@@ -60,7 +98,11 @@ const HomePage = () => {
               transition={{ duration: 0.5, delay: 0.3 }}
               className="mx-auto w-full max-w-[500px] aspect-square rounded-xl overflow-hidden"
             >
-              <img  alt="Fresh groceries" class="w-full h-full object-cover" src="https://images.unsplash.com/photo-1573246123716-6b1782bfc499" />
+              <img  
+                alt="Fresh groceries" 
+                className="w-full h-full object-cover" 
+                src="https://images.unsplash.com/photo-1573246123716-6b1782bfc499" 
+              />
             </motion.div>
           </div>
         </div>
@@ -128,11 +170,17 @@ const HomePage = () => {
             </Link>
           </div>
           
-          <div className="product-grid">
-            {featuredProducts.map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          {loading ? (
+            <div className="flex items-center justify-center h-64">
+              <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          ) : (
+            <div className="product-grid">
+              {featuredProducts.map(product => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
       
@@ -146,11 +194,17 @@ const HomePage = () => {
             </Link>
           </div>
           
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {featuredCategories.map(category => (
-              <CategoryCard key={category.id} category={category} />
-            ))}
-          </div>
+          {loading ? (
+            <div className="flex items-center justify-center h-64">
+              <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          ) : (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {categories.map(category => (
+                <CategoryCard key={category.id} category={category} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
       
@@ -175,4 +229,3 @@ const HomePage = () => {
 };
 
 export default HomePage;
-  

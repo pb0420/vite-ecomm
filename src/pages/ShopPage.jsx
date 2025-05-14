@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
@@ -7,8 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import ProductCard from '@/components/products/ProductCard';
-import { products } from '@/lib/data/products'; // Updated import
-import { categories } from '@/lib/data/categories'; // Updated import
+import { supabase } from '@/lib/supabaseClient';
 
 const ShopPage = () => {
   const location = useLocation();
@@ -18,7 +16,47 @@ const ShopPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('name-asc');
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [filteredProducts, setFilteredProducts] = useState([]);
+
+  // Fetch products and categories from Supabase
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch products with category information
+        const { data: productsData, error: productsError } = await supabase
+          .from('products')
+          .select(`
+            *,
+            categories (
+              id,
+              name
+            )
+          `);
+
+        if (productsError) throw productsError;
+
+        // Fetch categories
+        const { data: categoriesData, error: categoriesError } = await supabase
+          .from('categories')
+          .select('*')
+          .order('name');
+
+        if (categoriesError) throw categoriesError;
+
+        setProducts(productsData || []);
+        setCategories(categoriesData || []);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
   
   useEffect(() => {
     let result = [...products];
@@ -33,14 +71,13 @@ const ShopPage = () => {
       const term = searchTerm.toLowerCase();
       result = result.filter(product => 
         product.name.toLowerCase().includes(term) || 
-        product.description.toLowerCase().includes(term)
+        product.description?.toLowerCase().includes(term)
       );
     }
     
     // Filter by category
     if (selectedCategory !== 'all') {
-      const categoryId = parseInt(selectedCategory);
-      result = result.filter(product => product.category === categoryId);
+      result = result.filter(product => product.category_id === parseInt(selectedCategory));
     }
     
     // Sort products
@@ -62,8 +99,18 @@ const ShopPage = () => {
     }
     
     setFilteredProducts(result);
-  }, [searchTerm, selectedCategory, sortBy, featuredParam]);
+  }, [searchTerm, selectedCategory, sortBy, featuredParam, products]);
   
+  if (loading) {
+    return (
+      <div className="container px-4 py-8 mx-auto md:px-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container px-4 py-8 mx-auto md:px-6">
       <motion.div
@@ -170,4 +217,3 @@ const ShopPage = () => {
 };
 
 export default ShopPage;
-  
