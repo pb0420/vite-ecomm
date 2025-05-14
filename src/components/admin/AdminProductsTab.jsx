@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Filter, PlusCircle, Edit, Trash2, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
