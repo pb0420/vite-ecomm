@@ -19,7 +19,7 @@ const AdminProductsTab = ({ openDeleteDialog }) => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingProduct, setEditingProduct] = useState(null);z
+  const [editingProduct, setEditingProduct] = useState(null);
   const [isUploading, setisUploading] = useState(false);
 
   const fetchProductsAndCategories = useCallback(async () => {
