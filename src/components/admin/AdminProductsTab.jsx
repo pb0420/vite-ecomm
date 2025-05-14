@@ -120,8 +120,10 @@ const AdminProductsTab = ({ openDeleteDialog }) => {
     }
   };
 
+  const fileInputRef = useRef(null);
   const triggerFileUpload = async (event) => {
     setisUploading(true)
+    fileInputRef.current.click();
   };
 
   const handleFileUpload = async (event) => {
@@ -239,7 +241,7 @@ const AdminProductsTab = ({ openDeleteDialog }) => {
           {/* Hidden file input */}
           <input
             type="file"
-            id="csvFileInput"
+            ref={fileInputRef}
             accept=".csv"
             onChange={handleFileUpload}
             style={{ display: 'none' }}
