@@ -119,7 +119,7 @@ const AdminProductsTab = ({ openDeleteDialog }) => {
     }
   };
 
-  const isUploading = false;
+  var isUploading = false;
   const triggerFileUpload = async (event) => {
     isUploading = !isUploading
   };
