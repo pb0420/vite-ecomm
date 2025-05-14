@@ -119,6 +119,8 @@ const AdminProductsTab = ({ openDeleteDialog }) => {
     }
   };
 
+  const isUploading = false;
+
   const triggerFileUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) {
