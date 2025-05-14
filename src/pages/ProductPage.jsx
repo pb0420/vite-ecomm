@@ -1,10 +1,9 @@
-
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Minus, Plus, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { getProductById, getCategoryById } from '@/lib/data/helpers'; // Updated import
+import { getProductById, getCategoryById } from '@/lib/data/helpers';
 import { useCart } from '@/contexts/CartContext';
 import { formatCurrency } from '@/lib/utils';
 
@@ -14,7 +13,7 @@ const ProductPage = () => {
   const [category, setCategory] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
-  const { addToCart } = useCart();
+  const { addToCart, cart } = useCart();
   
   useEffect(() => {
     if (id) {
@@ -25,11 +24,17 @@ const ProductPage = () => {
         setProduct(foundProduct);
         const foundCategory = getCategoryById(foundProduct.category);
         setCategory(foundCategory);
+        
+        // Set initial quantity from cart if exists
+        const cartItem = cart.find(item => item.id === productId);
+        if (cartItem) {
+          setQuantity(cartItem.quantity);
+        }
       }
       
       setLoading(false);
     }
-  }, [id]);
+  }, [id, cart]);
   
   const handleAddToCart = () => {
     if (product) {
@@ -89,7 +94,11 @@ const ProductPage = () => {
           transition={{ duration: 0.3 }}
           className="overflow-hidden rounded-lg bg-muted aspect-square"
         >
-          <img  alt={product.name} class="w-full h-full object-cover" src="https://images.unsplash.com/photo-1607825878130-914be8978e27" />
+          <img  
+            alt={product.name} 
+            className="w-full h-full object-cover" 
+            src={product.image_url || "https://images.unsplash.com/photo-1607825878130-914be8978e27"} 
+          />
         </motion.div>
         
         <motion.div
@@ -159,4 +168,3 @@ const ProductPage = () => {
 };
 
 export default ProductPage;
-  

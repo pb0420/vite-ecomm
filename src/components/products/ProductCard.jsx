@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ShoppingCart, Plus } from 'lucide-react';
@@ -9,7 +8,11 @@ import { useCart } from '@/contexts/CartContext';
 import { formatCurrency } from '@/lib/utils';
 
 const ProductCard = ({ product }) => {
-  const { addToCart } = useCart();
+  const { addToCart, cart } = useCart();
+  
+  // Get quantity from cart
+  const cartItem = cart.find(item => item.id === product.id);
+  const quantity = cartItem ? cartItem.quantity : 0;
   
   const handleAddToCart = (e) => {
     e.preventDefault();
@@ -29,7 +32,8 @@ const ProductCard = ({ product }) => {
           <img  
             alt={product.name}
             className="w-full h-full object-cover"
-           src="https://images.unsplash.com/photo-1554702299-1ac5541cd63b" />
+            src={product.image_url || "https://images.unsplash.com/photo-1554702299-1ac5541cd63b"} 
+          />
           
           {product.featured && (
             <Badge 
@@ -37,6 +41,15 @@ const ProductCard = ({ product }) => {
               className="absolute top-2 left-2"
             >
               Featured
+            </Badge>
+          )}
+
+          {quantity > 0 && (
+            <Badge 
+              variant="secondary" 
+              className="absolute top-2 right-2"
+            >
+              {quantity} in cart
             </Badge>
           )}
         </div>
