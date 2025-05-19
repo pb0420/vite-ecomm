@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,40 +6,41 @@ import { supabase } from '@/lib/supabaseClient';
 import { toast } from '@/components/ui/use-toast';
 
 const StripeSettingsForm = () => {
-  const [settings, setSettings] = useState({ publishable_key: '', price_id: '' });
+  const [settings, setSettings] = useState({ publishable_key: '', price_id: '', openai_key: '' });
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    const fetchStripeSettings = async () => {
+    const fetchSettings = async () => {
       setLoading(true);
       try {
-        const { data, error } = await supabase
-          .from('stripe_settings')
-          .select('publishable_key, price_id')
-          .eq('id', 1)
-          .single();
+        const [{ data: stripeData }, { data: openaiData }] = await Promise.all([
+          supabase
+            .from('stripe_settings')
+            .select('publishable_key, price_id')
+            .eq('id', 1)
+            .single(),
+          supabase
+            .from('openai_settings')
+            .select('api_key')
+            .eq('id', 1)
+            .single()
+        ]);
 
-        if (error && error.code !== 'PGRST116') {
-          throw error;
-        }
-        if (data) {
-          setSettings({
-            publishable_key: data.publishable_key || '',
-            price_id: data.price_id || '',
-          });
-        } else {
-          setSettings({ publishable_key: '', price_id: '' });
-        }
+        setSettings({
+          publishable_key: stripeData?.publishable_key || '',
+          price_id: stripeData?.price_id || '',
+          openai_key: openaiData?.api_key || ''
+        });
       } catch (error) {
-        console.error('Error fetching Stripe settings:', error);
-        toast({ variant: "destructive", title: "Fetch Error", description: "Could not load Stripe settings." });
+        console.error('Error fetching settings:', error);
+        toast({ variant: "destructive", title: "Fetch Error", description: "Could not load settings." });
       } finally {
         setLoading(false);
       }
     };
-    fetchStripeSettings();
+    fetchSettings();
   }, []);
 
   const handleChange = (e) => {
@@ -56,14 +56,21 @@ const StripeSettingsForm = () => {
     if (!settings.publishable_key.trim()) {
       newErrors.publishable_key = 'Stripe Publishable Key is required.';
     } else if (!settings.publishable_key.startsWith('pk_')) {
-        newErrors.publishable_key = 'Invalid Publishable Key format. Should start with "pk_".';
+      newErrors.publishable_key = 'Invalid Publishable Key format. Should start with "pk_".';
     }
 
     if (!settings.price_id.trim()) {
       newErrors.price_id = 'Stripe Price ID is required.';
     } else if (!settings.price_id.startsWith('price_')) {
-        newErrors.price_id = 'Invalid Price ID format. Should start with "price_".';
+      newErrors.price_id = 'Invalid Price ID format. Should start with "price_".';
     }
+
+    if (!settings.openai_key.trim()) {
+      newErrors.openai_key = 'OpenAI API Key is required.';
+    } else if (!settings.openai_key.startsWith('sk-')) {
+      newErrors.openai_key = 'Invalid OpenAI API Key format. Should start with "sk-".';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -74,22 +81,30 @@ const StripeSettingsForm = () => {
 
     setIsSaving(true);
     try {
-      const updateData = {
-        id: 1,
-        publishable_key: settings.publishable_key.trim(),
-        price_id: settings.price_id.trim(),
-        updated_at: new Date(),
-      };
+      const [stripeResult, openaiResult] = await Promise.all([
+        supabase
+          .from('stripe_settings')
+          .upsert({
+            id: 1,
+            publishable_key: settings.publishable_key.trim(),
+            price_id: settings.price_id.trim(),
+            updated_at: new Date(),
+          }, { onConflict: 'id' }),
+        supabase
+          .from('openai_settings')
+          .upsert({
+            id: 1,
+            api_key: settings.openai_key.trim(),
+            updated_at: new Date(),
+          }, { onConflict: 'id' })
+      ]);
 
-      const { error } = await supabase
-        .from('stripe_settings')
-        .upsert(updateData, { onConflict: 'id' });
+      if (stripeResult.error) throw stripeResult.error;
+      if (openaiResult.error) throw openaiResult.error;
 
-      if (error) throw error;
-
-      toast({ title: "Stripe Settings Updated", description: "Your Stripe configuration has been saved." });
+      toast({ title: "Settings Updated", description: "Your payment and AI settings have been saved." });
     } catch (error) {
-      console.error('Error saving Stripe settings:', error);
+      console.error('Error saving settings:', error);
       toast({ variant: "destructive", title: "Save Error", description: error.message });
     } finally {
       setIsSaving(false);
@@ -134,16 +149,33 @@ const StripeSettingsForm = () => {
         />
         {errors.price_id && <p className="text-xs text-destructive">{errors.price_id}</p>}
         <p className="text-xs text-muted-foreground">
-          The Price ID for your primary product/service in Stripe. Used for client-only checkout.
+          The Price ID for your primary product/service in Stripe.
+        </p>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="openai_key">OpenAI API Key</Label>
+        <Input
+          id="openai_key"
+          name="openai_key"
+          type="password"
+          value={settings.openai_key}
+          onChange={handleChange}
+          placeholder="sk-..."
+          className={errors.openai_key ? 'border-destructive' : ''}
+          disabled={isSaving}
+        />
+        {errors.openai_key && <p className="text-xs text-destructive">{errors.openai_key}</p>}
+        <p className="text-xs text-muted-foreground">
+          Your OpenAI API key for the AI shopping assistant. Find this in your OpenAI dashboard.
         </p>
       </div>
 
       <Button type="submit" disabled={isSaving}>
-        {isSaving ? 'Saving...' : 'Save Stripe Settings'}
+        {isSaving ? 'Saving...' : 'Save Settings'}
       </Button>
     </form>
   );
 };
 
 export default StripeSettingsForm;
-  
