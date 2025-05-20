@@ -3,37 +3,52 @@ import { motion } from 'framer-motion';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Minus, Plus, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { getProductById, getCategoryById } from '@/lib/data/helpers';
 import { useCart } from '@/contexts/CartContext';
 import { formatCurrency } from '@/lib/utils';
+import { supabase } from '@/lib/supabaseClient';
 
 const ProductPage = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
-  const [category, setCategory] = useState(null);
-  const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [quantity, setQuantity] = useState(1);
   const { addToCart, cart } = useCart();
   
   useEffect(() => {
-    if (id) {
-      const productId = parseInt(id);
-      const foundProduct = getProductById(productId);
+    const fetchProduct = async () => {
+      if (!id) return;
       
-      if (foundProduct) {
-        setProduct(foundProduct);
-        const foundCategory = getCategoryById(foundProduct.category);
-        setCategory(foundCategory);
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select(`
+            *,
+            categories (
+              id,
+              name
+            )
+          `)
+          .eq('id', id)
+          .single();
+
+        if (error) throw error;
         
-        // Set initial quantity from cart if exists
-        const cartItem = cart.find(item => item.id === productId);
-        if (cartItem) {
-          setQuantity(cartItem.quantity);
+        if (data) {
+          setProduct(data);
+          // Set initial quantity from cart if exists
+          const cartItem = cart.find(item => item.id === data.id);
+          if (cartItem) {
+            setQuantity(cartItem.quantity);
+          }
         }
+      } catch (error) {
+        console.error('Error fetching product:', error);
+      } finally {
+        setLoading(false);
       }
-      
-      setLoading(false);
-    }
+    };
+
+    fetchProduct();
   }, [id, cart]);
   
   const handleAddToCart = () => {
@@ -97,7 +112,7 @@ const ProductPage = () => {
           <img  
             alt={product.name} 
             className="w-full h-full object-cover" 
-            src={product.image_url || "https://images.unsplash.com/photo-1607825878130-914be8978e27"} 
+            src={product.image_url || "https://images.pexels.com/photos/264636/pexels-photo-264636.jpeg"} 
           />
         </motion.div>
         
@@ -107,12 +122,12 @@ const ProductPage = () => {
           transition={{ duration: 0.3 }}
           className="space-y-6"
         >
-          {category && (
+          {product.categories && (
             <Link 
-              to={`/category/${category.id}`}
+              to={`/category/${product.categories.id}`}
               className="inline-block px-3 py-1 text-xs font-medium rounded-full bg-primary/10 text-primary"
             >
-              {category.name}
+              {product.categories.name}
             </Link>
           )}
           
@@ -149,9 +164,10 @@ const ProductPage = () => {
               <Button 
                 className="flex-1"
                 onClick={handleAddToCart}
+                disabled={!product.in_stock}
               >
                 <ShoppingCart className="w-4 h-4 mr-2" />
-                Add to Cart
+                {product.in_stock ? 'Add to Cart' : 'Out of Stock'}
               </Button>
             </div>
             
