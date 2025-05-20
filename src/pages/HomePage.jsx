@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Truck, Clock, ShieldCheck, MessageCircle, ShoppingBag, Gift, Cake } from 'lucide-react';
+import { ArrowRight, Truck, Clock, ShieldCheck, MessageCircle, ShoppingBag, Gift, Cake, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ProductCard from '@/components/products/ProductCard';
 import CategoryCard from '@/components/products/CategoryCard';
@@ -66,7 +66,7 @@ const HomePage = () => {
   }, []);
 
   const openWhatsApp = () => {
-    window.open('https://wa.me/1234567890', '_blank'); // Replace with your WhatsApp number
+    window.open('https://wa.me/1234567890', '_blank');
   };
   
   return (
@@ -76,19 +76,28 @@ const HomePage = () => {
         <div className="container px-4 md:px-6">
           <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 items-center">
             <div className="space-y-4">
-              <motion.h1 
-                className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl"
+              <motion.div 
+                className="flex items-center text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                Fresh Groceries Delivered to Your Doorstep
-              </motion.h1>
+                <span>Delivering now in</span>
+              </motion.div>
+              <motion.div
+                className="flex items-center text-3xl md:text-4xl text-primary font-bold"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+              >
+                <MapPin className="w-8 h-8 mr-2" />
+                <span>Adelaide</span>
+              </motion.div>
               <motion.p 
                 className="max-w-[600px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
               >
                 Shop for fresh produce, pantry staples, and household essentials with fast delivery and exceptional quality.
               </motion.p>
@@ -96,16 +105,16 @@ const HomePage = () => {
                 className="flex flex-col gap-2 min-[400px]:flex-row"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
               >
                 <Link to="/shop">
                   <Button size="lg" className="w-full min-[400px]:w-auto">
                     Shop Now
                   </Button>
                 </Link>
-                <Link to="/categories">
+                <Link to="/store-pickup">
                   <Button size="lg" variant="outline" className="w-full min-[400px]:w-auto">
-                    Browse Categories
+                    Schedule Store Pickup
                   </Button>
                 </Link>
               </motion.div>
