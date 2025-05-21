@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Store, Clock, Calendar, MessageCircle } from 'lucide-react';
+import { Store, Clock, Calendar, MessageCircle, Bot } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -42,14 +42,8 @@ const StorePickupPage = () => {
   const timeSlots = generateTimeSlots();
 
   useEffect(() => {
-    if (!user) {
-      toast({ title: "Authentication Required", description: "Please sign in to schedule a store pickup." });
-      navigate('/login');
-      return;
-    }
-
     fetchStores();
-  }, [user, navigate]);
+  }, []);
 
   const fetchStores = async () => {
     try {
@@ -70,6 +64,12 @@ const StorePickupPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!user) {
+      toast({ title: "Authentication Required", description: "Please sign in to complete your pickup request." });
+      navigate('/login');
+      return;
+    }
 
     if (!selectedStore || !selectedDate || !selectedTimeSlot || !whatsappNumber || !address || !estimatedTotal) {
       toast({ variant: "destructive", title: "Missing Information", description: "Please fill in all required fields." });
@@ -264,7 +264,7 @@ const StorePickupPage = () => {
                 </div>
 
                 <Button type="submit" className="w-full">
-                  Schedule Pickup
+                  {user ? 'Schedule Pickup' : 'Sign In to Schedule'}
                 </Button>
               </form>
             </CardContent>
