@@ -22,7 +22,7 @@ const AdminPickupOrdersTab = () => {
         .select(`
           *,
           stores (name),
-          profiles:user_id (name, email)
+          profiles (name, email)
         `)
         .order('created_at', { ascending: false });
 
