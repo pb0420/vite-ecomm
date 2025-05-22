@@ -11,8 +11,7 @@ const ProductPage = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [quantity, setQuantity] = useState(1);
-  const { addToCart, cart } = useCart();
+  const { addToCart, updateQuantity, cart } = useCart();
   
   useEffect(() => {
     const fetchProduct = async () => {
@@ -32,15 +31,7 @@ const ProductPage = () => {
           .single();
 
         if (error) throw error;
-        
-        if (data) {
-          setProduct(data);
-          // Set initial quantity from cart if exists
-          const cartItem = cart.find(item => item.id === data.id);
-          if (cartItem) {
-            setQuantity(cartItem.quantity);
-          }
-        }
+        setProduct(data);
       } catch (error) {
         console.error('Error fetching product:', error);
       } finally {
@@ -49,22 +40,22 @@ const ProductPage = () => {
     };
 
     fetchProduct();
-  }, [id, cart]);
+  }, [id]);
+
+  // Get quantity from cart
+  const cartItem = cart.find(item => item?.id === product?.id);
+  const quantity = cartItem ? cartItem.quantity : 0;
+  
+  const handleQuantityChange = (newQuantity) => {
+    if (product) {
+      updateQuantity(product.id, newQuantity);
+    }
+  };
   
   const handleAddToCart = () => {
     if (product) {
-      addToCart(product, quantity);
+      addToCart(product, 1);
     }
-  };
-  
-  const decreaseQuantity = () => {
-    if (quantity > 1) {
-      setQuantity(quantity - 1);
-    }
-  };
-  
-  const increaseQuantity = () => {
-    setQuantity(quantity + 1);
   };
   
   if (loading) {
@@ -142,40 +133,44 @@ const ProductPage = () => {
           
           <div className="pt-6 border-t">
             <div className="flex items-center space-x-4">
-              <div className="flex items-center">
+              {quantity > 0 ? (
+                <div className="flex items-center space-x-2">
+                  <Button 
+                    variant="outline" 
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => handleQuantityChange(quantity - 1)}
+                  >
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                  <span className="text-sm font-medium w-6 text-center">{quantity}</span>
+                  <Button 
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => handleQuantityChange(quantity + 1)}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+              ) : (
                 <Button 
-                  variant="outline" 
-                  size="icon" 
-                  onClick={decreaseQuantity}
-                  disabled={quantity <= 1}
+                  className="flex-1"
+                  onClick={handleAddToCart}
+                  disabled={!product.in_stock}
                 >
-                  <Minus className="h-4 w-4" />
+                  <ShoppingCart className="w-4 h-4 mr-2" />
+                  {product.in_stock ? 'Add to Cart' : 'Out of Stock'}
                 </Button>
-                <span className="w-12 text-center">{quantity}</span>
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  onClick={increaseQuantity}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-              
-              <Button 
-                className="flex-1"
-                onClick={handleAddToCart}
-                disabled={!product.in_stock}
-              >
-                <ShoppingCart className="w-4 h-4 mr-2" />
-                {product.in_stock ? 'Add to Cart' : 'Out of Stock'}
-              </Button>
+              )}
             </div>
             
-            <div className="mt-6 text-sm text-muted-foreground">
-              <p>
-                <span className="font-medium">Total:</span> {formatCurrency(product.price * quantity)}
-              </p>
-            </div>
+            {quantity > 0 && (
+              <div className="mt-6 text-sm text-muted-foreground">
+                <p>
+                  <span className="font-medium">Total:</span> {formatCurrency(product.price * quantity)}
+                </p>
+              </div>
+            )}
           </div>
         </motion.div>
       </div>
