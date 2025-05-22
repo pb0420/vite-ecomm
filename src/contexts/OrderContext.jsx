@@ -1,10 +1,6 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { loadOrders, saveOrders } from '@/lib/storage';
-import { sampleOrders } from '@/lib/data/orders'; // Keep using sample for local context
+import { supabase } from '@/lib/supabaseClient';
 import { toast } from '@/components/ui/use-toast';
-// NOTE: This context uses localStorage and sample data.
-// For production, order management should happen via Supabase functions or a secure backend.
 
 const OrderContext = createContext();
 
@@ -19,71 +15,98 @@ export const useOrders = () => {
 export const OrderProvider = ({ children }) => {
   const [orders, setOrders] = useState([]);
 
-  useEffect(() => {
-    const savedOrders = loadOrders();
-    if (savedOrders && savedOrders.length > 0) {
-      setOrders(savedOrders);
-    } else {
-      setOrders(sampleOrders);
-      saveOrders(sampleOrders);
+  const addOrder = async (orderInput) => {
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .insert({
+          user_id: orderInput.user_id || null,
+          customer_name: orderInput.customer.name,
+          customer_email: orderInput.customer.email,
+          customer_phone: orderInput.customer.phone,
+          customer_address: orderInput.customer.address,
+          delivery_notes: orderInput.deliveryNotes,
+          total: orderInput.total,
+          status: 'pending',
+          delivery_type: orderInput.deliveryType,
+          scheduled_delivery_time: orderInput.scheduledDeliveryTime,
+          delivery_fee: orderInput.deliveryFee,
+          items: orderInput.items
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      toast({
+        title: "Order Created",
+        description: "Your order has been successfully placed.",
+      });
+
+      return data;
+    } catch (error) {
+      console.error('Error creating order:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to create order. Please try again."
+      });
+      throw error;
     }
-  }, []);
-
-  useEffect(() => {
-    saveOrders(orders);
-  }, [orders]);
-
-  // Updated to accept more details, including delivery info
-  const addOrder = (orderInput) => {
-    const newOrder = {
-      id: `ORD-${String(Date.now()).slice(-6)}`, // More unique ID for local
-      date: new Date().toISOString(),
-      status: 'pending',
-      customer: orderInput.customer,
-      items: orderInput.items,
-      total: orderInput.total,
-      deliveryNotes: orderInput.deliveryNotes,
-      deliveryType: orderInput.deliveryType, // Added
-      scheduledDeliveryTime: orderInput.scheduledDeliveryTime, // Added
-      deliveryFee: orderInput.deliveryFee, // Added
-    };
-
-    setOrders(prevOrders => [...prevOrders, newOrder]);
-
-    // Toast is handled in CheckoutPage after successful simulation/payment
-    return newOrder; // Return the created order object
   };
 
-  const updateOrderStatus = (orderId, status) => {
-    setOrders(prevOrders =>
-      prevOrders.map(order =>
-        order.id === orderId
-          ? { ...order, status }
-          : order
-      )
-    );
+  const updateOrderStatus = async (orderId, status) => {
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({ status })
+        .eq('id', orderId);
 
-    toast({
-      title: "Order updated",
-      description: `Order #${orderId} status changed to ${status}.`,
-      duration: 2000,
-    });
+      if (error) throw error;
+
+      toast({
+        title: "Order Updated",
+        description: `Order status changed to ${status}.`,
+      });
+    } catch (error) {
+      console.error('Error updating order status:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to update order status."
+      });
+    }
   };
 
-  const getOrderById = (orderId) => {
-    // Find order, potentially converting dates if stored as strings
-    const order = orders.find(order => order.id === orderId);
-    if (order && typeof order.date === 'string') {
-        order.date = new Date(order.date);
+  const getOrderById = async (orderId) => {
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('id', orderId)
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error fetching order:', error);
+      return null;
     }
-     if (order && typeof order.scheduledDeliveryTime === 'string') {
-        order.scheduledDeliveryTime = new Date(order.scheduledDeliveryTime);
-    }
-    return order;
   };
 
-  const getOrdersByStatus = (status) => {
-    return status ? orders.filter(order => order.status === status) : orders;
+  const getOrdersByStatus = async (status) => {
+    try {
+      let query = supabase.from('orders').select('*');
+      if (status) {
+        query = query.eq('status', status);
+      }
+      const { data, error } = await query;
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+      return [];
+    }
   };
 
   return (
@@ -98,4 +121,3 @@ export const OrderProvider = ({ children }) => {
     </OrderContext.Provider>
   );
 };
-  

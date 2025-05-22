@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ShoppingCart, Trash2, Plus, Minus } from 'lucide-react';
@@ -112,7 +111,11 @@ const CartDrawer = () => {
                           className="flex items-center space-x-4 p-3 rounded-lg border bg-card"
                         >
                           <div className="w-16 h-16 rounded-md bg-muted flex items-center justify-center overflow-hidden">
-                            <img  alt={item.name} className="w-full h-full object-cover" src="https://images.unsplash.com/photo-1675023112817-52b789fd2ef0" />
+                            <img 
+                              alt={item.name} 
+                              className="w-full h-full object-cover" 
+                              src={item.image_url || "https://images.pexels.com/photos/264636/pexels-photo-264636.jpeg"} 
+                            />
                           </div>
                           
                           <div className="flex-1 min-w-0">

@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ShoppingCart, Plus } from 'lucide-react';
+import { ShoppingCart, Plus, Minus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,7 +8,17 @@ import { useCart } from '@/contexts/CartContext';
 import { formatCurrency } from '@/lib/utils';
 
 const ProductCard = ({ product }) => {
-  const { addToCart } = useCart();
+  const { addToCart, updateQuantity, cart } = useCart();
+  
+  // Get quantity from cart
+  const cartItem = cart.find(item => item.id === product.id);
+  const quantity = cartItem ? cartItem.quantity : 0;
+  
+  const handleQuantityChange = (e, newQuantity) => {
+    e.preventDefault();
+    e.stopPropagation();
+    updateQuantity(product.id, newQuantity);
+  };
   
   const handleAddToCart = (e) => {
     e.preventDefault();
@@ -29,7 +38,8 @@ const ProductCard = ({ product }) => {
           <img  
             alt={product.name}
             className="w-full h-full object-cover"
-           src="https://images.unsplash.com/photo-1554702299-1ac5541cd63b" />
+            src={product.image_url || "https://images.unsplash.com/photo-1554702299-1ac5541cd63b"} 
+          />
           
           {product.featured && (
             <Badge 
@@ -48,13 +58,35 @@ const ProductCard = ({ product }) => {
               <span className="text-lg font-semibold">{formatCurrency(product.price)}</span>
               <span className="text-xs text-muted-foreground">per {product.unit}</span>
             </div>
-            <Button 
-              size="icon" 
-              className="rounded-full"
-              onClick={handleAddToCart}
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
+            
+            {quantity > 0 ? (
+              <div className="flex items-center space-x-2" onClick={(e) => e.preventDefault()}>
+                <Button 
+                  size="icon" 
+                  variant="outline"
+                  className="h-8 w-8"
+                  onClick={(e) => handleQuantityChange(e, quantity - 1)}
+                >
+                  <Minus className="h-4 w-4" />
+                </Button>
+                <span className="text-sm font-medium w-6 text-center">{quantity}</span>
+                <Button 
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={(e) => handleQuantityChange(e, quantity + 1)}
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <Button 
+                size="icon" 
+                className="rounded-full"
+                onClick={handleAddToCart}
+              >
+                <ShoppingCart className="h-4 w-4" />
+              </Button>
+            )}
           </div>
         </div>
       </Link>

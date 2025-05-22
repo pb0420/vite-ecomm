@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -12,12 +11,12 @@ import { useOrders } from '@/contexts/OrderContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/supabaseClient';
-import { formatCurrency } from '@/lib/utils'; // Import formatCurrency
+import { formatCurrency } from '@/lib/utils';
 
 const CheckoutPage = () => {
   const { cart, getCartTotal, clearCart } = useCart();
   const { addOrder } = useOrders();
-  const { user, updateUserInfo } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -52,76 +51,63 @@ const CheckoutPage = () => {
   }, []);
 
   const validateCheckoutForm = () => {
-     const errors = {};
-     if (!customerDetails.name.trim()) errors.name = 'Name is required';
-     if (!customerDetails.email.trim()) {
-       errors.email = 'Email is required';
-     } else if (!/\S+@\S+\.\S+/.test(customerDetails.email)) {
-       errors.email = 'Email is invalid';
-     }
-     if (!customerDetails.phone.trim()) errors.phone = 'Phone number is required';
-     if (!customerDetails.address.trim()) errors.address = 'Address is required';
+    const errors = {};
+    if (!customerDetails.name.trim()) errors.name = 'Name is required';
+    if (!customerDetails.phone.trim()) errors.phone = 'Phone number is required';
+    if (!customerDetails.address.trim()) errors.address = 'Address is required';
+    if (customerDetails.email && !/\S+@\S+\.\S+/.test(customerDetails.email)) {
+      errors.email = 'Email is invalid';
+    }
 
-     if (deliveryDetails.type === 'scheduled' && !deliveryDetails.scheduledTime) {
-        errors.delivery = 'Please select a date and time for scheduled delivery.';
-        toast({ variant: "destructive", title: "Missing Information", description: errors.delivery });
-     }
+    if (deliveryDetails.type === 'scheduled' && !deliveryDetails.scheduledTime) {
+      errors.delivery = 'Please select a date and time for scheduled delivery.';
+      toast({ variant: "destructive", title: "Missing Information", description: errors.delivery });
+    }
 
-     setFormErrors(errors);
-     return Object.keys(errors).length === 0;
-   };
-
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handlePlaceOrder = async () => {
     if (!validateCheckoutForm()) return;
 
     setIsSubmitting(true);
 
-    if (user && (
-        user.name !== customerDetails.name ||
-        user.phone !== customerDetails.phone ||
-        user.address !== customerDetails.address
-    )) {
-      await updateUserInfo({
-        name: customerDetails.name,
-        phone: customerDetails.phone,
-        address: customerDetails.address
-      });
-    }
+    try {
+      const orderData = {
+        user_id: user?.id,
+        customer: {
+          name: customerDetails.name,
+          email: customerDetails.email || null,
+          phone: customerDetails.phone,
+          address: customerDetails.address
+        },
+        items: cart.map(item => ({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity
+        })),
+        total: getCartTotal() + deliveryDetails.fee,
+        deliveryNotes: customerDetails.deliveryNotes,
+        deliveryType: deliveryDetails.type,
+        scheduledDeliveryTime: deliveryDetails.scheduledTime,
+        deliveryFee: deliveryDetails.fee,
+      };
 
-    const orderData = {
-      user_id: user?.id || null,
-      customer_name: customerDetails.name,
-      customer_email: customerDetails.email,
-      customer_phone: customerDetails.phone,
-      customer_address: customerDetails.address,
-      delivery_notes: customerDetails.deliveryNotes,
-      total: getCartTotal() + deliveryDetails.fee,
-      status: 'pending',
-      delivery_type: deliveryDetails.type,
-      scheduled_delivery_time: deliveryDetails.scheduledTime,
-      delivery_fee: deliveryDetails.fee,
-    };
-
-    const newOrder = addOrder({
-        customer: { name: orderData.customer_name, email: orderData.customer_email, phone: orderData.customer_phone, address: orderData.customer_address },
-        items: cart.map(item => ({ id: item.id, name: item.name, price: item.price, quantity: item.quantity })),
-        total: orderData.total,
-        deliveryNotes: orderData.deliveryNotes,
-        deliveryType: orderData.delivery_type,
-        scheduledDeliveryTime: orderData.scheduled_delivery_time,
-        deliveryFee: orderData.delivery_fee,
-    });
-
-    setTimeout(() => {
+      const newOrder = await addOrder(orderData);
       clearCart();
-      setIsSubmitting(false);
-      toast({
-        title: "Order Placed!",
-        description: "Your order has been successfully placed.",
-      });
       navigate(`/order-confirmation/${newOrder.id}`);
-    }, 1500);
+    } catch (error) {
+      console.error('Error placing order:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to place order. Please try again."
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (cart.length === 0 && !isSubmitting) {
@@ -138,16 +124,26 @@ const CheckoutPage = () => {
 
   return (
     <div className="container px-4 py-8 mx-auto md:px-6">
-      <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="text-3xl font-bold tracking-tight">
+      <motion.h1 
+        initial={{ opacity: 0, y: 20 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        transition={{ duration: 0.3 }} 
+        className="text-3xl font-bold tracking-tight"
+      >
         Checkout
       </motion.h1>
 
       <div className="grid gap-8 mt-8 lg:grid-cols-[1fr_350px]">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.1 }} className="space-y-6">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ duration: 0.3, delay: 0.1 }} 
+          className="space-y-6"
+        >
           <CheckoutForm onDetailsChange={handleDetailsChange} errors={formErrors} />
           <DeliveryOptions onDeliveryChange={handleDeliveryChange} />
           <PaymentSection />
-           {formErrors.delivery && <p className="text-sm text-destructive">{formErrors.delivery}</p>}
+          {formErrors.delivery && <p className="text-sm text-destructive">{formErrors.delivery}</p>}
           <Button onClick={handlePlaceOrder} className="w-full" disabled={isSubmitting}>
             {isSubmitting ? (
               <>
@@ -158,7 +154,11 @@ const CheckoutPage = () => {
           </Button>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.2 }}>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ duration: 0.3, delay: 0.2 }}
+        >
           <OrderSummary deliveryFee={deliveryDetails.fee} />
         </motion.div>
       </div>
@@ -167,4 +167,3 @@ const CheckoutPage = () => {
 };
 
 export default CheckoutPage;
-  

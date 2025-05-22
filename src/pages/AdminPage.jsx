@@ -1,14 +1,15 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Package, List, Tag, Settings as SettingsIcon } from 'lucide-react';
+import { Package, List, Tag, Settings as SettingsIcon, Store, ShoppingBag } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AdminSummaryCards from '@/components/admin/AdminSummaryCards';
 import AdminOrdersTab from '@/components/admin/AdminOrdersTab';
 import AdminProductsTab from '@/components/admin/AdminProductsTab';
 import AdminCategoriesTab from '@/components/admin/AdminCategoriesTab';
 import AdminSettingsTab from '@/components/admin/AdminSettingsTab';
+import AdminStoresTab from '@/components/admin/AdminStoresTab';
+import AdminPickupOrdersTab from '@/components/admin/AdminPickupOrdersTab';
 import DeleteConfirmationDialog from '@/components/admin/DeleteConfirmationDialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { useOrders } from '@/contexts/OrderContext';
@@ -22,12 +23,12 @@ const useAdminRedirect = () => {
 
   useEffect(() => {
     if (!authLoading) {
-      if (!user) { // If no user is logged in at all
+      if (!user) {
         toast({ variant: "destructive", title: "Authentication Required", description: "Please log in to access this page." });
         navigate('/admin-login');
-      } else if (!isAdmin) { // If user is logged in but not an admin
+      } else if (!isAdmin) {
         toast({ variant: "destructive", title: "Access Denied", description: "You must be an admin to view this page." });
-        navigate('/admin-login'); // Or '/' if you want to send them to homepage
+        navigate('/admin-login');
       }
     }
   }, [isAdmin, authLoading, user, navigate]);
@@ -79,7 +80,6 @@ const useAdminDataDeletion = (activeTabSetter) => {
       activeTabSetter(''); 
       setTimeout(() => activeTabSetter(currentTab), 0);
 
-
     } catch (error) {
       console.error(`Error deleting ${itemToDelete.type}:`, error);
       toast({ variant: "destructive", title: "Deletion Failed", description: error.message });
@@ -93,7 +93,6 @@ const useAdminDataDeletion = (activeTabSetter) => {
   return { isDeleteDialogOpen, itemToDelete, isDeleting, openDeleteDialog, confirmDelete, setIsDeleteDialogOpen };
 };
 
-
 const AdminPageHeader = () => (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="mb-8">
     <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
@@ -103,7 +102,7 @@ const AdminPageHeader = () => (
 
 const AdminPage = () => {
   const { authLoading, isAdmin } = useAdminRedirect();
-  const { getOrdersByStatus } = useOrders(); 
+  const { getOrdersByStatus } = useOrders();
   const [activeTab, setActiveTab] = useState("orders");
   const { isDeleteDialogOpen, itemToDelete, isDeleting, openDeleteDialog, confirmDelete, setIsDeleteDialogOpen } = useAdminDataDeletion(setActiveTab);
   
@@ -114,12 +113,14 @@ const AdminPage = () => {
   if (authLoading) {
     return <div className="container flex items-center justify-center h-screen"><div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div></div>;
   }
-  if (!isAdmin) return null; 
+  if (!isAdmin) return null;
 
   const tabItems = [
     { value: "orders", label: "Orders", icon: Package, component: <AdminOrdersTab /> },
+    { value: "pickup-orders", label: "Store Pickups", icon: ShoppingBag, component: <AdminPickupOrdersTab /> },
     { value: "products", label: "Products", icon: List, component: <AdminProductsTab key="products" openDeleteDialog={openDeleteDialog} /> },
     { value: "categories", label: "Categories", icon: Tag, component: <AdminCategoriesTab key="categories" openDeleteDialog={openDeleteDialog} /> },
+    { value: "stores", label: "Stores", icon: Store, component: <AdminStoresTab /> },
     { value: "settings", label: "Settings", icon: SettingsIcon, component: <AdminSettingsTab /> },
   ];
 
@@ -133,7 +134,7 @@ const AdminPage = () => {
       />
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-8 space-y-6">
-        <TabsList className={`grid w-full grid-cols-${tabItems.length} md:w-auto md:inline-flex`}>
+        <TabsList className="grid w-full grid-cols-6 md:w-auto md:inline-flex">
           {tabItems.map(tab => (
             <TabsTrigger key={tab.value} value={tab.value} className="flex items-center">
               <tab.icon className="w-4 h-4 mr-2" />{tab.label}
@@ -157,4 +158,3 @@ const AdminPage = () => {
 };
 
 export default AdminPage;
-  
