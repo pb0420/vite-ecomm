@@ -123,29 +123,6 @@ const CheckoutPage = () => {
     );
   }
 
-  if (!user) {
-    return (
-      <div className="container px-4 py-8 mx-auto md:px-6">
-        <div className="max-w-md mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="text-center mb-8"
-          >
-            <h1 className="text-3xl font-bold">Sign in to Continue</h1>
-            <p className="mt-2 text-muted-foreground">
-              Please sign in with your phone number to complete your order
-            </p>
-          </motion.div>
-          <div className="p-6 border rounded-lg">
-            <PhoneLoginForm />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="container px-4 py-8 mx-auto md:px-6">
       <motion.h1 
@@ -168,14 +145,19 @@ const CheckoutPage = () => {
           <DeliveryOptions onDeliveryChange={handleDeliveryChange} />
           <PaymentSection />
           {formErrors.delivery && <p className="text-sm text-destructive">{formErrors.delivery}</p>}
-          <Button onClick={handlePlaceOrder} className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? (
-              <>
-                <div className="mr-2 h-4 w-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin"></div>
-                Processing...
-              </>
-            ) : `Place Order - ${formatCurrency(getCartTotal() + deliveryDetails.fee)}`}
-          </Button>
+          
+          {!user ? (
+            <PhoneLoginForm onSuccess={() => {}} />
+          ) : (
+            <Button onClick={handlePlaceOrder} className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <>
+                  <div className="mr-2 h-4 w-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin"></div>
+                  Processing...
+                </>
+              ) : `Place Order - ${formatCurrency(getCartTotal() + deliveryDetails.fee)}`}
+            </Button>
+          )}
         </motion.div>
 
         <motion.div 

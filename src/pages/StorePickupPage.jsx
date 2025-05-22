@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
 import { Store, Clock, Calendar, MessageCircle, Bot } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,7 +28,6 @@ const generateTimeSlots = () => {
 
 const StorePickupPage = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [stores, setStores] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedStore, setSelectedStore] = useState('');
@@ -103,29 +101,6 @@ const StorePickupPage = () => {
     return (
       <div className="container flex items-center justify-center min-h-[400px]">
         <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="container px-4 py-8 mx-auto md:px-6">
-        <div className="max-w-md mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="text-center mb-8"
-          >
-            <h1 className="text-3xl font-bold">Sign in to Continue</h1>
-            <p className="mt-2 text-muted-foreground">
-              Please sign in with your phone number to schedule a pickup
-            </p>
-          </motion.div>
-          <div className="p-6 border rounded-lg">
-            <PhoneLoginForm />
-          </div>
-        </div>
       </div>
     );
   }
@@ -263,6 +238,12 @@ const StorePickupPage = () => {
                   />
                 </div>
 
+                {!user ? (
+                  <PhoneLoginForm onSuccess={() => {}} />
+                ) : (
+                  <Button type="submit" className="w-full">Schedule Pickup</Button>
+                )}
+
                 <div className="rounded-lg bg-muted p-4 text-sm">
                   <h4 className="font-medium mb-2">How it works:</h4>
                   <ul className="space-y-2">
@@ -280,8 +261,6 @@ const StorePickupPage = () => {
                     </li>
                   </ul>
                 </div>
-
-                <Button type="submit" className="w-full">Schedule Pickup</Button>
               </form>
             </CardContent>
           </Card>
