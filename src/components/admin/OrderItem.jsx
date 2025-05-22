@@ -1,15 +1,12 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ChevronDown, ChevronUp, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useOrders } from '@/contexts/OrderContext';
 import { formatCurrency } from '@/lib/utils';
 
-const OrderItem = ({ order }) => {
+const OrderItem = ({ order, onStatusChange }) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
-  const { updateOrderStatus } = useOrders();
   
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -33,7 +30,7 @@ const OrderItem = ({ order }) => {
   };
   
   const handleStatusChange = (value) => {
-    updateOrderStatus(order.id, value);
+    onStatusChange(order.id, value);
   };
   
   return (
@@ -124,8 +121,8 @@ const OrderItem = ({ order }) => {
               <div className="mt-4">
                 <h4 className="text-sm font-semibold mb-2">Order Items</h4>
                 <div className="space-y-2">
-                  {order.items.map((item) => (
-                    <div key={item.id} className="flex justify-between p-2 rounded bg-background">
+                  {order.items.map((item, index) => (
+                    <div key={index} className="flex justify-between p-2 rounded bg-background">
                       <div className="flex items-center space-x-2">
                         <span className="text-sm font-medium">{item.name}</span>
                         <span className="text-xs text-muted-foreground">x{item.quantity}</span>
