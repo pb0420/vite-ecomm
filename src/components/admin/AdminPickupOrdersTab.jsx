@@ -27,7 +27,6 @@ const AdminPickupOrdersTab = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      console.log(data,'zzzzzaaa')
       setOrders(data || []);
     } catch (error) {
       console.error('Error fetching pickup orders:', error);
