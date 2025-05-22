@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Menu, X, User, LogOut, Package } from 'lucide-react';
@@ -7,11 +6,13 @@ import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Badge } from '@/components/ui/badge';
+import LoginDialog from '@/components/auth/LoginDialog';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
   const { getCartCount, toggleCart } = useCart();
-  const { user, isAdmin, logout, loading } = useAuth(); // Get loading state
+  const { user, isAdmin, logout, loading } = useAuth();
   const navigate = useNavigate();
 
   const cartCount = getCartCount();
@@ -38,10 +39,9 @@ const Header = () => {
         </Link>
 
         <nav className="hidden md:flex md:items-center md:space-x-6">
-          {/* <Link to="/" className="text-sm font-medium transition-colors hover:text-primary">Home</Link> */}
           <Link to="/shop" className="text-sm font-medium transition-colors hover:text-primary">Shop</Link>
           <Link to="/categories" className="text-sm font-medium transition-colors hover:text-primary">Categories</Link>
-           <Link to="/store-pickup" className="text-sm font-medium transition-colors hover:text-primary">Store Pickup</Link>
+          <Link to="/store-pickup" className="text-sm font-medium transition-colors hover:text-primary">Store Pickup</Link>
           {isAdmin && (
             <Link to="/admin" className="text-sm font-medium transition-colors hover:text-primary">Admin Dashboard</Link>
           )}
@@ -55,7 +55,7 @@ const Header = () => {
             )}
           </Button>
 
-          {!loading && ( // Only show auth buttons when not loading
+          {!loading && (
             user ? (
               <div className="hidden md:flex md:items-center md:space-x-2">
                 <Link to="/account">
@@ -69,9 +69,9 @@ const Header = () => {
                 </Button>
               </div>
             ) : (
-              <Link to="/login" className="hidden md:block">
-                <Button variant="outline" size="sm">Sign In</Button>
-              </Link>
+              <Button variant="outline" size="sm" onClick={() => setIsLoginOpen(true)}>
+                Sign In
+              </Button>
             )
           )}
 
@@ -115,7 +115,7 @@ const Header = () => {
                   </Link>
                 )}
 
-                {!loading && ( // Only show auth buttons when not loading
+                {!loading && (
                   user ? (
                     <>
                       <Link to="/account" className="flex items-center space-x-2 text-sm" onClick={closeMenu}>
@@ -126,7 +126,7 @@ const Header = () => {
                       </Button>
                     </>
                   ) : (
-                    <Link to="/login" onClick={closeMenu}><Button className="w-full">Sign In</Button></Link>
+                    <Button onClick={() => { closeMenu(); setIsLoginOpen(true); }}>Sign In</Button>
                   )
                 )}
               </div>
@@ -134,9 +134,10 @@ const Header = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <LoginDialog open={isLoginOpen} onOpenChange={setIsLoginOpen} />
     </header>
   );
 };
 
 export default Header;
-  

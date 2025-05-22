@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabaseClient';
-import { Link } from 'react-router-dom';
+import PhoneLoginForm from '@/components/auth/PhoneLoginForm';
 
 const AiChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -55,12 +55,11 @@ const AiChatBot = () => {
         .single();
 
       // Simulate AI response for now
-      // In production, this would make a call to your edge function
       setTimeout(() => {
         setMessages(prev => [...prev, {
           role: 'assistant',
           content: "I can help you find products. What are you looking for?",
-          products: [] // This would contain product suggestions
+          products: []
         }]);
         setIsLoading(false);
       }, 1000);
@@ -76,15 +75,8 @@ const AiChatBot = () => {
   };
 
   const LoginPrompt = () => (
-    <div className="flex flex-col items-center justify-center h-full p-6 text-center">
-      <Bot className="w-12 h-12 mb-4 text-primary" />
-      <h3 className="text-lg font-semibold mb-2">Sign in to use AI Assistant</h3>
-      <p className="text-sm text-muted-foreground mb-4">
-        Please sign in to chat with our AI shopping assistant.
-      </p>
-      <Link to="/login">
-        <Button>Sign In</Button>
-      </Link>
+    <div className="p-6">
+      <PhoneLoginForm onSuccess={() => {}} />
     </div>
   );
 
