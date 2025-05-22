@@ -1,25 +1,65 @@
-
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useParams, Link } from 'react-router-dom';
-import { CheckCircle, Package, ArrowRight } from 'lucide-react';
+import { CheckCircle, Package, ArrowRight, Truck, Clock, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useOrders } from '@/contexts/OrderContext';
+import { supabase } from '@/lib/supabaseClient';
 import { formatCurrency } from '@/lib/utils';
 
 const OrderConfirmationPage = () => {
   const { id } = useParams();
-  const { getOrderById } = useOrders();
   const [order, setOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [deliveryTime, setDeliveryTime] = useState(null);
   
   useEffect(() => {
-    if (id) {
-      const foundOrder = getOrderById(id);
-      setOrder(foundOrder);
-    }
-  }, [id, getOrderById]);
+    const fetchOrder = async () => {
+      if (!id) return;
+      
+      try {
+        const { data: orderData, error: orderError } = await supabase
+          .from('orders')
+          .select('*')
+          .eq('id', id)
+          .single();
+
+        if (orderError) throw orderError;
+
+        if (orderData) {
+          setOrder(orderData);
+
+          // Fetch delivery settings for express delivery time
+          if (orderData.delivery_type === 'express') {
+            const { data: settingsData } = await supabase
+              .from('delivery_settings')
+              .select('express_delivery_time')
+              .eq('id', 1)
+              .single();
+
+            if (settingsData) {
+              const orderDate = new Date(orderData.created_at);
+              const deliveryInterval = settingsData.express_delivery_time;
+              // Parse interval string (e.g., "2 hours") and add to order date
+              const hours = parseInt(deliveryInterval.match(/(\d+) hours?/)?.[1] || '2');
+              const estimatedDelivery = new Date(orderDate.getTime() + (hours * 60 * 60 * 1000));
+              setDeliveryTime(estimatedDelivery);
+            }
+          } else if (orderData.scheduled_delivery_time) {
+            setDeliveryTime(new Date(orderData.scheduled_delivery_time));
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching order:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrder();
+  }, [id]);
   
   const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('en-US', {
       year: 'numeric',
@@ -29,6 +69,53 @@ const OrderConfirmationPage = () => {
       minute: 'numeric'
     }).format(date);
   };
+
+  const getStatusInfo = () => {
+    if (!order) return null;
+
+    const statusConfig = {
+      pending: {
+        color: 'text-yellow-500',
+        bgColor: 'bg-yellow-100',
+        icon: Clock,
+        title: 'Order Pending',
+        description: deliveryTime ? `Estimated delivery by ${formatDate(deliveryTime)}` : 'Processing your order'
+      },
+      processing: {
+        color: 'text-blue-500',
+        bgColor: 'bg-blue-100',
+        icon: Package,
+        title: 'Order Processing',
+        description: 'Your order is being prepared'
+      },
+      delivered: {
+        color: 'text-green-500',
+        bgColor: 'bg-green-100',
+        icon: CheckCircle,
+        title: 'Order Delivered',
+        description: 'Your order has been delivered'
+      },
+      cancelled: {
+        color: 'text-red-500',
+        bgColor: 'bg-red-100',
+        icon: XCircle,
+        title: 'Order Cancelled',
+        description: 'This order has been cancelled'
+      }
+    };
+
+    return statusConfig[order.status] || statusConfig.pending;
+  };
+  
+  if (loading) {
+    return (
+      <div className="container px-4 py-8 mx-auto md:px-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      </div>
+    );
+  }
   
   if (!order) {
     return (
@@ -45,6 +132,9 @@ const OrderConfirmationPage = () => {
       </div>
     );
   }
+
+  const statusInfo = getStatusInfo();
+  const StatusIcon = statusInfo.icon;
   
   return (
     <div className="container px-4 py-8 mx-auto md:px-6">
@@ -52,23 +142,67 @@ const OrderConfirmationPage = () => {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
-        className="max-w-2xl mx-auto text-center"
+        className="max-w-2xl mx-auto"
       >
-        <div className="flex justify-center mb-4">
-          <div className="p-3 rounded-full bg-primary/10">
-            <CheckCircle className="h-12 w-12 text-primary" />
+        {/* Order Status Section */}
+        <div className="mb-8 text-center">
+          <motion.div
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className={`mx-auto w-24 h-24 rounded-full ${statusInfo.bgColor} flex items-center justify-center mb-4`}
+          >
+            <StatusIcon className={`w-12 h-12 ${statusInfo.color}`} />
+          </motion.div>
+          <h1 className="text-2xl font-bold mb-2">{statusInfo.title}</h1>
+          <p className="text-muted-foreground">{statusInfo.description}</p>
+        </div>
+
+        {/* Order Progress Bar */}
+        <div className="mb-8">
+          <div className="relative">
+            <div className="absolute left-0 top-1/2 w-full h-1 bg-muted transform -translate-y-1/2">
+              <div 
+                className={`h-full bg-primary transition-all duration-500 ${
+                  order.status === 'pending' ? 'w-1/3' :
+                  order.status === 'processing' ? 'w-2/3' :
+                  order.status === 'delivered' ? 'w-full' : 'w-0'
+                }`}
+              />
+            </div>
+            <div className="relative flex justify-between">
+              <div className="flex flex-col items-center">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                  ['pending', 'processing', 'delivered'].includes(order.status) ? 'bg-primary text-primary-foreground' : 'bg-muted'
+                }`}>
+                  <CheckCircle className="w-4 h-4" />
+                </div>
+                <span className="mt-2 text-sm">Confirmed</span>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                  ['processing', 'delivered'].includes(order.status) ? 'bg-primary text-primary-foreground' : 'bg-muted'
+                }`}>
+                  <Package className="w-4 h-4" />
+                </div>
+                <span className="mt-2 text-sm">Processing</span>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                  order.status === 'delivered' ? 'bg-primary text-primary-foreground' : 'bg-muted'
+                }`}>
+                  <Truck className="w-4 h-4" />
+                </div>
+                <span className="mt-2 text-sm">Delivered</span>
+              </div>
+            </div>
           </div>
         </div>
-        
-        <h1 className="text-3xl font-bold">Order Confirmed!</h1>
-        <p className="mt-2 text-muted-foreground">
-          Thank you for your order. We've received your order and will begin processing it right away.
-        </p>
         
         <div className="mt-8 p-6 border rounded-lg text-left">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold">Order #{order.id}</h2>
-            <span className="px-3 py-1 text-xs font-medium rounded-full bg-primary/10 text-primary">
+            <span className={`px-3 py-1 text-xs font-medium rounded-full ${statusInfo.bgColor} ${statusInfo.color}`}>
               {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
             </span>
           </div>
@@ -76,18 +210,18 @@ const OrderConfirmationPage = () => {
           <div className="space-y-4">
             <div>
               <p className="text-sm text-muted-foreground">Order Date</p>
-              <p className="font-medium">{formatDate(order.date)}</p>
+              <p className="font-medium">{formatDate(order.created_at)}</p>
             </div>
             
             <div>
               <p className="text-sm text-muted-foreground">Delivery Address</p>
-              <p className="font-medium">{order.customer.address}</p>
+              <p className="font-medium">{order.customer_address}</p>
             </div>
             
-            {order.deliveryNotes && (
+            {order.delivery_notes && (
               <div>
                 <p className="text-sm text-muted-foreground">Delivery Notes</p>
-                <p className="font-medium">{order.deliveryNotes}</p>
+                <p className="font-medium">{order.delivery_notes}</p>
               </div>
             )}
           </div>
