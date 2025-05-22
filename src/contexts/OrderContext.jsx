@@ -33,7 +33,10 @@ export const OrderProvider = ({ children }) => {
           delivery_fee: orderInput.deliveryFee,
           items: orderInput.items
         })
+        .select()
+        .single();
 
+      
       if (error) throw error;
       
       toast({
