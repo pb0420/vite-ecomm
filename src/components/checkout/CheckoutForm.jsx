@@ -1,15 +1,18 @@
-
 import React, { useState, useEffect } from 'react';
 import { Truck } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea'; // Import Textarea
+import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/contexts/AuthContext';
 
 const CheckoutForm = ({ onDetailsChange, errors }) => {
   const { user } = useAuth();
   const [formData, setFormData] = useState({
-    name: '', email: '', phone: '', address: '', deliveryNotes: '',
+    name: '', 
+    email: '', 
+    phone: '', 
+    address: '', 
+    deliveryNotes: '',
   });
 
   // Pre-fill form if user is logged in
@@ -20,7 +23,7 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
         email: user.email || '',
         phone: user.phone || '',
         address: user.address || '',
-        deliveryNotes: '', // Keep notes separate
+        deliveryNotes: '',
       });
     }
   }, [user]);
@@ -33,7 +36,6 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    // Clearing errors is handled by the parent based on validation result
   };
 
   return (
@@ -46,34 +48,59 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="name">Full Name</Label>
-            <Input id="name" name="name" value={formData.name} onChange={handleChange} className={errors?.name ? 'border-destructive' : ''} />
+            <Input 
+              id="name" 
+              name="name" 
+              value={formData.name} 
+              onChange={handleChange} 
+              className={errors?.name ? 'border-destructive' : ''} 
+            />
             {errors?.name && <p className="text-xs text-destructive">{errors.name}</p>}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" name="email" type="email" value={formData.email} onChange={handleChange} className={errors?.email ? 'border-destructive' : ''} />
+            <Label htmlFor="email">Email (Optional)</Label>
+            <Input 
+              id="email" 
+              name="email" 
+              type="email" 
+              value={formData.email} 
+              onChange={handleChange} 
+              className={errors?.email ? 'border-destructive' : ''} 
+            />
             {errors?.email && <p className="text-xs text-destructive">{errors.email}</p>}
           </div>
         </div>
         <div className="space-y-2">
           <Label htmlFor="phone">Phone Number</Label>
-          <Input id="phone" name="phone" value={formData.phone} onChange={handleChange} className={errors?.phone ? 'border-destructive' : ''} />
+          <Input 
+            id="phone" 
+            name="phone" 
+            value={formData.phone} 
+            onChange={handleChange} 
+            className={errors?.phone ? 'border-destructive' : ''} 
+          />
           {errors?.phone && <p className="text-xs text-destructive">{errors.phone}</p>}
         </div>
         <div className="space-y-2">
           <Label htmlFor="address">Delivery Address</Label>
-          <Input id="address" name="address" value={formData.address} onChange={handleChange} className={errors?.address ? 'border-destructive' : ''} />
+          <Input 
+            id="address" 
+            name="address" 
+            value={formData.address} 
+            onChange={handleChange} 
+            className={errors?.address ? 'border-destructive' : ''} 
+          />
           {errors?.address && <p className="text-xs text-destructive">{errors.address}</p>}
         </div>
         <div className="space-y-2">
           <Label htmlFor="deliveryNotes">Delivery Notes (Optional)</Label>
-          <Textarea // Use Textarea for potentially longer notes
+          <Textarea
             id="deliveryNotes"
             name="deliveryNotes"
             value={formData.deliveryNotes}
             onChange={handleChange}
             placeholder="E.g., Leave at the door, call upon arrival, etc."
-            rows={3} // Suggest a height
+            rows={3}
           />
         </div>
       </div>
@@ -82,4 +109,3 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
 };
 
 export default CheckoutForm;
-  
