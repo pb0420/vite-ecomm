@@ -6,6 +6,7 @@ import CheckoutForm from '@/components/checkout/CheckoutForm';
 import OrderSummary from '@/components/checkout/OrderSummary';
 import DeliveryOptions from '@/components/checkout/DeliveryOptions';
 import PaymentSection from '@/components/checkout/PaymentSection';
+import PhoneLoginForm from '@/components/auth/PhoneLoginForm';
 import { useCart } from '@/contexts/CartContext';
 import { useOrders } from '@/contexts/OrderContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -117,6 +118,29 @@ const CheckoutPage = () => {
           <h2 className="text-2xl font-bold">Your cart is empty</h2>
           <p className="mt-2 text-muted-foreground">Add products to checkout.</p>
           <Button className="mt-4" onClick={() => navigate('/shop')}>Continue Shopping</Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="container px-4 py-8 mx-auto md:px-6">
+        <div className="max-w-md mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="text-center mb-8"
+          >
+            <h1 className="text-3xl font-bold">Sign in to Continue</h1>
+            <p className="mt-2 text-muted-foreground">
+              Please sign in with your phone number to complete your order
+            </p>
+          </motion.div>
+          <div className="p-6 border rounded-lg">
+            <PhoneLoginForm />
+          </div>
         </div>
       </div>
     );

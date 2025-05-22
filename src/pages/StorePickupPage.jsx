@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Calendar as CalendarPicker } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import PhoneLoginForm from '@/components/auth/PhoneLoginForm';
 import { format } from 'date-fns';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabaseClient';
@@ -65,12 +66,6 @@ const StorePickupPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!user) {
-      toast({ title: "Authentication Required", description: "Please sign in to complete your pickup request." });
-      navigate('/login');
-      return;
-    }
-
     if (!selectedStore || !selectedDate || !selectedTimeSlot || !whatsappNumber || !address || !estimatedTotal) {
       toast({ variant: "destructive", title: "Missing Information", description: "Please fill in all required fields." });
       return;
@@ -108,6 +103,29 @@ const StorePickupPage = () => {
     return (
       <div className="container flex items-center justify-center min-h-[400px]">
         <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="container px-4 py-8 mx-auto md:px-6">
+        <div className="max-w-md mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="text-center mb-8"
+          >
+            <h1 className="text-3xl font-bold">Sign in to Continue</h1>
+            <p className="mt-2 text-muted-foreground">
+              Please sign in with your phone number to schedule a pickup
+            </p>
+          </motion.div>
+          <div className="p-6 border rounded-lg">
+            <PhoneLoginForm />
+          </div>
+        </div>
       </div>
     );
   }
@@ -263,9 +281,7 @@ const StorePickupPage = () => {
                   </ul>
                 </div>
 
-                <Button type="submit" className="w-full">
-                  {user ? 'Schedule Pickup' : 'Sign In to Schedule'}
-                </Button>
+                <Button type="submit" className="w-full">Schedule Pickup</Button>
               </form>
             </CardContent>
           </Card>
