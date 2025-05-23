@@ -109,12 +109,12 @@ const HomePage = () => {
               >
                 <Link to="/shop">
                   <Button size="lg" className="w-full min-[400px]:w-auto">
-                    Shop Now
+                   Quick Shop
                   </Button>
                 </Link>
                 <Link to="/store-pickup">
                   <Button size="lg" variant="outline" className="w-full min-[400px]:w-auto">
-                    Schedule Store Pickup
+                    Schedule a Grocery Run
                   </Button>
                 </Link>
               </motion.div>
