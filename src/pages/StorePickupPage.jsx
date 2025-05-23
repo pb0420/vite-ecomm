@@ -153,7 +153,7 @@ const StorePickupPage = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Pickup Date</Label>
+                  <Label>Select Date</Label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
@@ -221,9 +221,10 @@ const StorePickupPage = () => {
                   <Input
                     id="estimated"
                     type="number"
+                    min="50"
                     value={estimatedTotal}
                     onChange={(e) => setEstimatedTotal(e.target.value)}
-                    placeholder="Enter estimated total amount"
+                    placeholder="Enter estimated total amount (min $50)"
                   />
                 </div>
 
