@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Truck } from 'lucide-react';
+import { Truck, MapPin } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
+import AddressSelector from '@/components/checkout/AddressSelector';
 
 const CheckoutForm = ({ onDetailsChange, errors }) => {
   const { user } = useAuth();
@@ -14,6 +16,7 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
     address: '', 
     deliveryNotes: '',
   });
+  const [showAddressSelector, setShowAddressSelector] = useState(false);
 
   // Pre-fill form if user is logged in
   useEffect(() => {
@@ -36,6 +39,11 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleAddressSelect = (address) => {
+    setFormData(prev => ({ ...prev, address }));
+    setShowAddressSelector(false);
   };
 
   return (
@@ -82,7 +90,23 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
           {errors?.phone && <p className="text-xs text-destructive">{errors.phone}</p>}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="address">Delivery Address</Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="address">Delivery Address</Label>
+            {user && user.addresses?.length > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowAddressSelector(!showAddressSelector)}
+                className="flex items-center text-primary"
+              >
+                <MapPin className="w-4 h-4 mr-1" />
+                {showAddressSelector ? 'Hide saved addresses' : 'Use saved address'}
+              </Button>
+            )}
+          </div>
+          {showAddressSelector && (
+            <AddressSelector onSelect={handleAddressSelect} />
+          )}
           <Input 
             id="address" 
             name="address" 
