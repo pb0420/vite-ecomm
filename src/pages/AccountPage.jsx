@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatCurrency } from '@/lib/utils';
 import { supabase } from '@/lib/supabaseClient';
+import AddressManager from '@/components/account/AddressManager';
 
 const AccountPage = () => {
   const { user, updateUserInfo, logout, loading: authLoading } = useAuth();
@@ -152,12 +153,21 @@ const AccountPage = () => {
 
       <Tabs defaultValue="profile" className="space-y-6">
         <TabsList className="grid w-full grid-cols-2 md:w-auto md:inline-flex">
-          <TabsTrigger value="profile" className="flex items-center"><User className="w-4 h-4 mr-2" />Profile</TabsTrigger>
-          <TabsTrigger value="orders" className="flex items-center"><Package className="w-4 h-4 mr-2" />Orders</TabsTrigger>
+          <TabsTrigger value="profile" className="flex items-center">
+            <User className="w-4 h-4 mr-2" />Profile
+          </TabsTrigger>
+          <TabsTrigger value="orders" className="flex items-center">
+            <Package className="w-4 h-4 mr-2" />Orders
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="profile" className="space-y-6">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="p-6 border rounded-lg">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="p-6 border rounded-lg"
+          >
             <h2 className="text-xl font-semibold mb-4">Personal Information</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
@@ -189,10 +199,31 @@ const AccountPage = () => {
               </div>
             </form>
           </motion.div>
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.1 }} className="p-6 border rounded-lg">
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+            className="p-6 border rounded-lg"
+          >
+            <AddressManager />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.2 }}
+            className="p-6 border rounded-lg"
+          >
             <h2 className="text-xl font-semibold mb-4">Account Actions</h2>
-            <Button variant="destructive" className="flex items-center" onClick={handleLogout} disabled={isSubmitting}>
-              <LogOut className="w-4 h-4 mr-2" />Logout
+            <Button
+              variant="destructive"
+              className="flex items-center"
+              onClick={handleLogout}
+              disabled={isSubmitting}
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Logout
             </Button>
           </motion.div>
         </TabsContent>
