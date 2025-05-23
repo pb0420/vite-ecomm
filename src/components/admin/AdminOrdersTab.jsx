@@ -52,6 +52,23 @@ const AdminOrdersTab = () => {
     }
   };
 
+  const updateDeliveryTime = async (orderId, expectedDeliveryAt) => {
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({ expected_delivery_at: expectedDeliveryAt })
+        .eq('id', orderId);
+
+      if (error) throw error;
+      
+      toast({ title: "Delivery Time Updated", description: "Expected delivery time has been updated" });
+      fetchOrders(); // Refresh orders list
+    } catch (error) {
+      console.error('Error updating delivery time:', error);
+      toast({ variant: "destructive", title: "Error", description: "Could not update delivery time." });
+    }
+  };
+
   const filteredOrders = orders.filter(order => {
     const matchesSearch = 
       order.customer_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -136,9 +153,11 @@ const AdminOrdersTab = () => {
                   items: order.items,
                   total: order.total,
                   status: order.status,
-                  deliveryNotes: order.delivery_notes
+                  deliveryNotes: order.delivery_notes,
+                  expected_delivery_at: order.expected_delivery_at
                 }}
                 onStatusChange={updateOrderStatus}
+                onDeliveryTimeChange={updateDeliveryTime}
               />
             ))
           )}
