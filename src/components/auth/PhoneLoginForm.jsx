@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from '@/components/ui/use-toast';
 
@@ -10,7 +9,15 @@ const PhoneLoginForm = ({ onSuccess }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showOtpInput, setShowOtpInput] = useState(false);
+  const [countdown, setCountdown] = useState(0);
+  const [codeSent, setCodeSent] = useState(false);
+
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [countdown]);
 
   const handleSendOtp = async (e) => {
     e.preventDefault();
@@ -30,8 +37,9 @@ const PhoneLoginForm = ({ onSuccess }) => {
 
       if (error) throw error;
 
-      setShowOtpInput(true);
-      toast({ title: "OTP Sent", description: "Please check your phone for the verification code." });
+      setCodeSent(true);
+      setCountdown(30);
+      toast({ title: "Code Sent", description: "Please check your phone for the verification code." });
     } catch (error) {
       console.error('Error sending OTP:', error);
       toast({ variant: "destructive", title: "Error", description: error.message });
@@ -42,8 +50,8 @@ const PhoneLoginForm = ({ onSuccess }) => {
 
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
-    if (!otp.trim()) {
-      toast({ variant: "destructive", title: "Error", description: "Please enter the verification code" });
+    if (!otp.trim() || otp.length !== 6) {
+      toast({ variant: "destructive", title: "Error", description: "Please enter a valid 6-digit code" });
       return;
     }
 
@@ -77,61 +85,51 @@ const PhoneLoginForm = ({ onSuccess }) => {
         </p>
       </div>
       
-      {!showOtpInput ? (
-        <form onSubmit={handleSendOtp} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone Number</Label>
-            <div className="flex space-x-2">
-              <Select value="+61" disabled>
-                <SelectTrigger className="w-[100px]">
-                  <SelectValue placeholder="Country" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="+61">+61 AU</SelectItem>
-                </SelectContent>
-              </Select>
-              <Input
-                id="phone"
-                type="tel"
-                placeholder="412 345 678"
-                value={phoneNumber.replace(/^\+61/, '')}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                disabled={loading}
-                className="flex-1"
-              />
-            </div>
-          </div>
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Sending...' : 'Send Code'}
-          </Button>
-        </form>
-      ) : (
-        <form onSubmit={handleVerifyOtp} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="otp">Verification Code</Label>
+      <form onSubmit={handleVerifyOtp} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="phone">Phone Number</Label>
+          <div className="flex space-x-2">
             <Input
-              id="otp"
-              type="text"
-              placeholder="Enter verification code"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
+              id="phone"
+              type="tel"
+              placeholder="412 345 678"
+              value={phoneNumber.replace(/^\+61/, '')}
+              onChange={(e) => setPhoneNumber(e.target.value)}
               disabled={loading}
+              className="flex-1"
             />
+            <Button 
+              type="button" 
+              variant="outline"
+              onClick={handleSendOtp}
+              disabled={loading || (countdown > 0)}
+            >
+              {countdown > 0 ? `Resend (${countdown}s)` : codeSent ? 'Resend Code' : 'Send Code'}
+            </Button>
           </div>
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Verifying...' : 'Verify Code'}
-          </Button>
-          <Button
-            type="button"
-            variant="link"
-            className="w-full"
-            onClick={() => setShowOtpInput(false)}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="otp">Verification Code</Label>
+          <Input
+            id="otp"
+            type="text"
+            maxLength={6}
+            placeholder="Enter 6-digit code"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
             disabled={loading}
-          >
-            Use different phone number
-          </Button>
-        </form>
-      )}
+          />
+        </div>
+
+        <Button 
+          type="submit" 
+          className="w-full" 
+          disabled={loading || !codeSent || otp.length !== 6}
+        >
+          {loading ? 'Verifying...' : 'Verify & Sign In'}
+        </Button>
+      </form>
     </div>
   );
 };
