@@ -39,9 +39,9 @@ const Header = () => {
         </Link>
 
         <nav className="hidden md:flex md:items-center md:space-x-6">
+            <Link to="/store-pickup" className="text-sm font-medium transition-colors hover:text-primary">Grocery Run</Link>
           <Link to="/shop" className="text-sm font-medium transition-colors hover:text-primary">Shop</Link>
           <Link to="/categories" className="text-sm font-medium transition-colors hover:text-primary">Categories</Link>
-          <Link to="/store-pickup" className="text-sm font-medium transition-colors hover:text-primary">Store Pickup</Link>
           {isAdmin && (
             <Link to="/admin" className="text-sm font-medium transition-colors hover:text-primary">Admin Dashboard</Link>
           )}
