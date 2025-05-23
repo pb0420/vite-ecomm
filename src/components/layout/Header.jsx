@@ -61,7 +61,7 @@ const Header = () => {
                 <Link to="/account">
                   <Button variant="ghost" size="sm" className="flex items-center space-x-1">
                     <User className="w-4 h-4" />
-                    <span>{user.name?.split(' ')[0] || 'Account'}</span>
+                    <span>{user.name?.split(' ')[0] || 'My Account'}</span>
                   </Button>
                 </Link>
                 <Button variant="ghost" size="icon" onClick={handleLogout}>
