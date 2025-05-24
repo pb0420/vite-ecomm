@@ -36,9 +36,10 @@ const AddressManager = () => {
             : addr
         );
       } else {
+        const uniqueId =Math.random().toString(36).substr(2, 9);
         // Add new address
         newAddresses = [...addresses, {
-          id: Math.random().toString(36).substr(2, 9);,
+          id: uniqueId,
           label: formData.label,
           address: formData.address
         }];
