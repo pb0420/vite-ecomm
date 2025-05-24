@@ -126,7 +126,7 @@ const AddressManager = () => {
           <p className="text-center text-muted-foreground py-4">No addresses saved yet.</p>
         ) : (
           addresses.map((addr) => (
-            <motion.div
+            <div
               key={addr.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -157,7 +157,7 @@ const AddressManager = () => {
                   <Trash2 className="w-4 h-4" />
                 </Button>
               </div>
-            </motion.div>
+            </div>
           ))
         )}
       </div>
