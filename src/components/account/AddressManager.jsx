@@ -38,7 +38,7 @@ const AddressManager = () => {
       } else {
         // Add new address
         newAddresses = [...addresses, {
-          id: crypto.randomUUID(),
+          id: Math.random().toString(36).substr(2, 9);,
           label: formData.label,
           address: formData.address
         }];
