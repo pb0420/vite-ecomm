@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Store, Clock, Calendar, MessageCircle, Bot } from 'lucide-react';
+import { Store, Clock, Calendar, MessageCircle, Bot, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -15,6 +15,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from '@/components/ui/use-toast';
 import { cn } from '@/lib/utils';
+import AddressSelector from '@/components/checkout/AddressSelector';
 
 const generateTimeSlots = () => {
   const slots = [];
@@ -37,6 +38,7 @@ const StorePickupPage = () => {
   const [address, setAddress] = useState('');
   const [notes, setNotes] = useState('');
   const [estimatedTotal, setEstimatedTotal] = useState('');
+  const [showAddressSelector, setShowAddressSelector] = useState(false);
 
   const timeSlots = generateTimeSlots();
 
@@ -59,6 +61,11 @@ const StorePickupPage = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleAddressSelect = (selectedAddress) => {
+    setAddress(selectedAddress);
+    setShowAddressSelector(false);
   };
 
   const handleSubmit = async (e) => {
@@ -206,13 +213,28 @@ const StorePickupPage = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="address">Delivery Address</Label>
-                  <Textarea
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="address">Delivery Address</Label>
+                    {user && user.addresses?.length > 0 && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowAddressSelector(!showAddressSelector)}
+                        className="flex items-center text-primary"
+                      >
+                        <MapPin className="w-4 h-4 mr-1" />
+                        {showAddressSelector ? 'Hide saved addresses' : 'Use saved address'}
+                      </Button>
+                    )}
+                  </div>
+                  {showAddressSelector && (
+                    <AddressSelector onSelect={handleAddressSelect} />
+                  )}
+                  <Input
                     id="address"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                     placeholder="Enter your delivery address"
-                    rows={3}
                   />
                 </div>
 

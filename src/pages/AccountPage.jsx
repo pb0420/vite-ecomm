@@ -22,7 +22,6 @@ const AccountPage = () => {
     name: '',
     email: '',
     phone: '',
-    address: '',
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -35,7 +34,6 @@ const AccountPage = () => {
         name: user.name || '',
         email: user.email || '',
         phone: user.phone || '',
-        address: user.address || '',
       });
       fetchUserOrders(user.id);
       fetchPickupOrders(user.id);
@@ -94,7 +92,6 @@ const AccountPage = () => {
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Email is invalid';
     }
-    if (!formData.address.trim()) newErrors.address = 'Address is required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -105,22 +102,15 @@ const AccountPage = () => {
 
     setIsSubmitting(true);
     try {
-      // Update email in auth
-      const { error: emailError } = await supabase.auth.updateUser({
-        email: formData.email
-      });
-
-      if (emailError) throw emailError;
-
-      // Update other info in profile
+      // Update profile info including email
       await updateUserInfo({
         name: formData.name,
-        address: formData.address,
+        email: formData.email,
       });
 
       toast({
         title: "Profile Updated",
-        description: "Your profile has been updated. Please check your email to confirm the new address."
+        description: "Your profile has been updated successfully."
       });
     } catch (error) {
       console.error('Error updating profile:', error);
@@ -198,7 +188,14 @@ const AccountPage = () => {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="name">Full Name</Label>
-                  <Input id="name" name="name" value={formData.name} onChange={handleChange} className={errors.name ? 'border-destructive' : ''} disabled={isSubmitting} />
+                  <Input 
+                    id="name" 
+                    name="name" 
+                    value={formData.name} 
+                    onChange={handleChange} 
+                    className={errors.name ? 'border-destructive' : ''} 
+                    disabled={isSubmitting} 
+                  />
                   {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
                 </div>
                 <div className="space-y-2">
@@ -213,7 +210,6 @@ const AccountPage = () => {
                     disabled={isSubmitting}
                   />
                   {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
-                  <p className="text-xs text-muted-foreground">You'll need to verify your new email if changed.</p>
                 </div>
               </div>
               <div className="space-y-2">
@@ -226,11 +222,6 @@ const AccountPage = () => {
                   disabled={true} 
                 />
                 <p className="text-xs text-muted-foreground">Phone number cannot be changed.</p>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="address">Address</Label>
-                <Input id="address" name="address" value={formData.address} onChange={handleChange} className={errors.address ? 'border-destructive' : ''} disabled={isSubmitting} />
-                {errors.address && <p className="text-xs text-destructive">{errors.address}</p>}
               </div>
               <div className="flex justify-end space-x-2">
                 <Button type="submit" disabled={isSubmitting}>
