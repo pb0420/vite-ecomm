@@ -94,7 +94,6 @@ const AccountPage = () => {
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Email is invalid';
     }
-    if (!formData.phone.trim()) newErrors.phone = 'Phone number is required';
     if (!formData.address.trim()) newErrors.address = 'Address is required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -105,12 +104,34 @@ const AccountPage = () => {
     if (!validateForm() || isSubmitting) return;
 
     setIsSubmitting(true);
-    await updateUserInfo({
-      name: formData.name,
-      phone: formData.phone,
-      address: formData.address,
-    });
-    setIsSubmitting(false);
+    try {
+      // Update email in auth
+      const { error: emailError } = await supabase.auth.updateUser({
+        email: formData.email
+      });
+
+      if (emailError) throw emailError;
+
+      // Update other info in profile
+      await updateUserInfo({
+        name: formData.name,
+        address: formData.address,
+      });
+
+      toast({
+        title: "Profile Updated",
+        description: "Your profile has been updated. Please check your email to confirm the new address."
+      });
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      toast({
+        variant: "destructive",
+        title: "Update Failed",
+        description: error.message
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleLogout = async () => {
@@ -122,7 +143,11 @@ const AccountPage = () => {
     if (!dateString) return 'N/A';
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('en-US', {
-      year: 'numeric', month: 'short', day: 'numeric'
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric'
     }).format(date);
   };
 
@@ -178,14 +203,29 @@ const AccountPage = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" name="email" type="email" value={formData.email} readOnly disabled className="bg-muted/50 cursor-not-allowed" />
-                  <p className="text-xs text-muted-foreground">Email cannot be changed here.</p>
+                  <Input 
+                    id="email" 
+                    name="email" 
+                    type="email" 
+                    value={formData.email} 
+                    onChange={handleChange} 
+                    className={errors.email ? 'border-destructive' : ''} 
+                    disabled={isSubmitting}
+                  />
+                  {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
+                  <p className="text-xs text-muted-foreground">You'll need to verify your new email if changed.</p>
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone Number</Label>
-                <Input id="phone" name="phone" value={formData.phone} onChange={handleChange} className={errors.phone ? 'border-destructive' : ''} disabled={isSubmitting} />
-                {errors.phone && <p className="text-xs text-destructive">{errors.phone}</p>}
+                <Input 
+                  id="phone" 
+                  name="phone" 
+                  value={formData.phone} 
+                  className="bg-muted/50" 
+                  disabled={true} 
+                />
+                <p className="text-xs text-muted-foreground">Phone number cannot be changed.</p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="address">Address</Label>
