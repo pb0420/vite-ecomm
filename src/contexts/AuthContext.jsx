@@ -209,6 +209,7 @@ export const AuthProvider = ({ children }) => {
         name: newUserData.name,
         phone: newUserData.phone,
         address: newUserData.address,
+        addresses: newUserData.addresses
         updated_at: new Date(),
       })
       .eq('id', user.id)
