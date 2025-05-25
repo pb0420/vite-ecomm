@@ -62,58 +62,55 @@ import PhoneLoginForm from '@/components/auth/PhoneLoginForm';
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
-        <Input
-          id="email"
-          name="email"
-          type="email"
-          value={formData.email}
-          onChange={handleChange}
-          className={errors.email ? 'border-destructive' : ''}
-          disabled={isSubmitting || authLoading}
-        />
-        {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
-      </div>
+    // <form onSubmit={handleSubmit} className="space-y-4">
+    //   <div className="space-y-2">
+    //     <Label htmlFor="email">Email</Label>
+    //     <Input
+    //       id="email"
+    //       name="email"
+    //       type="email"
+    //       value={formData.email}
+    //       onChange={handleChange}
+    //       className={errors.email ? 'border-destructive' : ''}
+    //       disabled={isSubmitting || authLoading}
+    //     />
+    //     {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
+    //   </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
-        <Input
-          id="password"
-          name="password"
-          type="password"
-          value={formData.password}
-          onChange={handleChange}
-          className={errors.password ? 'border-destructive' : ''}
-          disabled={isSubmitting || authLoading}
-        />
-        {errors.password && <p className="text-xs text-destructive">{errors.password}</p>}
-      </div>
+    //   <div className="space-y-2">
+    //     <Label htmlFor="password">Password</Label>
+    //     <Input
+    //       id="password"
+    //       name="password"
+    //       type="password"
+    //       value={formData.password}
+    //       onChange={handleChange}
+    //       className={errors.password ? 'border-destructive' : ''}
+    //       disabled={isSubmitting || authLoading}
+    //     />
+    //     {errors.password && <p className="text-xs text-destructive">{errors.password}</p>}
+    //   </div>
 
-      <div className="text-sm text-right">
-        <Link to="/forgot-password" className={`text-primary hover:underline ${(isSubmitting || authLoading) ? 'pointer-events-none opacity-50' : ''}`}>
-          Forgot password?
-        </Link>
-      </div>
+    //   <div className="text-sm text-right">
+    //     <Link to="/forgot-password" className={`text-primary hover:underline ${(isSubmitting || authLoading) ? 'pointer-events-none opacity-50' : ''}`}>
+    //       Forgot password?
+    //     </Link>
+    //   </div>
 
-      <Button type="submit" className="w-full" disabled={isSubmitting || authLoading}>
-        {(isSubmitting || authLoading) ? (
-          <>
-            <div className="mr-2 h-4 w-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin"></div>
-            Signing In...
-          </>
-        ) : (
-          'Sign In'
-        )}
-      </Button>
-    </form>
+    //   <Button type="submit" className="w-full" disabled={isSubmitting || authLoading}>
+    //     {(isSubmitting || authLoading) ? (
+    //       <>
+    //         <div className="mr-2 h-4 w-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin"></div>
+    //         Signing In...
+    //       </>
+    //     ) : (
+    //       'Sign In'
+    //     )}
+    //   </Button>
+    // </form>
+
+    <PhoneLoginForm onSuccess={() => onOpenChange(false)} />
   );
 };
-
-const LoginForm = () => {
-   <PhoneLoginForm onSuccess={() => onOpenChange(false)} />
-}
-
 export default LoginForm;
   
