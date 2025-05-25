@@ -86,26 +86,6 @@ const Footer = () => {
             </ul>
           </div>
 
-          <div className="space-y-4">
-            <h4 className="text-sm font-semibold">Account</h4>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link to="/login" className="text-gray-600 hover:text-primary">
-                  Customer Sign In
-                </Link>
-              </li>
-              <li>
-                <Link to="/register" className="text-gray-600 hover:text-primary">
-                  Register
-                </Link>
-              </li>
-              <li>
-                <Link to="/account/orders" className="text-gray-600 hover:text-primary">
-                  Order History
-                </Link>
-              </li>
-            </ul>
-          </div>
         </div>
 
         <div className="pt-8 mt-8 border-t">
