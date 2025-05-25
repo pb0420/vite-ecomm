@@ -64,9 +64,6 @@ const Header = () => {
                     <span>{user.name?.split(' ')[0] || 'My Account'}</span>
                   </Button>
                 </Link>
-                <Button variant="ghost" size="icon" onClick={handleLogout}>
-                  <LogOut className="w-4 h-4" />
-                </Button>
               </div>
             ) : (
               <Button variant="outline" size="sm" onClick={() => setIsLoginOpen(true)}>
