@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, Send, X, ShoppingCart, Bot, MessageSquareMore } from 'lucide-react';
+import { MessageCircle, Send, X, ShoppingCart, Bot, MessageSquare as MessageSquareMore } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
