@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from '@/components/ui/use-toast';
 
@@ -129,6 +130,12 @@ const PhoneLoginForm = ({ onSuccess }) => {
         >
           {loading ? 'Verifying...' : 'Verify & Sign In'}
         </Button>
+
+        <p className="text-xs text-center text-muted-foreground mt-4">
+          By continuing, you agree to our{' '}
+          <Link to="/terms" className="text-primary hover:underline" target="_blank">Terms and Conditions</Link> and{' '}
+          <Link to="/privacy" className="text-primary hover:underline" target="_blank">Privacy Policy</Link>
+        </p>
       </form>
     </div>
   );

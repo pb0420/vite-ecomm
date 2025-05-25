@@ -9,12 +9,14 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Calendar as CalendarPicker } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Checkbox } from '@/components/ui/checkbox';
 import PhoneLoginForm from '@/components/auth/PhoneLoginForm';
 import { format } from 'date-fns';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from '@/components/ui/use-toast';
 import { cn } from '@/lib/utils';
+import { Link } from 'react-router-dom';
 import AddressSelector from '@/components/checkout/AddressSelector';
 
 const generateTimeSlots = () => {
@@ -39,6 +41,8 @@ const StorePickupPage = () => {
   const [notes, setNotes] = useState('');
   const [estimatedTotal, setEstimatedTotal] = useState('');
   const [showAddressSelector, setShowAddressSelector] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
 
   const timeSlots = generateTimeSlots();
 
@@ -68,11 +72,27 @@ const StorePickupPage = () => {
     setShowAddressSelector(false);
   };
 
+  const validateForm = () => {
+    const errors = {};
+    if (!selectedStore) errors.store = 'Please select a store';
+    if (!selectedTimeSlot) errors.timeSlot = 'Please select a time slot';
+    if (!whatsappNumber) errors.whatsapp = 'WhatsApp number is required';
+    if (!address) errors.address = 'Delivery address is required';
+    if (!estimatedTotal || parseFloat(estimatedTotal) < 50) {
+      errors.estimated = 'Minimum order amount is $50';
+    }
+    if (!termsAccepted) {
+      errors.terms = 'You must accept the terms and conditions';
+    }
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!selectedStore || !selectedDate || !selectedTimeSlot || !whatsappNumber || !address || !estimatedTotal) {
-      toast({ variant: "destructive", title: "Missing Information", description: "Please fill in all required fields." });
+    if (!validateForm()) {
+      toast({ variant: "destructive", title: "Missing Information", description: "Please fill in all required fields and accept the terms." });
       return;
     }
 
@@ -146,7 +166,7 @@ const StorePickupPage = () => {
                 <div className="space-y-2">
                   <Label htmlFor="store">Select Store</Label>
                   <Select value={selectedStore} onValueChange={setSelectedStore}>
-                    <SelectTrigger>
+                    <SelectTrigger className={formErrors.store ? 'border-destructive' : ''}>
                       <SelectValue placeholder="Choose a store" />
                     </SelectTrigger>
                     <SelectContent>
@@ -157,6 +177,7 @@ const StorePickupPage = () => {
                       ))}
                     </SelectContent>
                   </Select>
+                  {formErrors.store && <p className="text-xs text-destructive">{formErrors.store}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -189,7 +210,7 @@ const StorePickupPage = () => {
                 <div className="space-y-2">
                   <Label>Time Slot</Label>
                   <Select value={selectedTimeSlot} onValueChange={setSelectedTimeSlot}>
-                    <SelectTrigger>
+                    <SelectTrigger className={formErrors.timeSlot ? 'border-destructive' : ''}>
                       <SelectValue placeholder="Choose a time slot" />
                     </SelectTrigger>
                     <SelectContent>
@@ -200,6 +221,7 @@ const StorePickupPage = () => {
                       ))}
                     </SelectContent>
                   </Select>
+                  {formErrors.timeSlot && <p className="text-xs text-destructive">{formErrors.timeSlot}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -209,7 +231,9 @@ const StorePickupPage = () => {
                     value={whatsappNumber}
                     onChange={(e) => setWhatsappNumber(e.target.value)}
                     placeholder="Enter your WhatsApp number"
+                    className={formErrors.whatsapp ? 'border-destructive' : ''}
                   />
+                  {formErrors.whatsapp && <p className="text-xs text-destructive">{formErrors.whatsapp}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -235,7 +259,9 @@ const StorePickupPage = () => {
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                     placeholder="Enter your delivery address"
+                    className={formErrors.address ? 'border-destructive' : ''}
                   />
+                  {formErrors.address && <p className="text-xs text-destructive">{formErrors.address}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -247,7 +273,9 @@ const StorePickupPage = () => {
                     value={estimatedTotal}
                     onChange={(e) => setEstimatedTotal(e.target.value)}
                     placeholder="Enter estimated total amount (min $50)"
+                    className={formErrors.estimated ? 'border-destructive' : ''}
                   />
+                  {formErrors.estimated && <p className="text-xs text-destructive">{formErrors.estimated}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -260,6 +288,19 @@ const StorePickupPage = () => {
                     rows={3}
                   />
                 </div>
+
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="terms" 
+                    checked={termsAccepted}
+                    onCheckedChange={setTermsAccepted}
+                  />
+                  <Label htmlFor="terms" className="text-sm">
+                    I agree to the <Link to="/terms" className="text-primary hover:underline" target="_blank">Terms and Conditions</Link> and{' '}
+                    <Link to="/privacy" className="text-primary hover:underline" target="_blank">Privacy Policy</Link>
+                  </Label>
+                </div>
+                {formErrors.terms && <p className="text-xs text-destructive">{formErrors.terms}</p>}
 
                 {!user ? (
                   <PhoneLoginForm onSuccess={() => {}} />
