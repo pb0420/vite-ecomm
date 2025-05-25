@@ -78,6 +78,11 @@ const AiChatBot = () => {
 
   const LoginPrompt = () => (
     <div className="p-4">
+      <div className="text-sm text-center text-muted-foreground mb-4">
+        By continuing, you agree to our{' '}
+        <a href="/privacy" target="_blank" className="text-primary hover:underline">Privacy Policy</a> and{' '}
+        <a href="/terms" target="_blank" className="text-primary hover:underline">Terms of Service</a>
+      </div>
       <PhoneLoginForm onSuccess={() => {}} />
     </div>
   );
@@ -86,7 +91,7 @@ const AiChatBot = () => {
     <>
       <Button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg"
+        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg bg-[#2E8B57] hover:bg-[#2E8B57]/90"
         size="icon"
       >
         <MessageSquareMore className="h-6 w-6" />
@@ -99,7 +104,7 @@ const AiChatBot = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-24 right-6 w-96 max-h-[600px] bg-background border rounded-lg shadow-xl flex flex-col"
+            className="fixed bottom-24 right-6 w-96 max-h-[calc(100vh-120px)] bg-background border rounded-lg shadow-xl flex flex-col"
           >
             <Tabs defaultValue="ai" className="w-full h-full" value={activeTab} onValueChange={setActiveTab}>
               <div className="flex items-center justify-between p-4 border-b">
@@ -116,7 +121,7 @@ const AiChatBot = () => {
                 </Button>
               </div>
 
-              <TabsContent value="ai" className="flex-1 flex flex-col">
+              <TabsContent value="ai" className="flex-1 flex flex-col overflow-hidden">
                 {user ? (
                   <>
                     <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -130,7 +135,7 @@ const AiChatBot = () => {
                           <div
                             className={`max-w-[80%] rounded-lg p-3 ${
                               message.role === 'user'
-                                ? 'bg-primary text-primary-foreground'
+                                ? 'bg-[#2E8B57] text-white'
                                 : 'bg-muted'
                             }`}
                           >
@@ -160,9 +165,9 @@ const AiChatBot = () => {
                         <div className="flex justify-start">
                           <div className="bg-muted rounded-lg p-3">
                             <div className="flex space-x-2">
-                              <div className="w-2 h-2 bg-primary rounded-full animate-bounce" />
-                              <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
-                              <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.4s' }} />
+                              <div className="w-2 h-2 bg-[#2E8B57] rounded-full animate-bounce" />
+                              <div className="w-2 h-2 bg-[#2E8B57] rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                              <div className="w-2 h-2 bg-[#2E8B57] rounded-full animate-bounce" style={{ animationDelay: '0.4s' }} />
                             </div>
                           </div>
                         </div>
@@ -193,12 +198,12 @@ const AiChatBot = () => {
 
               <TabsContent value="human" className="flex-1">
                 <div className="p-6 flex flex-col items-center justify-center h-full text-center space-y-4">
-                  <MessageCircle className="h-12 w-12 text-primary" />
+                  <MessageCircle className="h-12 w-12 text-[#2E8B57]" />
                   <h3 className="text-lg font-semibold">Chat with our team</h3>
                   <p className="text-sm text-muted-foreground">
                     Our team is available on WhatsApp to assist you with your orders and queries.
                   </p>
-                  <Button onClick={openWhatsApp} className="mt-4">
+                  <Button onClick={openWhatsApp} className="mt-4 bg-[#2E8B57] hover:bg-[#2E8B57]/90">
                     <MessageCircle className="w-4 h-4 mr-2" />
                     Open WhatsApp Chat
                   </Button>

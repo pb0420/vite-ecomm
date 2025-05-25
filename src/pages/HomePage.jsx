@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Truck, Clock, ShieldCheck, Gift, Cake, MapPin } from 'lucide-react';
+import { ArrowRight, Clock, ShieldCheck, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ProductCard from '@/components/products/ProductCard';
 import CategoryCard from '@/components/products/CategoryCard';
@@ -10,16 +10,16 @@ import { supabase } from '@/lib/supabaseClient';
 
 const CategoryIcon = ({ name }) => {
   const icons = {
-    'Fruits & Vegetables': Gift,
-    'Dairy & Eggs': Gift,
-    'Bakery': Cake,
-    'Meat & Seafood': Gift,
-    'Pantry Staples': Gift,
-    'Beverages': Gift,
-    'Gift Packs': Gift,
+    'Fruits & Vegetables': Clock,
+    'Dairy & Eggs': Clock,
+    'Bakery': Clock,
+    'Meat & Seafood': Clock,
+    'Pantry Staples': Clock,
+    'Beverages': Clock,
+    'Gift Packs': Clock,
   };
   
-  const IconComponent = icons[name] || Gift;
+  const IconComponent = icons[name] || Clock;
   return <IconComponent className="w-6 h-6" />;
 };
 
@@ -68,64 +68,46 @@ const HomePage = () => {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <section className="hero-gradient py-16 md:py-24">
-        <div className="container px-4 md:px-6">
-          <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 items-center">
-            <div className="space-y-4">
-              <motion.div 
-                className="flex items-center text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                <span>Delivering now in</span>
-              </motion.div>
-              <motion.div
-                className="flex items-center text-3xl md:text-4xl text-primary font-bold"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-              >
+      <section className="relative h-[30vh] min-h-[300px] bg-[#F0E68C] overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src="https://images.pexels.com/photos/264636/pexels-photo-264636.jpeg" 
+            alt="Fresh groceries" 
+            className="w-full h-full object-cover opacity-20"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#2E8B57]/80 to-[#F0E68C]/50" />
+        </div>
+        
+        <div className="container relative h-full px-4 md:px-6">
+          <div className="flex flex-col justify-center h-full max-w-2xl">
+            <motion.div 
+              className="space-y-2"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <h1 className="text-4xl md:text-5xl font-bold text-white">
+                Delivering now in
+              </h1>
+              <div className="flex items-center text-3xl text-white font-bold">
                 <MapPin className="w-8 h-8 mr-2" />
                 <span>Adelaide</span>
-              </motion.div>
-              <motion.p 
-                className="max-w-[600px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-              >
-                Shop for fresh produce, pantry staples, and household essentials with fast delivery and exceptional quality.
-              </motion.p>
-              <motion.div 
-                className="flex flex-col gap-2 min-[400px]:flex-row"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-              >
+              </div>
+              <p className="text-white/90 text-lg">
+                Shop for fresh produce, pantry staples, and household essentials with fast delivery.
+              </p>
+              <div className="flex flex-col gap-2 min-[400px]:flex-row pt-4">
                 <Link to="/shop">
-                  <Button size="lg" className="w-full min-[400px]:w-auto">
-                   Quick Shop
+                  <Button size="lg" className="w-full min-[400px]:w-auto bg-[#2E8B57] hover:bg-[#2E8B57]/90">
+                    Quick Shop
                   </Button>
                 </Link>
                 <Link to="/store-pickup">
-                  <Button size="lg" variant="outline" className="w-full min-[400px]:w-auto">
+                  <Button size="lg" variant="outline" className="w-full min-[400px]:w-auto bg-white/90 hover:bg-white">
                     Schedule a Grocery Run
                   </Button>
                 </Link>
-              </motion.div>
-            </div>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="mx-auto w-full max-w-[500px] aspect-square rounded-xl overflow-hidden"
-            >
-              <img  
-                alt="Fresh groceries" 
-                className="w-full h-full object-cover" 
-                src="https://images.pexels.com/photos/264636/pexels-photo-264636.jpeg" 
-              />
+              </div>
             </motion.div>
           </div>
         </div>
@@ -157,7 +139,7 @@ const HomePage = () => {
                 >
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/0" />
                   <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-                    <div className="bg-white/90 rounded-full p-4 mb-2 group-hover:bg-primary group-hover:text-white transition-colors">
+                    <div className="bg-white/90 rounded-full p-4 mb-2 group-hover:bg-[#2E8B57] group-hover:text-white transition-colors">
                       <CategoryIcon name={category.name} />
                     </div>
                   </div>
@@ -207,8 +189,8 @@ const HomePage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <div className="p-2 rounded-full bg-primary/10">
-                <Truck className="h-6 w-6 text-primary" />
+              <div className="p-2 rounded-full bg-[#2E8B57]/10">
+                <Clock className="h-6 w-6 text-[#2E8B57]" />
               </div>
               <h3 className="text-lg font-medium">Fast Delivery</h3>
               <p className="text-sm text-muted-foreground">
@@ -222,8 +204,8 @@ const HomePage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.1 }}
             >
-              <div className="p-2 rounded-full bg-primary/10">
-                <ShieldCheck className="h-6 w-6 text-primary" />
+              <div className="p-2 rounded-full bg-[#2E8B57]/10">
+                <ShieldCheck className="h-6 w-6 text-[#2E8B57]" />
               </div>
               <h3 className="text-lg font-medium">Quality Guarantee</h3>
               <p className="text-sm text-muted-foreground">
@@ -237,8 +219,8 @@ const HomePage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.2 }}
             >
-              <div className="p-2 rounded-full bg-primary/10">
-                <Clock className="h-6 w-6 text-primary" />
+              <div className="p-2 rounded-full bg-[#2E8B57]/10">
+                <Clock className="h-6 w-6 text-[#2E8B57]" />
               </div>
               <h3 className="text-lg font-medium">Convenient Shopping</h3>
               <p className="text-sm text-muted-foreground">
