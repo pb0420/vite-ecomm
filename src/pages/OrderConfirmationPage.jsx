@@ -32,7 +32,7 @@ const OrderConfirmationPage = () => {
           if (orderData.expected_delivery_at === null) {
              let currentTime = new Date().getTime();
              let updatedTIme = new Date(currentTime + 45 * 60 * 1000); // 45 mins
-            setDeliveryTime();
+            setDeliveryTime(updatedTIme);
           } else  {
             setDeliveryTime(new Date(orderData.expected_delivery_at));
           }
