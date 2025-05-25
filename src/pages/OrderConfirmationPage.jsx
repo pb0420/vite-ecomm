@@ -29,23 +29,12 @@ const OrderConfirmationPage = () => {
           setOrder(orderData);
 
           // Fetch delivery settings for express delivery time
-          if (orderData.delivery_type === 'express') {
-            const { data: settingsData } = await supabase
-              .from('delivery_settings')
-              .select('express_delivery_time')
-              .eq('id', 1)
-              .single();
-
-            if (settingsData) {
-              const orderDate = new Date(orderData.created_at);
-              const deliveryInterval = settingsData.express_delivery_time;
-              // Parse interval string (e.g., "2 hours") and add to order date
-              const hours = parseInt(deliveryInterval.match(/(\d+) hours?/)?.[1] || '2');
-              const estimatedDelivery = new Date(orderDate.getTime() + (hours * 60 * 60 * 1000));
-              setDeliveryTime(estimatedDelivery);
-            }
-          } else if (orderData.scheduled_delivery_time) {
-            setDeliveryTime(new Date(orderData.scheduled_delivery_time));
+          if (orderData.expected_delivery_at === null) {
+             let currentTime = new Date().getTime();
+             let updatedTIme = new Date(currentTime + 45 * 60 * 1000); // 45 mins
+            setDeliveryTime();
+          } else  {
+            setDeliveryTime(new Date(orderData.expected_delivery_at));
           }
         }
       } catch (error) {
