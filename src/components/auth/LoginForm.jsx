@@ -6,8 +6,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/components/ui/use-toast';
+import PhoneLoginForm from '@/components/auth/PhoneLoginForm';
 
-const LoginForm = () => {
+
+// const LoginForm = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false); // Renamed from loading to avoid conflict
@@ -108,6 +110,10 @@ const LoginForm = () => {
     </form>
   );
 };
+
+const LoginForm = () => {
+   <PhoneLoginForm onSuccess={() => onOpenChange(false)} />
+}
 
 export default LoginForm;
   
