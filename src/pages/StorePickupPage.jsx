@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { Store, Clock, Calendar, MessageCircle, Bot, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -43,9 +44,9 @@ const StorePickupPage = () => {
   const [showAddressSelector, setShowAddressSelector] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [formErrors, setFormErrors] = useState({});
-
+  
   const timeSlots = generateTimeSlots();
-
+  const navigate = useNavigate();
   useEffect(() => {
     fetchStores();
   }, []);
