@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, Send, X, ShoppingCart, Bot } from 'lucide-react';
+import { MessageCircle, Send, X, ShoppingCart, Bot, MessageSquareMore } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabaseClient';
@@ -13,6 +14,7 @@ const AiChatBot = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("ai");
   const messagesEndRef = useRef(null);
   const chatBoxRef = useRef(null);
   const { addToCart } = useCart();
@@ -70,12 +72,12 @@ const AiChatBot = () => {
     }
   };
 
-  const toggleChat = () => {
-    setIsOpen(!isOpen);
+  const openWhatsApp = () => {
+    window.open('https://wa.me/1234567890', '_blank');
   };
 
   const LoginPrompt = () => (
-    <div className="p-6">
+    <div className="p-4">
       <PhoneLoginForm onSuccess={() => {}} />
     </div>
   );
@@ -83,11 +85,11 @@ const AiChatBot = () => {
   return (
     <>
       <Button
-        onClick={toggleChat}
-        className="fixed bottom-24 right-6 h-14 w-14 rounded-full shadow-lg"
+        onClick={() => setIsOpen(!isOpen)}
+        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg"
         size="icon"
       >
-        <Bot className="h-6 w-6" />
+        <MessageSquareMore className="h-6 w-6" />
       </Button>
 
       <AnimatePresence>
@@ -97,88 +99,112 @@ const AiChatBot = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-24 right-6 w-96 max-h-[calc(100vh-200px)] bg-background border rounded-lg shadow-xl flex flex-col"
+            className="fixed bottom-24 right-6 w-96 max-h-[600px] bg-background border rounded-lg shadow-xl flex flex-col"
           >
-            <div className="flex items-center justify-between p-4 border-b">
-              <div className="flex items-center space-x-2">
-                <Bot className="h-5 w-5 text-primary" />
-                <h3 className="font-semibold">Shopping Assistant</h3>
+            <Tabs defaultValue="ai" className="w-full h-full" value={activeTab} onValueChange={setActiveTab}>
+              <div className="flex items-center justify-between p-4 border-b">
+                <TabsList className="grid w-[200px] grid-cols-2">
+                  <TabsTrigger value="ai" className="flex items-center">
+                    <Bot className="w-4 h-4 mr-2" />AI Chat
+                  </TabsTrigger>
+                  <TabsTrigger value="human" className="flex items-center">
+                    <MessageCircle className="w-4 h-4 mr-2" />Human
+                  </TabsTrigger>
+                </TabsList>
+                <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
+                  <X className="h-4 w-4" />
+                </Button>
               </div>
-              <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
 
-            {user ? (
-              <>
-                <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                  {messages.map((message, index) => (
-                    <div
-                      key={index}
-                      className={`flex ${
-                        message.role === 'user' ? 'justify-end' : 'justify-start'
-                      }`}
-                    >
-                      <div
-                        className={`max-w-[80%] rounded-lg p-3 ${
-                          message.role === 'user'
-                            ? 'bg-primary text-primary-foreground'
-                            : 'bg-muted'
-                        }`}
-                      >
-                        <p className="text-sm">{message.content}</p>
-                        {message.products && message.products.length > 0 && (
-                          <div className="mt-2 space-y-2">
-                            {message.products.map((product) => (
-                              <div
-                                key={product.id}
-                                className="flex items-center justify-between bg-background rounded p-2"
-                              >
-                                <span className="text-sm">{product.name}</span>
-                                <Button
-                                  size="sm"
-                                  onClick={() => addToCart(product, 1)}
-                                >
-                                  <ShoppingCart className="h-4 w-4" />
-                                </Button>
+              <TabsContent value="ai" className="flex-1 flex flex-col">
+                {user ? (
+                  <>
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                      {messages.map((message, index) => (
+                        <div
+                          key={index}
+                          className={`flex ${
+                            message.role === 'user' ? 'justify-end' : 'justify-start'
+                          }`}
+                        >
+                          <div
+                            className={`max-w-[80%] rounded-lg p-3 ${
+                              message.role === 'user'
+                                ? 'bg-primary text-primary-foreground'
+                                : 'bg-muted'
+                            }`}
+                          >
+                            <p className="text-sm">{message.content}</p>
+                            {message.products && message.products.length > 0 && (
+                              <div className="mt-2 space-y-2">
+                                {message.products.map((product) => (
+                                  <div
+                                    key={product.id}
+                                    className="flex items-center justify-between bg-background rounded p-2"
+                                  >
+                                    <span className="text-sm">{product.name}</span>
+                                    <Button
+                                      size="sm"
+                                      onClick={() => addToCart(product, 1)}
+                                    >
+                                      <ShoppingCart className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                ))}
                               </div>
-                            ))}
+                            )}
                           </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                  {isLoading && (
-                    <div className="flex justify-start">
-                      <div className="bg-muted rounded-lg p-3">
-                        <div className="flex space-x-2">
-                          <div className="w-2 h-2 bg-primary rounded-full animate-bounce" />
-                          <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
-                          <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.4s' }} />
                         </div>
-                      </div>
+                      ))}
+                      {isLoading && (
+                        <div className="flex justify-start">
+                          <div className="bg-muted rounded-lg p-3">
+                            <div className="flex space-x-2">
+                              <div className="w-2 h-2 bg-primary rounded-full animate-bounce" />
+                              <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                              <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.4s' }} />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      <div ref={messagesEndRef} />
                     </div>
-                  )}
-                  <div ref={messagesEndRef} />
-                </div>
 
-                <form onSubmit={handleSubmit} className="p-4 border-t">
-                  <div className="flex space-x-2">
-                    <Input
-                      value={input}
-                      onChange={(e) => setInput(e.target.value)}
-                      placeholder="Ask about products..."
-                      disabled={isLoading}
-                    />
-                    <Button type="submit" size="icon" disabled={isLoading}>
-                      <Send className="h-4 w-4" />
-                    </Button>
+                    <form onSubmit={handleSubmit} className="p-4 border-t">
+                      <div className="flex space-x-2">
+                        <Input
+                          value={input}
+                          onChange={(e) => setInput(e.target.value)}
+                          placeholder="Ask about products..."
+                          disabled={isLoading}
+                        />
+                        <Button type="submit" size="icon" disabled={isLoading}>
+                          <Send className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </form>
+                  </>
+                ) : (
+                  <div className="flex-1 overflow-y-auto">
+                    <LoginPrompt />
                   </div>
-                </form>
-              </>
-            ) : (
-              <LoginPrompt />
-            )}
+                )}
+              </TabsContent>
+
+              <TabsContent value="human" className="flex-1">
+                <div className="p-6 flex flex-col items-center justify-center h-full text-center space-y-4">
+                  <MessageCircle className="h-12 w-12 text-primary" />
+                  <h3 className="text-lg font-semibold">Chat with our team</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Our team is available on WhatsApp to assist you with your orders and queries.
+                  </p>
+                  <Button onClick={openWhatsApp} className="mt-4">
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                    Open WhatsApp Chat
+                  </Button>
+                </div>
+              </TabsContent>
+            </Tabs>
           </motion.div>
         )}
       </AnimatePresence>

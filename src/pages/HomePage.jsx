@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Truck, Clock, ShieldCheck, MessageCircle, ShoppingBag, Gift, Cake, MapPin } from 'lucide-react';
+import { ArrowRight, Truck, Clock, ShieldCheck, Gift, Cake, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ProductCard from '@/components/products/ProductCard';
 import CategoryCard from '@/components/products/CategoryCard';
@@ -10,16 +10,16 @@ import { supabase } from '@/lib/supabaseClient';
 
 const CategoryIcon = ({ name }) => {
   const icons = {
-    'Fruits & Vegetables': ShoppingBag,
-    'Dairy & Eggs': ShoppingBag,
+    'Fruits & Vegetables': Gift,
+    'Dairy & Eggs': Gift,
     'Bakery': Cake,
-    'Meat & Seafood': ShoppingBag,
-    'Pantry Staples': ShoppingBag,
-    'Beverages': ShoppingBag,
+    'Meat & Seafood': Gift,
+    'Pantry Staples': Gift,
+    'Beverages': Gift,
     'Gift Packs': Gift,
   };
   
-  const IconComponent = icons[name] || ShoppingBag;
+  const IconComponent = icons[name] || Gift;
   return <IconComponent className="w-6 h-6" />;
 };
 
@@ -64,10 +64,6 @@ const HomePage = () => {
 
     fetchData();
   }, []);
-
-  const openWhatsApp = () => {
-    window.open('https://wa.me/1234567890', '_blank');
-  };
   
   return (
     <div className="flex flex-col min-h-screen">
@@ -252,15 +248,6 @@ const HomePage = () => {
           </div>
         </div>
       </section>
-
-      {/* WhatsApp Button */}
-      <Button
-        onClick={openWhatsApp}
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg bg-green-500 hover:bg-green-600"
-        size="icon"
-      >
-        <MessageCircle className="h-6 w-6" />
-      </Button>
 
       {/* AI Shopping Assistant */}
       <AiChatBot />
