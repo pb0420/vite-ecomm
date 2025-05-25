@@ -15,7 +15,7 @@ const CustomerLoginFormCard = () => {
       >
         <h1 className="text-3xl font-bold">Welcome to Groceroo</h1>
         <p className="mt-2 text-muted-foreground">
-          Sign in to your account to continue
+          Groceries made easy!
         </p>
       </motion.div>
 
