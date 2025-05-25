@@ -9,57 +9,57 @@ import { toast } from '@/components/ui/use-toast';
 import PhoneLoginForm from '@/components/auth/PhoneLoginForm';
 
 
-// const LoginForm = () => {
-  const [formData, setFormData] = useState({ email: '', password: '' });
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false); // Renamed from loading to avoid conflict
-  const { login, loading: authLoading } = useAuth();
-  const navigate = useNavigate();
+const LoginForm = () => {
+  // const [formData, setFormData] = useState({ email: '', password: '' });
+  // const [errors, setErrors] = useState({});
+  // const [isSubmitting, setIsSubmitting] = useState(false); // Renamed from loading to avoid conflict
+  // const { login, loading: authLoading } = useAuth();
+  // const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
-    }
-  };
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setFormData(prev => ({ ...prev, [name]: value }));
+  //   if (errors[name]) {
+  //     setErrors(prev => ({ ...prev, [name]: '' }));
+  //   }
+  // };
 
-  const validateForm = () => {
-    const newErrors = {};
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
-    }
-    if (!formData.password.trim()) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  // const validateForm = () => {
+  //   const newErrors = {};
+  //   if (!formData.email.trim()) {
+  //     newErrors.email = 'Email is required';
+  //   } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+  //     newErrors.email = 'Email is invalid';
+  //   }
+  //   if (!formData.password.trim()) {
+  //     newErrors.password = 'Password is required';
+  //   } else if (formData.password.length < 6) {
+  //     newErrors.password = 'Password must be at least 6 characters';
+  //   }
+  //   setErrors(newErrors);
+  //   return Object.keys(newErrors).length === 0;
+  // };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm() || isSubmitting || authLoading) return;
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   if (!validateForm() || isSubmitting || authLoading) return;
 
-    setIsSubmitting(true);
-    const { success, isAdminUser } = await login(formData.email, formData.password);
+  //   setIsSubmitting(true);
+  //   const { success, isAdminUser } = await login(formData.email, formData.password);
     
-    if (success) {
-      if (isAdminUser) {
-        navigate('/admin');
-      } else {
-        navigate('/'); // Navigate to homepage for regular users
-      }
-    } else {
-      // Error toast is handled by AuthContext's login function
-      // If login was successful but not admin, and they tried to access admin,
-      // the AdminPage's own protection logic will handle redirection/toast.
-    }
-    setIsSubmitting(false);
-  };
+  //   if (success) {
+  //     if (isAdminUser) {
+  //       navigate('/admin');
+  //     } else {
+  //       navigate('/'); // Navigate to homepage for regular users
+  //     }
+  //   } else {
+  //     // Error toast is handled by AuthContext's login function
+  //     // If login was successful but not admin, and they tried to access admin,
+  //     // the AdminPage's own protection logic will handle redirection/toast.
+  //   }
+  //   setIsSubmitting(false);
+  // };
 
   return (
     // <form onSubmit={handleSubmit} className="space-y-4">
