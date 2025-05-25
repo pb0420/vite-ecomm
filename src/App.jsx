@@ -27,6 +27,8 @@ import RegisterPage from '@/pages/RegisterPage';
 import AccountPage from '@/pages/AccountPage';
 import AdminPage from '@/pages/AdminPage';
 import StorePickupPage from '@/pages/StorePickupPage';
+import PrivacyPage from '@/pages/PrivacyPage';
+import TermsPage from '@/pages/TermsPage';
 
 const App = () => {
   return (
@@ -52,6 +54,8 @@ const App = () => {
                     <Route path="/register" element={<RegisterPage />} />
                     <Route path="/account/*" element={<AccountPage />} />
                     <Route path="/admin" element={<AdminPage />} />
+                    <Route path="/privacy" element={<PrivacyPage />} />
+                    <Route path="/terms" element={<TermsPage />} />
                   </Routes>
                 </AnimatePresence>
               </main>

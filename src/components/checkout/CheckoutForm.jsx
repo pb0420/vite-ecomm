@@ -4,6 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import AddressSelector from '@/components/checkout/AddressSelector';
 
@@ -17,6 +19,7 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
     deliveryNotes: '',
   });
   const [showAddressSelector, setShowAddressSelector] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   // Pre-fill form if user is logged in
   useEffect(() => {
@@ -33,8 +36,8 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
 
   // Update parent component when form data changes
   useEffect(() => {
-    onDetailsChange(formData);
-  }, [formData, onDetailsChange]);
+    onDetailsChange({ ...formData, termsAccepted });
+  }, [formData, termsAccepted, onDetailsChange]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -127,6 +130,18 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
             rows={3}
           />
         </div>
+        <div className="flex items-center space-x-2">
+          <Checkbox 
+            id="terms" 
+            checked={termsAccepted}
+            onCheckedChange={setTermsAccepted}
+          />
+          <Label htmlFor="terms" className="text-sm">
+            I agree to the <Link to="/terms" className="text-primary hover:underline" target="_blank">Terms and Conditions</Link> and{' '}
+            <Link to="/privacy" className="text-primary hover:underline" target="_blank">Privacy Policy</Link>
+          </Label>
+        </div>
+        {errors?.terms && <p className="text-xs text-destructive mt-1">{errors.terms}</p>}
       </div>
     </div>
   );
