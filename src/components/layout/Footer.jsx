@@ -39,7 +39,7 @@ const Footer = () => {
             </div>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-6">
             <h4 className="text-sm font-semibold">Shop</h4>
             <ul className="space-y-2 text-sm">
               <li>
@@ -60,7 +60,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-6">
             <h4 className="text-sm font-semibold">Customer Service</h4>
             <ul className="space-y-2 text-sm">
               <li>
