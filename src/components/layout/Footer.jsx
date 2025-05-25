@@ -115,12 +115,6 @@ const Footer = () => {
               <Link to="/terms" className="hover:text-primary">
                 Terms of Service
               </Link>
-              <Link to="/cookies" className="hover:text-primary">
-                Cookie Policy
-              </Link>
-              <button onClick={clearStorage} className="hover:text-red-500 text-xs">
-                Clear Storage
-              </button>
             </div>
           </div>
         </div>
