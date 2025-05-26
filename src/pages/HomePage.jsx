@@ -173,7 +173,7 @@ const HomePage = () => {
               </div>
               <h3 className="text-base font-medium">Quality</h3>
               <p className="text-sm text-muted-foreground">
-                Strict quality control and checks
+                Strict quality assurance and control
               </p>
             </motion.div>
             
@@ -184,11 +184,11 @@ const HomePage = () => {
               transition={{ duration: 0.3, delay: 0.2 }}
             >
               <div className="p-2 rounded-full bg-[#2E8B57]/10">
-                <Clock className="h-5 w-5 text-[#2E8B57]" />
+                <Handshake className="h-5 w-5 text-[#2E8B57]" />
               </div>
-              <h3 className="text-base font-medium">Customer Support</h3>
+              <h3 className="text-base font-medium">Support</h3>
               <p className="text-sm text-muted-foreground">
-                Instant customer support on WhatsApp
+                Super-fast customer support on WhatsApp
               </p>
             </motion.div>
           </div>
