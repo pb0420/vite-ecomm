@@ -87,11 +87,17 @@ const Footer = () => {
           </div>
 
           <div className="space-y-4">
-            <h4 className="text-sm font-semibold">Account</h4>
+            <h4 className="text-sm font-semibold">More</h4>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link to="/account" className="text-gray-600 hover:text-primary">
                   My account
+                </Link>
+                <Link to="/account" className="text-gray-600 hover:text-primary">
+                  Contact Us
+                </Link>
+                <Link to="/account" className="text-gray-600 hover:text-primary">
+                  Work
                 </Link>
               </li>
             </ul>
