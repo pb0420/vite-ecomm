@@ -128,11 +128,11 @@ const HomePage = () => {
           {loading ? (
             <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-6 gap-4 animate-pulse">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center mr-4"></div>
+                <div key={i} className="aspect-square bg-muted rounded-lg"></div>
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center mr-4">
               {categories.map((category) => (
                 <Link
                   key={category.id}
