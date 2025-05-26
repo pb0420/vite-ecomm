@@ -93,9 +93,13 @@ const Footer = () => {
                 <Link to="/account" className="text-gray-600 hover:text-primary">
                   My account
                 </Link>
+              </li>
+              <li>
                 <Link to="/account" className="text-gray-600 hover:text-primary">
                   Contact Us
                 </Link>
+              </li>
+              <li>
                 <Link to="/account" className="text-gray-600 hover:text-primary">
                   Work
                 </Link>
