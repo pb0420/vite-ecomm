@@ -162,14 +162,14 @@ const StorePickupPage = () => {
         </div>
       </section>
 
-      <div className="container px8 py-8 mx-auto md:px-6">
+      <div className="container px8 py-8 mx-auto md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
           className="max-w-4xl mx-auto"
         >
-          <div className="grid gap-8 md:grid-cols-[1fr_400px]"> 
+          <div className="grid gap-12 md:grid-cols-[1fr_400px]"> 
 
             <Card>
               <CardHeader>
