@@ -162,7 +162,7 @@ const StorePickupPage = () => {
         </div>
       </section>
 
-      <div className="container px-4 py-8 mx-auto md:px-6">
+      <div className="container px8 py-8 mx-auto md:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
