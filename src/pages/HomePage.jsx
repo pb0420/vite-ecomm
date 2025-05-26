@@ -130,7 +130,7 @@ const HomePage = () => {
               ))}
             </div>
           ) : (
-            <div className="">
+            <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-6">
               {categories.map((category) => (
                 <Link
                   key={category.id}
