@@ -173,7 +173,7 @@ const StorePickupPage = () => {
 
             <Card>
               <CardHeader>
-                <CardTitle>Schedule a run</CardTitle>
+                <CardTitle>Schedule a delivery</CardTitle>
                 <CardDescription>
                   Fill in your details below
                 </CardDescription>
