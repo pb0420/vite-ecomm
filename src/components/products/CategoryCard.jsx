@@ -13,7 +13,7 @@ const CategoryCard = ({ category }) => {
         whileHover={{ scale: 1.03 }}
         className="category-card overflow-hidden rounded-lg border bg-card"
       >
-        <div className="aspect-square w-24 h-24 mx-auto bg-muted">
+        <div className="aspect-square w-48 h-48 mx-auto bg-muted">
           <img  
             alt={category.name}
             className="w-full h-full object-cover"
