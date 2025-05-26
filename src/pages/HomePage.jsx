@@ -115,7 +115,7 @@ const HomePage = () => {
 
       {/* Categories Section */}
       <section className="py-12 bg-background">
-        <div className="container px-4 md:px-6">
+        <div className="container px-6 md:px-8">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl font-bold tracking-tight">Shop by Category</h2>
             <Link to="/categories" className="text-primary hover:underline flex items-center">
