@@ -170,18 +170,6 @@ const StorePickupPage = () => {
           className="max-w-4xl mx-auto"
         >
           <div className="grid gap-8 md:grid-cols-[1fr_400px]">
-            <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
-              <img 
-                src="https://images.pexels.com/photos/264636/pexels-photo-264636.jpeg"
-                alt="Store pickup service"
-                className="object-cover w-full h-full"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-              <div className="absolute bottom-0 left-0 p-6 text-white">
-                <h2 className="text-2xl font-bold mb-2">Grocery Run</h2>
-                <p className="text-white/90">Let us do the shopping for you!</p>
-              </div>
-            </div>
 
             <Card>
               <CardHeader>
