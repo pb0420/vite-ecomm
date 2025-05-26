@@ -99,12 +99,12 @@ const HomePage = () => {
               <div className="flex flex-col gap-2 min-[400px]:flex-row pt-4">
                 <Link to="/shop">
                   <Button size="lg" className="w-full min-[400px]:w-auto bg-[#2E8B57] hover:bg-[#2E8B57]/90">
-                    Shop Now
+                    Quick Shop
                   </Button>
                 </Link>
                 <Link to="/store-pickup">
                   <Button size="lg" variant="outline" className="w-full min-[400px]:w-auto bg-white/90 hover:bg-white">
-                    Schedule Grocery Run
+                    Schedule a Grocery Run
                   </Button>
                 </Link>
               </div>
@@ -115,24 +115,22 @@ const HomePage = () => {
 
       {/* Categories Section */}
       <section className="py-12 bg-background">
-        <div className="container mx-auto px-4 py-8">
-          <div className="mb-8 flex items-center">
+        <div className="container px-4 md:px-6">
+          <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl font-bold tracking-tight">Shop by Category</h2>
             <Link to="/categories" className="text-primary hover:underline flex items-center">
               View All <ArrowRight className="ml-1 h-4 w-4" />
             </Link>
           </div>
-          {/* <div className="container mx-auto px-4 py-8">
-        <div className="mb-8 flex items-center">
-          <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center mr-4"> */}
+          
           {loading ? (
-            <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-6 gap-4 animate-pulse">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 animate-pulse">
               {[...Array(6)].map((_, i) => (
                 <div key={i} className="aspect-square bg-muted rounded-lg"></div>
               ))}
             </div>
           ) : (
-            <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center mr-4">
+            <div className="">
               {categories.map((category) => (
                 <Link
                   key={category.id}
