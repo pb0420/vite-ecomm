@@ -13,7 +13,7 @@ const CategoryCard = ({ category }) => {
         whileHover={{ scale: 1.03 }}
         className="category-card overflow-hidden rounded-lg border bg-card"
       >
-        <div className="aspect-square bg-muted">
+        <div className="aspect-square w-24 h-24 mx-auto bg-muted">
           <img  
             alt={category.name}
             className="w-full h-full object-cover"
@@ -21,13 +21,13 @@ const CategoryCard = ({ category }) => {
           />
         </div>
         
-        <div className="p-4">
-          <h3 className="text-lg font-medium">{category.name}</h3>
-          <p className="mt-1 text-sm text-muted-foreground">{category.description}</p>
+        <div className="p-3 text-center">
+          <h3 className="text-sm font-medium">{category.name}</h3>
+          <p className="mt-1 text-xs text-muted-foreground line-clamp-2">{category.description}</p>
           
-          <div className="flex items-center mt-4 text-primary">
-            <span className="text-sm font-medium">Shop now</span>
-            <ArrowRight className="ml-1 h-4 w-4" />
+          <div className="flex items-center justify-center mt-2 text-primary">
+            <span className="text-xs font-medium">Shop now</span>
+            <ArrowRight className="ml-1 h-3 w-3" />
           </div>
         </div>
       </motion.div>

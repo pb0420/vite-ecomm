@@ -10,7 +10,6 @@ import { formatCurrency } from '@/lib/utils';
 const ProductCard = ({ product }) => {
   const { addToCart, updateQuantity, cart } = useCart();
   
-  // Get quantity from cart
   const cartItem = cart.find(item => item.id === product.id);
   const quantity = cartItem ? cartItem.quantity : 0;
   
@@ -34,7 +33,7 @@ const ProductCard = ({ product }) => {
       className="product-card overflow-hidden rounded-lg border bg-card"
     >
       <Link to={`/product/${product.id}`} className="block">
-        <div className="relative aspect-square bg-muted">
+        <div className="relative aspect-square w-full max-h-48 bg-muted">
           <img  
             alt={product.name}
             className="w-full h-full object-cover"
@@ -44,47 +43,47 @@ const ProductCard = ({ product }) => {
           {product.featured && (
             <Badge 
               variant="default" 
-              className="absolute top-2 left-2"
+              className="absolute top-2 left-2 text-xs"
             >
               Featured
             </Badge>
           )}
         </div>
         
-        <div className="p-4">
-          <h3 className="font-medium truncate">{product.name}</h3>
+        <div className="p-3">
+          <h3 className="text-sm font-medium truncate">{product.name}</h3>
           <div className="flex items-center justify-between mt-1">
             <div className="flex flex-col">
-              <span className="text-lg font-semibold">{formatCurrency(product.price)}</span>
+              <span className="text-base font-semibold">{formatCurrency(product.price)}</span>
               <span className="text-xs text-muted-foreground">per {product.unit}</span>
             </div>
             
             {quantity > 0 ? (
-              <div className="flex items-center space-x-2" onClick={(e) => e.preventDefault()}>
+              <div className="flex items-center space-x-1" onClick={(e) => e.preventDefault()}>
                 <Button 
                   size="icon" 
                   variant="outline"
-                  className="h-8 w-8"
+                  className="h-6 w-6"
                   onClick={(e) => handleQuantityChange(e, quantity - 1)}
                 >
-                  <Minus className="h-4 w-4" />
+                  <Minus className="h-3 w-3" />
                 </Button>
-                <span className="text-sm font-medium w-6 text-center">{quantity}</span>
+                <span className="text-xs font-medium w-4 text-center">{quantity}</span>
                 <Button 
                   size="icon"
-                  className="h-8 w-8"
+                  className="h-6 w-6"
                   onClick={(e) => handleQuantityChange(e, quantity + 1)}
                 >
-                  <Plus className="h-4 w-4" />
+                  <Plus className="h-3 w-3" />
                 </Button>
               </div>
             ) : (
               <Button 
                 size="icon" 
-                className="rounded-full"
+                className="h-7 w-7 rounded-full"
                 onClick={handleAddToCart}
               >
-                <ShoppingCart className="h-4 w-4" />
+                <ShoppingCart className="h-3 w-3" />
               </Button>
             )}
           </div>
