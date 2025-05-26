@@ -156,9 +156,9 @@ const HomePage = () => {
               <div className="p-2 rounded-full bg-[#2E8B57]/10">
                 <Clock className="h-5 w-5 text-[#2E8B57]" />
               </div>
-              <h3 className="text-base font-medium">Fast Delivery</h3>
+              <h3 className="text-base font-medium">Convenience</h3>
               <p className="text-sm text-muted-foreground">
-                Get your groceries delivered within hours
+                Get your groceries delivered right to your doorstep
               </p>
             </motion.div>
             
@@ -171,9 +171,9 @@ const HomePage = () => {
               <div className="p-2 rounded-full bg-[#2E8B57]/10">
                 <ShieldCheck className="h-5 w-5 text-[#2E8B57]" />
               </div>
-              <h3 className="text-base font-medium">Quality Guarantee</h3>
+              <h3 className="text-base font-medium">Quality</h3>
               <p className="text-sm text-muted-foreground">
-                Fresh products guaranteed
+                Strict quality control and checks
               </p>
             </motion.div>
             
@@ -186,9 +186,9 @@ const HomePage = () => {
               <div className="p-2 rounded-full bg-[#2E8B57]/10">
                 <Clock className="h-5 w-5 text-[#2E8B57]" />
               </div>
-              <h3 className="text-base font-medium">Easy Shopping</h3>
+              <h3 className="text-base font-medium">Customer Support</h3>
               <p className="text-sm text-muted-foreground">
-                Shop anytime, anywhere
+                Instant customer support on WhatsApp
               </p>
             </motion.div>
           </div>
