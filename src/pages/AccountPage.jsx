@@ -303,7 +303,7 @@ const AccountPage = () => {
 
             {/* Store Pickup Orders */}
             <div className="p-6 border rounded-lg">
-              <h2 className="text-xl font-semibold mb-4">Store Pickup Orders</h2>
+              <h2 className="text-xl font-semibold mb-4">Grocery Run Summary</h2>
               {loadingOrders ? (
                 <div className="flex items-center justify-center h-40">
                   <div className="w-6 h-6 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
