@@ -1,27 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Clock, ShieldCheck, MapPin } from 'lucide-react';
+import { ArrowRight, Clock, ShieldCheck, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ProductCard from '@/components/products/ProductCard';
-import CategoryCard from '@/components/products/CategoryCard';
-import AiChatBot from '@/components/chat/AiChatBot';
 import { supabase } from '@/lib/supabaseClient';
-
-const CategoryIcon = ({ name }) => {
-  const icons = {
-    'Fruits & Vegetables': Clock,
-    'Dairy & Eggs': Clock,
-    'Bakery': Clock,
-    'Meat & Seafood': Clock,
-    'Pantry Staples': Clock,
-    'Beverages': Clock,
-    'Gift Packs': Clock,
-  };
-  
-  const IconComponent = icons[name] || Clock;
-  return <IconComponent className="w-4 h-4" />;
-};
 
 const HomePage = () => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -64,6 +47,10 @@ const HomePage = () => {
 
     fetchData();
   }, []);
+
+  const openWhatsApp = () => {
+    window.open('https://wa.me/1234567890', '_blank');
+  };
   
   return (
     <div className="flex flex-col min-h-screen">
@@ -87,19 +74,15 @@ const HomePage = () => {
               transition={{ duration: 0.5 }}
             >
               <h1 className="text-4xl md:text-5xl font-bold text-white">
-                Delivering now in
+                Fresh Groceries
               </h1>
-              <div className="flex items-center text-3xl text-white font-bold">
-                <MapPin className="w-8 h-8 mr-2" />
-                <span>Adelaide</span>
-              </div>
-              <p className="text-white/90 text-lg">
-                Shop for fresh produce, pantry staples, and household essentials with fast delivery.
+              <p className="text-xl text-white/90">
+                Delivered to your doorstep in Adelaide
               </p>
               <div className="flex flex-col gap-2 min-[400px]:flex-row pt-4">
                 <Link to="/shop">
                   <Button size="lg" className="w-full min-[400px]:w-auto bg-[#2E8B57] hover:bg-[#2E8B57]/90">
-                    Quick Shop
+                    Shop Now
                   </Button>
                 </Link>
                 <Link to="/store-pickup">
@@ -114,125 +97,112 @@ const HomePage = () => {
       </section>
 
       {/* Categories Section */}
-      <section className="py-12 bg-background">
+      <section className="py-8 bg-background">
         <div className="container px-4 md:px-6">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold tracking-tight">Shop by Category</h2>
-            <Link to="/categories" className="text-primary hover:underline flex items-center">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold">Categories</h2>
+            <Link to="/categories" className="text-primary hover:underline text-sm flex items-center">
               View All <ArrowRight className="ml-1 h-4 w-4" />
             </Link>
           </div>
           
-          {loading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 animate-pulse">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="aspect-square bg-muted rounded-lg"></div>
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className="relative">
+            <div className="flex overflow-x-auto pb-4 space-x-4 scrollbar-hide">
               {categories.map((category) => (
                 <Link
                   key={category.id}
                   to={`/category/${category.id}`}
-                  className="group relative aspect-square bg-muted rounded-lg overflow-hidden hover:shadow-lg transition-all"
+                  className="flex-none w-24 group text-center"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/0" />
-                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-                    <div className="bg-white/90 rounded-full p-3 mb-2 group-hover:bg-[#2E8B57] group-hover:text-white transition-colors">
-                      <CategoryIcon name={category.name} />
-                    </div>
+                  <div className="w-16 h-16 mx-auto mb-2 rounded-full bg-muted/50 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                    <Clock className="w-8 h-8 text-primary" />
                   </div>
-                  <div className="absolute bottom-0 left-0 right-0 p-3">
-                    <h3 className="text-white text-sm font-medium text-center">{category.name}</h3>
-                  </div>
+                  <span className="text-xs font-medium block truncate">{category.name}</span>
                 </Link>
               ))}
             </div>
-          )}
+          </div>
         </div>
       </section>
 
       {/* Featured Products Section */}
-      <section className="py-12">
+      <section className="py-8">
         <div className="container px-4 md:px-6">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold tracking-tight">Featured Products</h2>
-            <Link to="/shop" className="text-primary hover:underline flex items-center">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold">Featured Products</h2>
+            <Link to="/shop" className="text-primary hover:underline text-sm flex items-center">
               View All <ArrowRight className="ml-1 h-4 w-4" />
             </Link>
           </div>
           
-          {loading ? (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="aspect-[4/5] bg-muted rounded-lg animate-pulse"></div>
-              ))}
-            </div>
-          ) : (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-              {featuredProducts.map(product => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          )}
+          <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
+            {featuredProducts.map(product => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-12 bg-muted/30">
+      <section className="py-8 bg-muted/30">
         <div className="container px-4 md:px-6">
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-3">
             <motion.div 
-              className="flex flex-col items-center text-center space-y-2 p-6 bg-background rounded-lg shadow-sm"
+              className="flex flex-col items-center text-center space-y-2 p-4 bg-background rounded-lg shadow-sm"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
             >
               <div className="p-2 rounded-full bg-[#2E8B57]/10">
-                <Clock className="h-6 w-6 text-[#2E8B57]" />
+                <Clock className="h-5 w-5 text-[#2E8B57]" />
               </div>
-              <h3 className="text-lg font-medium">Fast Delivery</h3>
+              <h3 className="text-base font-medium">Fast Delivery</h3>
               <p className="text-sm text-muted-foreground">
-                Get your groceries delivered within hours of ordering.
+                Get your groceries delivered within hours
               </p>
             </motion.div>
             
             <motion.div 
-              className="flex flex-col items-center text-center space-y-2 p-6 bg-background rounded-lg shadow-sm"
+              className="flex flex-col items-center text-center space-y-2 p-4 bg-background rounded-lg shadow-sm"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.1 }}
             >
               <div className="p-2 rounded-full bg-[#2E8B57]/10">
-                <ShieldCheck className="h-6 w-6 text-[#2E8B57]" />
+                <ShieldCheck className="h-5 w-5 text-[#2E8B57]" />
               </div>
-              <h3 className="text-lg font-medium">Quality Guarantee</h3>
+              <h3 className="text-base font-medium">Quality Guarantee</h3>
               <p className="text-sm text-muted-foreground">
-                We ensure the freshness and quality of all our products.
+                Fresh products guaranteed
               </p>
             </motion.div>
             
             <motion.div 
-              className="flex flex-col items-center text-center space-y-2 p-6 bg-background rounded-lg shadow-sm"
+              className="flex flex-col items-center text-center space-y-2 p-4 bg-background rounded-lg shadow-sm"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.2 }}
             >
               <div className="p-2 rounded-full bg-[#2E8B57]/10">
-                <Clock className="h-6 w-6 text-[#2E8B57]" />
+                <Clock className="h-5 w-5 text-[#2E8B57]" />
               </div>
-              <h3 className="text-lg font-medium">Convenient Shopping</h3>
+              <h3 className="text-base font-medium">Easy Shopping</h3>
               <p className="text-sm text-muted-foreground">
-                Shop anytime, anywhere with our easy-to-use platform.
+                Shop anytime, anywhere
               </p>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* AI Shopping Assistant */}
-      <AiChatBot />
+      {/* WhatsApp Button */}
+      <Button
+        onClick={openWhatsApp}
+        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg bg-[#25D366] hover:bg-[#25D366]/90"
+        size="icon"
+      >
+        <MessageCircle className="h-6 w-6 text-white" />
+      </Button>
     </div>
   );
 };
