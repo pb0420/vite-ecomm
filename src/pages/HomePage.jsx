@@ -82,7 +82,7 @@ const HomePage = () => {
               <div className="flex flex-col gap-2 min-[400px]:flex-row pt-4">
                 <Link to="/shop">
                   <Button size="lg" className="w-full min-[400px]:w-auto bg-[#2E8B57] hover:bg-[#2E8B57]/90">
-                   <ShoppingCart />  Shop Now
+                   <ShoppingCart />&nbsp;  Shop Now
                   </Button>
                 </Link>
                 <Link to="/store-pickup">
