@@ -169,7 +169,7 @@ const StorePickupPage = () => {
           transition={{ duration: 0.3 }}
           className="max-w-4xl mx-auto"
         >
-          <div className="grid gap-8 md:grid-cols-[1fr_400px]">
+          <div className="grid gap-8 md:grid-cols-[1fr_800px]">
 
             <Card>
               <CardHeader>
