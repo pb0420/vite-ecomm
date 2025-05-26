@@ -104,7 +104,8 @@ const AiChatBot = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-24 right-6 w-96 max-h-[calc(100vh-120px)] bg-background border rounded-lg shadow-xl flex flex-col"
+            className="fixed bottom-24 right-6 w-96 max-h-[calc(100vh-120px)] bg-background border rounded-lg shadow-xl flex flex-col overflow-hidden"
+            style={{ maxHeight: '600px' }}
           >
             <Tabs defaultValue="ai" className="w-full h-full" value={activeTab} onValueChange={setActiveTab}>
               <div className="flex items-center justify-between p-4 border-b">
