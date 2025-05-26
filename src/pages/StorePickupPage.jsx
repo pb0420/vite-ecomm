@@ -47,6 +47,7 @@ const StorePickupPage = () => {
   
   const timeSlots = generateTimeSlots();
   const navigate = useNavigate();
+
   useEffect(() => {
     fetchStores();
   }, []);
@@ -134,203 +135,231 @@ const StorePickupPage = () => {
   }
 
   return (
-    <div className="container px-4 py-8 mx-auto md:px-6">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="max-w-4xl mx-auto"
-      >
-        <div className="grid gap-8 md:grid-cols-[1fr_400px]">
-          <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
-            <img 
-              src="https://images.pexels.com/photos/264636/pexels-photo-264636.jpeg"
-              alt="Store pickup service"
-              className="object-cover w-full h-full"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-            <div className="absolute bottom-0 left-0 p-6 text-white">
-              <h2 className="text-2xl font-bold mb-2">Grocery Run</h2>
-              <p className="text-white/90">Let us do the shopping for you!</p>
-            </div>
-          </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Schedule a run</CardTitle>
-              <CardDescription>
-                Fill in your details below
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="store">Select Store</Label>
-                  <Select value={selectedStore} onValueChange={setSelectedStore}>
-                    <SelectTrigger className={formErrors.store ? 'border-destructive' : ''}>
-                      <SelectValue placeholder="Choose a store" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {stores.map(store => (
-                        <SelectItem key={store.id} value={store.id}>
-                          {store.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {formErrors.store && <p className="text-xs text-destructive">{formErrors.store}</p>}
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Select Date</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          !selectedDate && "text-muted-foreground"
-                        )}
-                      >
-                        <Calendar className="mr-2 h-4 w-4" />
-                        {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <CalendarPicker
-                        mode="single"
-                        selected={selectedDate}
-                        onSelect={setSelectedDate}
-                        disabled={(date) => date < new Date()}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Time Slot</Label>
-                  <Select value={selectedTimeSlot} onValueChange={setSelectedTimeSlot}>
-                    <SelectTrigger className={formErrors.timeSlot ? 'border-destructive' : ''}>
-                      <SelectValue placeholder="Choose a time slot" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {timeSlots.map(slot => (
-                        <SelectItem key={slot.id} value={slot.id}>
-                          {slot.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {formErrors.timeSlot && <p className="text-xs text-destructive">{formErrors.timeSlot}</p>}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="whatsapp">WhatsApp Number</Label>
-                  <Input
-                    id="whatsapp"
-                    value={whatsappNumber}
-                    onChange={(e) => setWhatsappNumber(e.target.value)}
-                    placeholder="Enter your WhatsApp number"
-                    className={formErrors.whatsapp ? 'border-destructive' : ''}
-                  />
-                  {formErrors.whatsapp && <p className="text-xs text-destructive">{formErrors.whatsapp}</p>}
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="address">Delivery Address</Label>
-                    {user && user.addresses?.length > 0 && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setShowAddressSelector(!showAddressSelector)}
-                        className="flex items-center text-primary"
-                      >
-                        <MapPin className="w-4 h-4 mr-1" />
-                        {showAddressSelector ? 'Hide saved addresses' : 'Use saved address'}
-                      </Button>
-                    )}
-                  </div>
-                  {showAddressSelector && (
-                    <AddressSelector onSelect={handleAddressSelect} />
-                  )}
-                  <Input
-                    id="address"
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                    placeholder="Enter your delivery address"
-                    className={formErrors.address ? 'border-destructive' : ''}
-                  />
-                  {formErrors.address && <p className="text-xs text-destructive">{formErrors.address}</p>}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="estimated">Estimated Total ($)</Label>
-                  <Input
-                    id="estimated"
-                    type="number"
-                    min="50"
-                    value={estimatedTotal}
-                    onChange={(e) => setEstimatedTotal(e.target.value)}
-                    placeholder="Enter estimated total amount (min $50)"
-                    className={formErrors.estimated ? 'border-destructive' : ''}
-                  />
-                  {formErrors.estimated && <p className="text-xs text-destructive">{formErrors.estimated}</p>}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="notes">Additional Notes (Optional)</Label>
-                  <Textarea
-                    id="notes"
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    placeholder="Any special instructions?"
-                    rows={3}
-                  />
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="terms" 
-                    checked={termsAccepted}
-                    onCheckedChange={setTermsAccepted}
-                  />
-                  <Label htmlFor="terms" className="text-sm">
-                    I agree to the <Link to="/terms" className="text-primary hover:underline" target="_blank">Terms and Conditions</Link> and{' '}
-                    <Link to="/privacy" className="text-primary hover:underline" target="_blank">Privacy Policy</Link>
-                  </Label>
-                </div>
-                {formErrors.terms && <p className="text-xs text-destructive">{formErrors.terms}</p>}
-
-                {!user ? (
-                  <PhoneLoginForm onSuccess={() => {}} />
-                ) : (
-                  <Button type="submit" className="w-full">Schedule Pickup</Button>
-                )}
-
-                <div className="rounded-lg bg-muted p-4 text-sm">
-                  <h4 className="font-medium mb-2">How it works:</h4>
-                  <ul className="space-y-2">
-                    <li className="flex items-center">
-                      <Store className="w-4 h-4 mr-2 text-primary" />
-                      Choose your preferred store and time
-                    </li>
-                    <li className="flex items-center">
-                      <MessageCircle className="w-4 h-4 mr-2 text-primary" />
-                      Share your list via WhatsApp
-                    </li>
-                    <li className="flex items-center">
-                      <Clock className="w-4 h-4 mr-2 text-primary" />
-                      We'll shop and send the final bill
-                    </li>
-                  </ul>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
+    <div className="flex flex-col min-h-screen">
+      {/* Banner Section */}
+      <section className="relative h-[30vh] min-h-[200px] bg-[#F0E68C] overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src="https://images.pexels.com/photos/264636/pexels-photo-264636.jpeg" 
+            alt="Store pickup service" 
+            className="w-full h-full object-cover opacity-20"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#2E8B57]/80 to-[#F0E68C]/50" />
         </div>
-      </motion.div>
+        
+        <div className="container relative h-full px-4 md:px-6">
+          <div className="flex flex-col justify-center h-full max-w-2xl">
+            <motion.div 
+              className="space-y-2"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <h1 className="text-3xl md:text-4xl font-bold text-white">Grocery Run</h1>
+              <p className="text-white/90">Let us do the shopping for you!</p>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      <div className="container px-4 py-8 mx-auto md:px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="max-w-4xl mx-auto"
+        >
+          <div className="grid gap-8 md:grid-cols-[1fr_400px]">
+            <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
+              <img 
+                src="https://images.pexels.com/photos/264636/pexels-photo-264636.jpeg"
+                alt="Store pickup service"
+                className="object-cover w-full h-full"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+              <div className="absolute bottom-0 left-0 p-6 text-white">
+                <h2 className="text-2xl font-bold mb-2">Grocery Run</h2>
+                <p className="text-white/90">Let us do the shopping for you!</p>
+              </div>
+            </div>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Schedule a run</CardTitle>
+                <CardDescription>
+                  Fill in your details below
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="store">Select Store</Label>
+                    <Select value={selectedStore} onValueChange={setSelectedStore}>
+                      <SelectTrigger className={formErrors.store ? 'border-destructive' : ''}>
+                        <SelectValue placeholder="Choose a store" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {stores.map(store => (
+                          <SelectItem key={store.id} value={store.id}>
+                            {store.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {formErrors.store && <p className="text-xs text-destructive">{formErrors.store}</p>}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Select Date</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !selectedDate && "text-muted-foreground"
+                          )}
+                        >
+                          <Calendar className="mr-2 h-4 w-4" />
+                          {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <CalendarPicker
+                          mode="single"
+                          selected={selectedDate}
+                          onSelect={setSelectedDate}
+                          disabled={(date) => date < new Date()}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Time Slot</Label>
+                    <Select value={selectedTimeSlot} onValueChange={setSelectedTimeSlot}>
+                      <SelectTrigger className={formErrors.timeSlot ? 'border-destructive' : ''}>
+                        <SelectValue placeholder="Choose a time slot" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {timeSlots.map(slot => (
+                          <SelectItem key={slot.id} value={slot.id}>
+                            {slot.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {formErrors.timeSlot && <p className="text-xs text-destructive">{formErrors.timeSlot}</p>}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="whatsapp">WhatsApp Number</Label>
+                    <Input
+                      id="whatsapp"
+                      value={whatsappNumber}
+                      onChange={(e) => setWhatsappNumber(e.target.value)}
+                      placeholder="Enter your WhatsApp number"
+                      className={formErrors.whatsapp ? 'border-destructive' : ''}
+                    />
+                    {formErrors.whatsapp && <p className="text-xs text-destructive">{formErrors.whatsapp}</p>}
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="address">Delivery Address</Label>
+                      {user && user.addresses?.length > 0 && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setShowAddressSelector(!showAddressSelector)}
+                          className="flex items-center text-primary"
+                        >
+                          <MapPin className="w-4 h-4 mr-1" />
+                          {showAddressSelector ? 'Hide saved addresses' : 'Use saved address'}
+                        </Button>
+                      )}
+                    </div>
+                    {showAddressSelector && (
+                      <AddressSelector onSelect={handleAddressSelect} />
+                    )}
+                    <Input
+                      id="address"
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                      placeholder="Enter your delivery address"
+                      className={formErrors.address ? 'border-destructive' : ''}
+                    />
+                    {formErrors.address && <p className="text-xs text-destructive">{formErrors.address}</p>}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="estimated">Estimated Total ($)</Label>
+                    <Input
+                      id="estimated"
+                      type="number"
+                      min="50"
+                      value={estimatedTotal}
+                      onChange={(e) => setEstimatedTotal(e.target.value)}
+                      placeholder="Enter estimated total amount (min $50)"
+                      className={formErrors.estimated ? 'border-destructive' : ''}
+                    />
+                    {formErrors.estimated && <p className="text-xs text-destructive">{formErrors.estimated}</p>}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="notes">Additional Notes (Optional)</Label>
+                    <Textarea
+                      id="notes"
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      placeholder="Any special instructions?"
+                      rows={3}
+                    />
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="terms" 
+                      checked={termsAccepted}
+                      onCheckedChange={setTermsAccepted}
+                    />
+                    <Label htmlFor="terms" className="text-sm">
+                      I agree to the <Link to="/terms" className="text-primary hover:underline" target="_blank">Terms and Conditions</Link> and{' '}
+                      <Link to="/privacy" className="text-primary hover:underline" target="_blank">Privacy Policy</Link>
+                    </Label>
+                  </div>
+                  {formErrors.terms && <p className="text-xs text-destructive">{formErrors.terms}</p>}
+
+                  {!user ? (
+                    <PhoneLoginForm onSuccess={() => {}} />
+                  ) : (
+                    <Button type="submit" className="w-full">Schedule Pickup</Button>
+                  )}
+
+                  <div className="rounded-lg bg-muted p-4 text-sm">
+                    <h4 className="font-medium mb-2">How it works:</h4>
+                    <ul className="space-y-2">
+                      <li className="flex items-center">
+                        <Store className="w-4 h-4 mr-2 text-primary" />
+                        Choose your preferred store and time
+                      </li>
+                      <li className="flex items-center">
+                        <MessageCircle className="w-4 h-4 mr-2 text-primary" />
+                        Share your list via WhatsApp
+                      </li>
+                      <li className="flex items-center">
+                        <Clock className="w-4 h-4 mr-2 text-primary" />
+                        We'll shop and send the final bill
+                      </li>
+                    </ul>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
+        </motion.div>
+      </div>
     </div>
   );
 };
