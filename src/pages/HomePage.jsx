@@ -124,7 +124,7 @@ const HomePage = () => {
           </div>
           
           {loading ? (
-            <div className="grid grid-cols-6 md:grid-cols-6 lg:grid-cols-6 gap-4 animate-pulse">
+            <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-6 gap-4 animate-pulse">
               {[...Array(6)].map((_, i) => (
                 <div key={i} className="aspect-square bg-muted rounded-lg"></div>
               ))}
