@@ -140,9 +140,8 @@ const HomePage = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/0" />
                   <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
                     <div className="bg-white/90 rounded-full p-3 mb-2 group-hover:bg-[#2E8B57] group-hover:text-white transition-colors">
-                     
+                      <CategoryIcon name={category.name} />
                     </div>
-                     <CategoryIcon name={category.name} />
                   </div>
                   <div className="absolute bottom-0 left-0 right-0 p-3">
                     <h3 className="text-white text-sm font-medium text-center">{category.name}</h3>
