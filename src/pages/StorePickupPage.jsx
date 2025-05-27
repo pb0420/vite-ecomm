@@ -323,7 +323,7 @@ const StorePickupPage = () => {
                     <div className="flex items-center justify-between">
                       <Label htmlFor="address">Delivery Address</Label>
                       {user && user.addresses?.length > 0 && (
-                        <span
+                        <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => setShowAddressSelector(!showAddressSelector)}
@@ -331,7 +331,7 @@ const StorePickupPage = () => {
                         >
                           <MapPin className="w-4 h-4 mr-1" />
                           {showAddressSelector ? 'Hide saved addresses' : 'Use saved address'}
-                        </span>
+                        </Button>
                       )}
                     </div>
                     {showAddressSe`lector && (
