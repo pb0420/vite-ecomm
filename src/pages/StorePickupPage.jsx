@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Store, Clock, Calendar, MessageCircle, Bot, MapPin } from 'lucide-react';
+import { Store, Clock, Calendar, MessageCircle, Bot, MapPin, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -11,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Calendar as CalendarPicker } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import PhoneLoginForm from '@/components/auth/PhoneLoginForm';
 import { format } from 'date-fns';
 import { useAuth } from '@/contexts/AuthContext';
@@ -19,6 +20,7 @@ import { toast } from '@/components/ui/use-toast';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
 import AddressSelector from '@/components/checkout/AddressSelector';
+import { formatCurrency } from '@/lib/utils';
 
 const generateTimeSlots = () => {
   const slots = [];
@@ -44,6 +46,8 @@ const StorePickupPage = () => {
   const [showAddressSelector, setShowAddressSelector] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [formErrors, setFormErrors] = useState({});
+  const [contactPreference, setContactPreference] = useState('whatsapp');
+  const [phoneNumber, setPhoneNumber] = useState('');
   
   const timeSlots = generateTimeSlots();
   const navigate = useNavigate();
@@ -78,7 +82,12 @@ const StorePickupPage = () => {
     const errors = {};
     if (!selectedStore) errors.store = 'Please select a store';
     if (!selectedTimeSlot) errors.timeSlot = 'Please select a time slot';
-    if (!whatsappNumber) errors.whatsapp = 'WhatsApp number is required';
+    if (contactPreference === 'whatsapp' && !whatsappNumber) {
+      errors.whatsapp = 'WhatsApp number is required for WhatsApp communication';
+    }
+    if (contactPreference === 'phone' && !phoneNumber) {
+      errors.phone = 'Phone number is required for SMS/Call communication';
+    }
     if (!address) errors.address = 'Delivery address is required';
     if (!estimatedTotal || parseFloat(estimatedTotal) < 50) {
       errors.estimated = 'Minimum order amount is $50';
@@ -106,7 +115,8 @@ const StorePickupPage = () => {
           store_id: selectedStore,
           pickup_date: selectedDate.toISOString(),
           time_slot: selectedTimeSlot,
-          whatsapp_number: whatsappNumber,
+          whatsapp_number: contactPreference === 'whatsapp' ? whatsappNumber : null,
+          phone_number: contactPreference === 'phone' ? phoneNumber : null,
           delivery_address: address,
           notes,
           estimated_total: parseFloat(estimatedTotal),
@@ -118,7 +128,7 @@ const StorePickupPage = () => {
 
       if (error) throw error;
 
-      toast({ title: "Order Created", description: "Your pickup order has been scheduled. We'll contact you on WhatsApp shortly." });
+      toast({ title: "Order Created", description: "Your pickup order has been scheduled. We'll contact you shortly." });
       navigate('/account/orders');
     } catch (error) {
       console.error('Error creating pickup order:', error);
@@ -126,13 +136,7 @@ const StorePickupPage = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="container flex items-center justify-center min-h-[400px]">
-        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
-  }
+  const selectedStoreData = stores.find(store => store.id === selectedStore);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -169,8 +173,40 @@ const StorePickupPage = () => {
           transition={{ duration: 0.3 }}
           className="max-w-4xl mx-auto"
         >
-          <div className="grid gap-12"> 
+          {/* How it works section */}
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>How it works</CardTitle>
+              <CardDescription>Simple steps to get your groceries</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-6 md:grid-cols-3">
+                <div className="flex flex-col items-center text-center space-y-2">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Store className="w-6 h-6 text-primary" />
+                  </div>
+                  <h3 className="font-medium">1. Choose Store</h3>
+                  <p className="text-sm text-muted-foreground">Select your preferred store and pickup time</p>
+                </div>
+                <div className="flex flex-col items-center text-center space-y-2">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <MessageCircle className="w-6 h-6 text-primary" />
+                  </div>
+                  <h3 className="font-medium">2. Share List</h3>
+                  <p className="text-sm text-muted-foreground">We'll contact you to get your shopping list</p>
+                </div>
+                <div className="flex flex-col items-center text-center space-y-2">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Clock className="w-6 h-6 text-primary" />
+                  </div>
+                  <h3 className="font-medium">3. We Shop</h3>
+                  <p className="text-sm text-muted-foreground">We'll shop and deliver to your address</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
+          <div className="grid gap-12"> 
             <Card>
               <CardHeader>
                 <CardTitle>Schedule a delivery</CardTitle>
@@ -189,7 +225,7 @@ const StorePickupPage = () => {
                       <SelectContent>
                         {stores.map(store => (
                           <SelectItem key={store.id} value={store.id}>
-                            {store.name}
+                            {store.name} - Delivery Fee: {formatCurrency(store.store_delivery_fee)}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -242,16 +278,46 @@ const StorePickupPage = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="whatsapp">WhatsApp Number</Label>
-                    <Input
-                      id="whatsapp"
-                      value={whatsappNumber}
-                      onChange={(e) => setWhatsappNumber(e.target.value)}
-                      placeholder="Enter your WhatsApp number"
-                      className={formErrors.whatsapp ? 'border-destructive' : ''}
-                    />
-                    {formErrors.whatsapp && <p className="text-xs text-destructive">{formErrors.whatsapp}</p>}
+                    <Label>Contact Preference</Label>
+                    <RadioGroup value={contactPreference} onValueChange={setContactPreference} className="grid gap-2">
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="whatsapp" id="whatsapp" />
+                        <Label htmlFor="whatsapp">WhatsApp</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="phone" id="phone" />
+                        <Label htmlFor="phone">SMS/Call</Label>
+                      </div>
+                    </RadioGroup>
                   </div>
+
+                  {contactPreference === 'whatsapp' && (
+                    <div className="space-y-2">
+                      <Label htmlFor="whatsapp">WhatsApp Number</Label>
+                      <Input
+                        id="whatsapp"
+                        value={whatsappNumber}
+                        onChange={(e) => setWhatsappNumber(e.target.value)}
+                        placeholder="Enter your WhatsApp number"
+                        className={formErrors.whatsapp ? 'border-destructive' : ''}
+                      />
+                      {formErrors.whatsapp && <p className="text-xs text-destructive">{formErrors.whatsapp}</p>}
+                    </div>
+                  )}
+
+                  {contactPreference === 'phone' && (
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">Phone Number</Label>
+                      <Input
+                        id="phone"
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        placeholder="Enter your phone number"
+                        className={formErrors.phone ? 'border-destructive' : ''}
+                      />
+                      {formErrors.phone && <p className="text-xs text-destructive">{formErrors.phone}</p>}
+                    </div>
+                  )}
 
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
@@ -324,24 +390,6 @@ const StorePickupPage = () => {
                   ) : (
                     <Button type="submit" className="w-full">Schedule Pickup</Button>
                   )}
-
-                  <div className="rounded-lg bg-muted p-4 text-sm">
-                    <h4 className="font-medium mb-2">How it works:</h4>
-                    <ul className="space-y-2">
-                      <li className="flex items-center">
-                        <Store className="w-4 h-4 mr-2 text-primary" />
-                        Choose your preferred store and time
-                      </li>
-                      <li className="flex items-center">
-                        <MessageCircle className="w-4 h-4 mr-2 text-primary" />
-                        Share your list via WhatsApp
-                      </li>
-                      <li className="flex items-center">
-                        <Clock className="w-4 h-4 mr-2 text-primary" />
-                        We'll shop and send the final bill
-                      </li>
-                    </ul>
-                  </div>
                 </form>
               </CardContent>
             </Card>
