@@ -328,6 +328,7 @@ const StorePickupPage = () => {
                           size="sm"
                           onClick={() => setShowAddressSelector(!showAddressSelector)}
                           className="flex items-center text-primary"
+                          style={{ cursor: 'pointer' }}
                         >
                           <MapPin className="w-4 h-4 mr-1" />
                           {showAddressSelector ? 'Hide saved addresses' : 'Use saved address'}
