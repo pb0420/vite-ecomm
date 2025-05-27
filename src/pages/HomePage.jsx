@@ -53,8 +53,46 @@ const HomePage = () => {
   };
 
   const iconClass = "w-8 h-8 text-primary";
-  const getCatIcon = () => {
-     return <CupSoda className={iconClass} />;
+  const getCatIcon = (cName) => {
+     switch(cName..toLowerCase()){
+      case "beverages":
+      case "soda":
+      case "drinks":
+        return <CupSoda className={iconClass} />;
+      case "eggs":
+      case "breakfast":
+        return <EggFried className={iconClass} />;
+      case "cookies":
+      case "biscuits":
+        return <Cookie className={iconClass} />;
+      case "burgers":
+      case "fast food":
+        return <Hamburger className={iconClass} />;
+      case "croissants":
+      case "pastries":
+        return <Croissant className={iconClass} />;
+      case "apple":
+      case "apples":
+      case "fruit":
+        return <Apple className={iconClass} />;
+      case "banana":
+      case "bananas":
+        return <Banana className={iconClass} />;
+      case "beef":
+      case "meat":
+        return <Beef className={iconClass} />;
+      case "candy":
+      case "sweets":
+        return <Candy className={iconClass} />;
+      case "fish":
+      case "seafood":
+        return <Fish className={iconClass} />;
+      case "utensils":
+      case "kitchen":
+        return <Utensils className={iconClass} />;
+      default:
+        return <Clock className={iconClass} />;
+     }
   }
   
   return (
