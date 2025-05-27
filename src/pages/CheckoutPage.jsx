@@ -69,48 +69,6 @@ const CheckoutPage = () => {
     return Object.keys(errors).length === 0;
   };
 
-  const handlePlaceOrder = async () => {
-    if (!validateCheckoutForm()) return;
-
-    setIsSubmitting(true);
-
-    try {
-      const orderData = {
-        user_id: user?.id,
-        customer: {
-          name: customerDetails.name,
-          email: customerDetails.email || null,
-          phone: customerDetails.phone,
-          address: customerDetails.address
-        },
-        items: cart.map(item => ({
-          id: item.id,
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity
-        })),
-        total: getCartTotal() + deliveryDetails.fee,
-        deliveryNotes: customerDetails.deliveryNotes,
-        deliveryType: deliveryDetails.type,
-        scheduledDeliveryTime: deliveryDetails.scheduledTime,
-        deliveryFee: deliveryDetails.fee,
-      };
-
-      const newOrder = await addOrder(orderData);
-      clearCart();
-      navigate(`/order-confirmation/${newOrder.id}`);
-    } catch (error) {
-      console.error('Error placing order:', error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to place order. Please try again."
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   if (cart.length === 0 && !isSubmitting) {
     return (
       <div className="container px-4 py-8 mx-auto md:px-6">
@@ -125,49 +83,47 @@ const CheckoutPage = () => {
 
   return (
     <div className="container px-4 py-8 mx-auto md:px-6">
-      <motion.h1 
+      <motion.div 
         initial={{ opacity: 0, y: 20 }} 
         animate={{ opacity: 1, y: 0 }} 
-        transition={{ duration: 0.3 }} 
-        className="text-3xl font-bold tracking-tight"
+        transition={{ duration: 0.3 }}
       >
-        Checkout
-      </motion.h1>
+        <h1 className="text-3xl font-bold tracking-tight mb-8">Checkout</h1>
 
-      <div className="grid gap-8 mt-8 lg:grid-cols-[1fr_350px]">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }} 
-          animate={{ opacity: 1, y: 0 }} 
-          transition={{ duration: 0.3, delay: 0.1 }} 
-          className="space-y-6"
-        >
-          <CheckoutForm onDetailsChange={handleDetailsChange} errors={formErrors} />
-          <DeliveryOptions onDeliveryChange={handleDeliveryChange} />
-          <PaymentSection />
-          {formErrors.delivery && <p className="text-sm text-destructive">{formErrors.delivery}</p>}
-          
-          {!user ? (
-            <PhoneLoginForm onSuccess={() => {}} />
-          ) : (
-            <Button onClick={handlePlaceOrder} className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? (
-                <>
-                  <div className="mr-2 h-4 w-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin"></div>
-                  Processing...
-                </>
-              ) : `Place Order - ${formatCurrency(getCartTotal() + deliveryDetails.fee)}`}
-            </Button>
-          )}
-        </motion.div>
+        <div className="grid gap-8 lg:grid-cols-[1fr_350px]">
+          <div className="space-y-6">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              transition={{ duration: 0.3, delay: 0.1 }}
+            >
+              <CheckoutForm onDetailsChange={handleDetailsChange} errors={formErrors} />
+              <DeliveryOptions onDeliveryChange={handleDeliveryChange} />
+              
+              {!user ? (
+                <div className="mt-6 p-6 border rounded-lg bg-muted/30">
+                  <h3 className="text-lg font-semibold mb-4">Sign in to Continue</h3>
+                  <PhoneLoginForm onSuccess={() => {}} />
+                </div>
+              ) : (
+                <PaymentSection 
+                  customerDetails={customerDetails} 
+                  deliveryDetails={deliveryDetails} 
+                />
+              )}
+            </motion.div>
+          </div>
 
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }} 
-          animate={{ opacity: 1, y: 0 }} 
-          transition={{ duration: 0.3, delay: 0.2 }}
-        >
-          <OrderSummary deliveryFee={deliveryDetails.fee} />
-        </motion.div>
-      </div>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ duration: 0.3, delay: 0.2 }}
+            className="lg:sticky lg:top-20"
+          >
+            <OrderSummary deliveryFee={deliveryDetails.fee} />
+          </motion.div>
+        </div>
+      </motion.div>
     </div>
   );
 };
