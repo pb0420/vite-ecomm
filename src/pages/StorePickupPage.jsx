@@ -326,7 +326,7 @@ const StorePickupPage = () => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={(e) => e.stopPropagation();setShowAddressSelector(!showAddressSelector)}
+                          onClick={(e) => setShowAddressSelector(!showAddressSelector); e.stopPropagation()}
                           className="flex items-center text-primary"
                         >
                           <MapPin className="w-4 h-4 mr-1" />
