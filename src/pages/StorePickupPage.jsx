@@ -326,7 +326,7 @@ const StorePickupPage = () => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick=function (event) {
+                          onClick=function onClick(event) {
                               event.stopPropagation();
                               setShowAddressSelector(!showAddressSelector);
                           }
