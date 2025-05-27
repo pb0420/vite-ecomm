@@ -59,8 +59,7 @@ const HomePage = () => {
       case "soda":
       case "drinks":
         return <CupSoda className={iconClass} />;
-      case "eggs":
-      case "breakfast":
+      case "dairy & eggs":
         return <EggFried className={iconClass} />;
       case "cookies":
       case "biscuits":
@@ -68,26 +67,16 @@ const HomePage = () => {
       case "burgers":
       case "fast food":
         return <Hamburger className={iconClass} />;
-      case "croissants":
-      case "pastries":
+      case "bakery":
         return <Croissant className={iconClass} />;
-      case "apple":
-      case "apples":
-      case "fruit":
+      case "fruits":
         return <Apple className={iconClass} />;
-      case "banana":
-      case "bananas":
-        return <Banana className={iconClass} />;
-      case "beef":
       case "meat":
         return <Beef className={iconClass} />;
-      case "candy":
-      case "sweets":
+      case "confectionary":
         return <Candy className={iconClass} />;
-      case "fish":
       case "seafood":
         return <Fish className={iconClass} />;
-      case "utensils":
       case "kitchen":
         return <Utensils className={iconClass} />;
       default:
