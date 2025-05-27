@@ -52,6 +52,7 @@ const HomePage = () => {
     window.open('https://wa.me/1234567890', '_blank');
   };
 
+  const iconClass = "w-8 h-8 text-primary";
   const getCatIcon = () => {
      return <CupSoda className={iconClass} />;
   }
