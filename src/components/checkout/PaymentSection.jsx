@@ -30,7 +30,6 @@ const PaymentSection = ({ customerDetails, deliveryDetails }) => {
 
   const handlePaymentSuccess = async (sessionId) => {
     try {
-      // Create order in database
       const orderData = {
         items: cart,
         total: getCartTotal() + deliveryDetails.fee,
@@ -56,6 +55,8 @@ const PaymentSection = ({ customerDetails, deliveryDetails }) => {
   const handleCheckout = async () => {
     setIsProcessing(true);
     try {
+      const productIds = cart.map(item => item.id);
+      
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-checkout-session`, {
         method: 'POST',
         headers: {
@@ -63,7 +64,7 @@ const PaymentSection = ({ customerDetails, deliveryDetails }) => {
           'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
         },
         body: JSON.stringify({
-          items: cart,
+          productIds,
           deliveryFee: deliveryDetails.fee,
           customerDetails,
           deliveryNotes: customerDetails.deliveryNotes,

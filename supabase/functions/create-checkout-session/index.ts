@@ -6,15 +6,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-}
-
-interface CheckoutBody {
-  items: CartItem[];
+interface RequestBody {
+  productIds: string[];
   deliveryFee: number;
   customerDetails: {
     name: string;
@@ -40,18 +33,26 @@ Deno.serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const { items, deliveryFee, customerDetails, deliveryNotes, deliveryType, scheduledTime } = await req.json() as CheckoutBody;
+    const { productIds, deliveryFee, customerDetails, deliveryNotes, deliveryType, scheduledTime } = await req.json() as RequestBody;
 
-    // Create Stripe line items
-    const lineItems = items.map(item => ({
+    // Fetch products from Supabase
+    const { data: products, error: productsError } = await supabase
+      .from('products')
+      .select('*')
+      .in('id', productIds);
+
+    if (productsError) throw productsError;
+
+    // Create Stripe line items from products
+    const lineItems = products.map(product => ({
       price_data: {
         currency: 'usd',
         product_data: {
-          name: item.name,
+          name: product.name,
         },
-        unit_amount: Math.round(item.price * 100), // Convert to cents
+        unit_amount: Math.round(product.price * 100), // Convert to cents
       },
-      quantity: item.quantity,
+      quantity: 1,
     }));
 
     // Add delivery fee as a separate line item
