@@ -54,7 +54,7 @@ const HomePage = () => {
 
   const iconClass = "w-8 h-8 text-primary";
   const getCatIcon = (cName) => {
-     switch(cName..toLowerCase()){
+     switch(cName.toLowerCase()){
       case "beverages":
       case "soda":
       case "drinks":
