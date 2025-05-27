@@ -51,6 +51,10 @@ const HomePage = () => {
   const openWhatsApp = () => {
     window.open('https://wa.me/1234567890', '_blank');
   };
+
+  const getCatIcon = () => {
+     return <CupSoda className={iconClass} />;
+  }
   
   return (
     <div className="flex flex-col min-h-screen">
@@ -115,7 +119,7 @@ const HomePage = () => {
                   className="flex-none w-24 group text-center"
                 >
                   <div className="w-16 h-16 mx-auto mb-2 rounded-full bg-muted/50 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                    <Clock className="w-8 h-8 text-primary" />
+                    {getCatIcon(category.name)}
                   </div>
                   <span className="text-xs font-medium block truncate">{category.name}</span>
                 </Link>
