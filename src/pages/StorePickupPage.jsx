@@ -334,7 +334,7 @@ const StorePickupPage = () => {
                         </Button>
                       )}
                     </div>
-                    {showAddressSe`lector && (
+                    {showAddressSelector && (
                       <AddressSelector onSelect={handleAddressSelect} />
                     )}
                     <Input
