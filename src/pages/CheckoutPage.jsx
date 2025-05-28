@@ -107,10 +107,10 @@ const CheckoutPage = () => {
                   <PhoneLoginForm onSuccess={() => {}} />
                 </div>
               ) : (
-                // <PaymentSection 
-                //   customerDetails={customerDetails} 
-                //   deliveryDetails={deliveryDetails} 
-                // />
+                <PaymentSection 
+                  customerDetails={customerDetails} 
+                  deliveryDetails={deliveryDetails} 
+                />
               )}
             </motion.div>
           </div>
