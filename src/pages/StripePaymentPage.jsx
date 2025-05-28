@@ -90,11 +90,15 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
   const appearance = {
     theme: 'stripe',
   };
+  const options = {
+    clientSecret,
+    appearance,
+  }
 
   return (
    <div>
     
-     { stripeCS && (<Elements stripe={stripePromise} options={{stripeCS}} > 
+     { stripeCS && (<Elements stripe={stripePromise} options={options} > 
        <StripeCheckoutForm />
     </Elements>) }
     </div>
