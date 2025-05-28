@@ -29,6 +29,7 @@ import AdminPage from '@/pages/AdminPage';
 import StorePickupPage from '@/pages/StorePickupPage';
 import PrivacyPage from '@/pages/PrivacyPage';
 import TermsPage from '@/pages/TermsPage';
+import StripePaymentPage from '@/pages/StripePaymentPage';
 
 const App = () => {
   return (
