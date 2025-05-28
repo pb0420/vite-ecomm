@@ -96,9 +96,9 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
   return (
    <>
     
-     {stripePromise && stripeCS && (<Elements options={{clientSecret:stripeCS}} stripe={stripePromise} >  
+     {stripePromise && stripeCS !== false ? (<Elements options={{clientSecret:stripeCS}} stripe={stripePromise} >  
        <StripeCheckoutForm />
-    </Elements>) }
+    </Elements>) : (<p>...</p>) }
     </>
   )
   
