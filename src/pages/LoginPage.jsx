@@ -2,6 +2,7 @@
 import React from 'react';
 import CustomerLoginFormCard from '@/components/auth/CustomerLoginFormCard';
 import {Elements,PaymentElement} from '@stripe/react-stripe-js';
+import {loadStripe} from '@stripe/stripe-js';
 
 const LoginPage = () => {
   return (
