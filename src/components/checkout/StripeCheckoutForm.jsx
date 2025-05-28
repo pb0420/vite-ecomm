@@ -48,7 +48,7 @@ const EmailInput = ({ email, setEmail, error, setError }) => {
   );
 };
 
-const CheckoutForm = () => {
+const StripeCheckoutForm = () => {
   const checkout = useCheckout();
 
   const [email, setEmail] = useState('');
