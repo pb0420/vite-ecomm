@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import {
   PaymentElement,
-  useCheckout,
+  useCheckout, useStripe, useElements
 } from '@stripe/react-stripe-js';
 
 const validateEmail = async (email, checkout) => {
@@ -49,7 +49,7 @@ const EmailInput = ({ email, setEmail, error, setError }) => {
 };
 
 const StripeCheckoutForm = () => {
-  const checkout = useCheckout();
+ // const checkout = useCheckout();
 
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState(null);
@@ -85,21 +85,10 @@ const StripeCheckoutForm = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <EmailInput
-        email={email}
-        setEmail={setEmail}
-        error={emailError}
-        setError={setEmailError}
-      />
+      
       <h4>Payment</h4>
       <PaymentElement id="payment-element" />
-      <button disabled={isLoading} id="submit">
-        {isLoading ? (
-          <div className="spinner"></div>
-        ) : (
-          `Pay ${checkout.total.total.amount} now`
-        )}
-      </button>
+      
       {/* Show any error or success messages */}
       {message && <div id="payment-message">{message}</div>}
     </form>
