@@ -42,7 +42,7 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
 
       <Elements>
           <CardForm />
-        </Elements>
+        </Elements> 
 
      
     </>
