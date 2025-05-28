@@ -76,6 +76,7 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
   };
 
   return (
+    <h1>pay</h1>
     <div>
 
    
@@ -97,7 +98,7 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
       options={{fetchClientSecret}}
     >
       {/* your components here */}
-         <StripeCheckoutForm />
+         <div>hello</div>
     </CheckoutProvider>
     </div>
   )
