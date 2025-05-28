@@ -136,8 +136,9 @@ const CheckoutPage = () => {
               <Link to="/privacy" className="text-primary hover:underline" target="_blank">Privacy Policy</Link>
             </Label>
 
-               <Button onClick={() => navigate('/stripe-payment')} disabled={!user || !termsAccepted}> Proceed to Payment &nbsp; <CreditCard /></Button>
+               <div><Button onClick={() => navigate('/stripe-payment')} disabled={!user || !termsAccepted}> Proceed to Payment &nbsp; <CreditCard /></Button>
           <p style={{ marginTop:'-25px',fontSize:'8px'}}>Secure payment powered by Stripe</p>
+                 </div>
             
           </div>
 
