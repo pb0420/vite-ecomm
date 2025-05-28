@@ -4,7 +4,7 @@ import {
   useCheckout,
 } from '@stripe/react-stripe-js';
 
-
+console.log('mnt');
 const StripeCheckoutForm = () => {
   const checkout = useCheckout();
 
