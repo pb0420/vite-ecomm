@@ -106,10 +106,10 @@ const CheckoutPage = () => {
                   <PhoneLoginForm onSuccess={() => {}} />
                 </div>
               ) : (
-                <PaymentSection 
-                  customerDetails={customerDetails} 
-                  deliveryDetails={deliveryDetails} 
-                />
+                // <PaymentSection 
+                //   customerDetails={customerDetails} 
+                //   deliveryDetails={deliveryDetails} 
+                // />
               )}
             </motion.div>
           </div>
@@ -122,6 +122,20 @@ const CheckoutPage = () => {
           >
             <OrderSummary deliveryFee={deliveryDetails.fee} />
           </motion.div>
+
+        <div className="flex items-center space-x-2">
+          <Checkbox 
+            id="terms" 
+            checked={termsAccepted}
+            onCheckedChange={setTermsAccepted}
+          />
+          <Label htmlFor="terms" className="text-sm">
+            I agree to the <Link to="/terms" className="text-primary hover:underline" target="_blank">Terms and Conditions</Link> and{' '}
+            <Link to="/privacy" className="text-primary hover:underline" target="_blank">Privacy Policy</Link>
+          </Label>
+        </div>
+          {user && }
+          
         </div>
       </motion.div>
     </div>
