@@ -17,7 +17,7 @@ const LoginPage = () => {
   currency:'aud',
   amount:1999
   }}>   
-    <div>leggo</div>
+    <div></div>
       <PaymentElement />
     </Elements> 
       </>
