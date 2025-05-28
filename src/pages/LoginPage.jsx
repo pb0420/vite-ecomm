@@ -12,7 +12,11 @@ const LoginPage = () => {
     <>
 <p>login</p>
 
-  <Elements stripe={loadStripe("pk_test_L1f0e3XAzjsG7jtp4uN7L9ql")} >   
+  <Elements stripe={loadStripe("pk_test_L1f0e3XAzjsG7jtp4uN7L9ql")} options={{
+  mode:'payment',
+  currency:'aud',
+  amount:1999
+  }}>   
       <PaymentElement />
     </Elements> 
       </>
