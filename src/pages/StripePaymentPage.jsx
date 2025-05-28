@@ -76,31 +76,15 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
   };
 
   return (
-    <h1>pay</h1>
-    <div>
-
    
-        {/* <CheckoutProvider
-          stripe={stripePromise}
-          options={{
-            fetchClientSecret: () => promise,
-            elementsOptions: {appearance},
-          }}
-        >
-          <Routes>
-            <Route path="/checkout" element={<StripeCheckoutForm />} />
-            <Route path="/return" element={<Return />} />
-          </Routes>
-          <StripeCheckoutForm />
-        </CheckoutProvider> */}
        <CheckoutProvider
       stripe={stripePromise}
       options={{fetchClientSecret}}
     >
-      {/* your components here */}
+      
          <div>hello</div>
     </CheckoutProvider>
-    </div>
+   
   )
   
 }
