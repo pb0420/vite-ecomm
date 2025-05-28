@@ -2,6 +2,9 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
+import {Elements,PaymentElement} from '@stripe/react-stripe-js';
+import {loadStripe} from '@stripe/stripe-js';
+
 // Contexts
 import { CartProvider } from '@/contexts/CartContext';
 import { OrderProvider } from '@/contexts/OrderContext';
@@ -65,6 +68,15 @@ const App = () => {
               <CartDrawer />
               <Toaster />
             </div>
+
+             <Elements stripe={loadStripe("pk_test_L1f0e3XAzjsG7jtp4uN7L9ql")} options={{
+  mode:'payment',
+  currency:'aud',
+  amount:1999
+  }}>   zzz
+      <PaymentElement />
+    </Elements> 
+            
           </Router>
         </CartProvider>
       </OrderProvider>
