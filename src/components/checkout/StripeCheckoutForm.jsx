@@ -43,7 +43,7 @@ export default function StripeCheckoutForm (){
   return (
     <form onSubmit={handleSubmit}>
       
-      <h4>Hi</h4>
+      <h4>Payment by Stripe</h4>
       <PaymentElement id="payment-element" />
       
       {/* Show any error or success messages */}
