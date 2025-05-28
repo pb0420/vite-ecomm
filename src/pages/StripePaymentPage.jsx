@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import {loadStripe} from '@stripe/stripe-js';
-import {Elements} from '@stripe/react-stripe-js';
+import {Elements,PaymentElement} from '@stripe/react-stripe-js';
 import { useCart } from '@/contexts/CartContext';
 import {
   BrowserRouter as Router,
@@ -98,6 +98,7 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
     
      {stripePromise && stripeCS !== false ? (<Elements options={{clientSecret:stripeCS}} stripe={stripePromise} >  
       zazazazaz
+       <PaymentElement />
     </Elements>) : (<p>...</p>) } 
     </>
   )
