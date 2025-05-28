@@ -15,6 +15,8 @@ import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/supabaseClient';
 import { formatCurrency } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
+import { Link } from 'react-router-dom';
+
 
 const CheckoutPage = () => {
   const { cart, getCartTotal, clearCart } = useCart();
