@@ -34,8 +34,8 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
 
   // Update parent component when form data changes
   useEffect(() => {
-    onDetailsChange({ ...formData, termsAccepted });
-  }, [formData, termsAccepted, onDetailsChange]);
+    onDetailsChange({ ...formData });
+  }, [formData, onDetailsChange]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
