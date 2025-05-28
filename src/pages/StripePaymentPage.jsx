@@ -80,7 +80,7 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
           }}
         >
           <Routes>
-            <Route path="/" element={<StripeCheckoutForm />} />
+           <StripeCheckoutForm />
             <Route path="/return" element={<Return />} />
           </Routes>
         </CheckoutProvider>
