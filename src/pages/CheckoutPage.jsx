@@ -18,6 +18,11 @@ import { Label } from '@/components/ui/label';
 import { Link } from 'react-router-dom';
 import { CreditCard } from 'lucide-react';
 
+import {loadStripe} from '@stripe/stripe-js';
+import {
+  CheckoutProvider
+} from '@stripe/react-stripe-js';
+
 
 const CheckoutPage = () => {
   const { cart, getCartTotal, clearCart } = useCart();
@@ -30,6 +35,8 @@ const CheckoutPage = () => {
   const [customerDetails, setCustomerDetails] = useState({ name: '', email: '', phone: '', address: '', deliveryNotes: '' });
   const [formErrors, setFormErrors] = useState({});
    const [termsAccepted, setTermsAccepted] = useState(false);
+   const [showStripePaymentSection, setShowStripePaymentSection] = useState(false);
+
 
   useEffect(() => {
     const fetchInitialFee = async () => {
@@ -140,9 +147,15 @@ const CheckoutPage = () => {
               customerDetails={customerDetails} 
               deliveryDetails={deliveryDetails} 
           /> */}
-          <Button disabled={!user || !termsAccepted}> Proceed to Payment &nbsp;<CreditCard /></Button>
+          <Button onClick=setShowStripePaymentSection(true) disabled={!user || !termsAccepted}> Proceed to Payment &nbsp;<CreditCard /></Button>
           <p style={{ marginTop:'-25px',fontSize:'8px'}}>Secure payment powered by Stripe</p>
-          
+          {
+            showStripePaymentSection &&
+            <PaymentSection 
+              customerDetails={customerDetails}
+              deliveryDetails={deliveryDetails}
+            />
+          }
         </div>
       </motion.div>
     </div>
