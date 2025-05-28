@@ -18,7 +18,7 @@ import { Label } from '@/components/ui/label';
 import { Link } from 'react-router-dom';
 import { CreditCard } from 'lucide-react';
 import {loadStripe} from '@stripe/stripe-js';
-import {CheckoutProvider} from '@/stripe/react-stripe-js';
+import {CheckoutProvider} from '@stripe/react-stripe-js';
 
 
 const CheckoutPage = () => {
