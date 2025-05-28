@@ -137,11 +137,13 @@ const CheckoutPage = () => {
             </Label>
           </div>
 
-          <Button onClick={() => navigate('/stripe-payment')} disabled={!user || !termsAccepted}> Proceed to Payment &nbsp; <CreditCard /></Button>
-          <p style={{ marginTop:'-25px',fontSize:'8px'}}>Secure payment powered by Stripe</p>
          
         </div>
       </motion.div>
+
+       <Button onClick={() => navigate('/stripe-payment')} disabled={!user || !termsAccepted}> Proceed to Payment &nbsp; <CreditCard /></Button>
+          <p style={{ marginTop:'-25px',fontSize:'8px'}}>Secure payment powered by Stripe</p>
+      
     </div>
   );
 };
