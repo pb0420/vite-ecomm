@@ -49,6 +49,7 @@ Success. Redirecting...
 }
 
 const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
+  console.log('1111');
   const { cart, getCartTotal, clearCart } = useCart();
   const productIds = cart.map(item => item.id);
   const [stripeCS, setStripeCS] = useState(false);
