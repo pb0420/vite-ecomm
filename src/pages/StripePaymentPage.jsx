@@ -57,9 +57,9 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
         'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjYnhjbnh1dG90anptZGpleWRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY0NjIwODksImV4cCI6MjA2MjAzODA4OX0.sMIn31DXRvBpQsxYZV2nn1lKqdEkEk2S0jvdve2yACY'
       },
       method: 'POST',
-      body: {
+      body: JSON.stringify({
         productIds:productIds
-      }
+      })
     })
       .then((res) => res.json())
       .then((data) => data.clientSecret);
@@ -80,7 +80,7 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
           }}
         >
           <Routes>
-            <Route path="/stripecheckout" element={<StripeCheckoutForm />} />
+            <Route path="/" element={<StripeCheckoutForm />} />
             <Route path="/return" element={<Return />} />
           </Routes>
         </CheckoutProvider>
