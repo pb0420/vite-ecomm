@@ -16,6 +16,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { formatCurrency } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
 import { Link } from 'react-router-dom';
+import { CreditCard } from 'lucide-react';
 
 
 const CheckoutPage = () => {
@@ -139,7 +140,7 @@ const CheckoutPage = () => {
               customerDetails={customerDetails} 
               deliveryDetails={deliveryDetails} 
           /> */}
-          <Button disabled={!user || !termsAccepted}> Continue to Pay </Button>
+          <Button disabled={!user || !termsAccepted}> Proceed to Payment <CreditCard /></Button>
           
         </div>
       </motion.div>
