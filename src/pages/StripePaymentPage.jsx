@@ -61,7 +61,7 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
   };
 
   return (
-    <div className="App">zaza
+    <div className="App">
       <Router>
         <CheckoutProvider
           stripe={stripePromise}
