@@ -135,12 +135,6 @@ const CheckoutPage = () => {
             <Link to="/privacy" className="text-primary hover:underline" target="_blank">Privacy Policy</Link>
           </Label>
         </div>
-          {user && termsAccepted ? (
-             <PaymentSection 
-                  customerDetails={customerDetails} 
-                  deliveryDetails={deliveryDetails} 
-            />
-          ) : (<p><</p>)}
           
         </div>
       </motion.div>
