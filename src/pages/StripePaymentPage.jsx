@@ -71,7 +71,7 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
 
   return (
     <div>
-aooo
+aooo 
         <CheckoutProvider
           stripe={stripePromise}
           options={{
