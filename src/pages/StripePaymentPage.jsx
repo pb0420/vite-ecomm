@@ -77,7 +77,6 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
 
   return (
    <div>
-      <h2>hooo</h2>
        <EmbeddedCheckoutProvider stripe={stripePromise} options={{fetchClientSecret}} >
        <EmbeddedCheckout />
     </EmbeddedCheckoutProvider>
