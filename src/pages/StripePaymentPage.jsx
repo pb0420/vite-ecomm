@@ -82,7 +82,7 @@ Stripe Payment
          --
           <Routes>
            {/* <StripeCheckoutForm /> */}
-            <Route path="/" element={<StripeCheckoutForm />} />
+            <Route path="/checkout" element={<StripeCheckoutForm />} />
             <Route path="/return" element={<Return />} />
           </Routes>
         </CheckoutProvider>
