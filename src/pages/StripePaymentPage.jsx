@@ -63,7 +63,7 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
       })
     })
       .then((res) => res.json())
-      .then((data) => data.clientSecret);
+      .then((data) => data.id);
   }, []);
 
   const appearance = {
@@ -77,7 +77,7 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
         <CheckoutProvider
           stripe={stripePromise}
           options={{
-            fetchClientSecret: ,
+            fetchClientSecret: () => promise,
             elementsOptions: {appearance},
           }}
         >
