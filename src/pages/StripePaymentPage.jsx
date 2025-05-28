@@ -71,7 +71,7 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
 
   return (
     <div>
-aooo 
+Stripe Payment 
         <CheckoutProvider
           stripe={stripePromise}
           options={{
@@ -79,9 +79,10 @@ aooo
             elementsOptions: {appearance},
           }}
         >
-          yaa
+         --
           <Routes>
-           <StripeCheckoutForm />
+           {/* <StripeCheckoutForm /> */}
+            <Route path="/" element={<StripeCheckoutForm />} />
             <Route path="/return" element={<Return />} />
           </Routes>
         </CheckoutProvider>
