@@ -81,14 +81,12 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
             elementsOptions: {appearance},
           }}
         >
-         --
           <Routes>
            {/* <StripeCheckoutForm /> */}
             <Route path="/checkout" element={<StripeCheckoutForm />} />
             <Route path="/return" element={<Return />} />
           </Routes>
         </CheckoutProvider>
-      
     </div>
   )
   
