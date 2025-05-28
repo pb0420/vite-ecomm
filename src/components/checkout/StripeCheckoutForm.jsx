@@ -5,6 +5,7 @@ import {
 } from '@stripe/react-stripe-js';
 
 const StripeCheckoutForm = () => {
+  console.log('in222');
   const checkout = useCheckout();
 
   const [email, setEmail] = useState('');
