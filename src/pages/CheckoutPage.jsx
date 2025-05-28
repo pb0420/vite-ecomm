@@ -140,7 +140,7 @@ const CheckoutPage = () => {
               customerDetails={customerDetails} 
               deliveryDetails={deliveryDetails} 
           /> */}
-          <Button disabled={!user || !termsAccepted}> Proceed to Payment <CreditCard /></Button>
+          <Button disabled={!user || !termsAccepted}> Proceed to Payment &nbsp;<CreditCard /></Button>
           
         </div>
       </motion.div>
