@@ -4,53 +4,10 @@ import {
   useCheckout, useStripe, useElements
 } from '@stripe/react-stripe-js';
 
-const validateEmail = async (email, checkout) => {
-  const updateResult = await checkout.updateEmail(email);
-  const isValid = updateResult.type !== "error";
-
-  return { isValid, message: !isValid ? updateResult.error.message : null };
-}
-
-const EmailInput = ({ email, setEmail, error, setError }) => {
-  const checkout = useCheckout();
-
-  const handleBlur = async () => {
-    if (!email) {
-      return;
-    }
-
-    const { isValid, message } = await validateEmail(email, checkout);
-    if (!isValid) {
-      setError(message);
-    }
-  };
-
-  const handleChange = (e) => {
-    setError(null);
-    setEmail(e.target.value);
-  };
-
-  return (
-    <>
-      <label>
-        Email
-        <input
-          id="email"
-          type="text"
-          value={email}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          placeholder="you@example.com"
-        />
-      </label>
-      {error && <div id="email-errors">{error}</div>}
-    </>
-  );
-};
-
-const StripeCheckoutForm = () => {
+export default const StripeCheckoutForm = () => {
  // const checkout = useCheckout();
-
+  const stripe = useStripe();
+  const elements = useElements();
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState(null);
   const [message, setMessage] = useState(null);
@@ -94,5 +51,3 @@ const StripeCheckoutForm = () => {
     </form>
   );
 }
-
-export default StripeCheckoutForm;
