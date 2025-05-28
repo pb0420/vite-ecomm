@@ -19,7 +19,6 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
     deliveryNotes: '',
   });
   const [showAddressSelector, setShowAddressSelector] = useState(false);
-  const [termsAccepted, setTermsAccepted] = useState(false);
 
   // Pre-fill form if user is logged in
   useEffect(() => {
