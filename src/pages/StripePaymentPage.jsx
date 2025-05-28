@@ -91,7 +91,7 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
     theme: 'stripe',
   };
   const options = {
-    clientSecret,
+    stripeCS,
     appearance,
   }
 
