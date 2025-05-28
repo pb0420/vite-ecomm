@@ -8,7 +8,6 @@ import {
   Routes,
   Navigate
 } from "react-router-dom";
-import StripeCheckoutForm from '@/components/checkout/StripeCheckoutForm';
 
 
 
