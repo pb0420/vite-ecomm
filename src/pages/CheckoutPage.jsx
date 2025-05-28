@@ -24,6 +24,7 @@ const CheckoutPage = () => {
   const [deliveryDetails, setDeliveryDetails] = useState({ type: 'express', fee: 0, scheduledTime: null });
   const [customerDetails, setCustomerDetails] = useState({ name: '', email: '', phone: '', address: '', deliveryNotes: '' });
   const [formErrors, setFormErrors] = useState({});
+   const [termsAccepted, setTermsAccepted] = useState(false);
 
   useEffect(() => {
     const fetchInitialFee = async () => {
@@ -134,7 +135,12 @@ const CheckoutPage = () => {
             <Link to="/privacy" className="text-primary hover:underline" target="_blank">Privacy Policy</Link>
           </Label>
         </div>
-          {user && }
+          {user && termsAccepted ? (
+             <PaymentSection 
+                  customerDetails={customerDetails} 
+                  deliveryDetails={deliveryDetails} 
+            />
+          ) : (<p><</p>)}
           
         </div>
       </motion.div>
