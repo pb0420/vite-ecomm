@@ -63,7 +63,7 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
       })
     })
       .then((res) => res.json())
-      .then((data) => setStripeCS(data.clientSecret));
+      .then((data) => data.clientSecret)
   }, []);
 
   const appearance = {
@@ -73,11 +73,11 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
   return (
     <div>
 
-      { stripeCS !== false ? (
+   
         <CheckoutProvider
           stripe={stripePromise}
           options={{
-            fetchClientSecret: {stripeCS},
+            fetchClientSecret: ,
             elementsOptions: {appearance},
           }}
         >
@@ -87,8 +87,7 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
             <Route path="/checkout" element={<StripeCheckoutForm />} />
             <Route path="/return" element={<Return />} />
           </Routes>
-        </CheckoutProvider> ) : ('loading...')
-      }
+        </CheckoutProvider>
       
     </div>
   )
