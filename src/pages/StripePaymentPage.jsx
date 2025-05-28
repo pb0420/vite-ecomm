@@ -36,9 +36,9 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
   return (
    <>
     
-     {stripePromise && stripeCS !== false ? (<Elements options={{clientSecret:'pi_3RTkUbA3GELNlHOQ0c7fMgE3_secret_PiJo0Y5rAWZ3NK2gwLaz8ZBiy'}} stripe={loadStripe("pk_test_L1f0e3XAzjsG7jtp4uN7L9ql")} >   
+  <Elements options={{clientSecret:'pi_3RTkUbA3GELNlHOQ0c7fMgE3_secret_PiJo0Y5rAWZ3NK2gwLaz8ZBiy'}} stripe={loadStripe("pk_test_L1f0e3XAzjsG7jtp4uN7L9ql")} >   
        <PaymentElement />
-    </Elements>) : (<p>...</p>) }
+    </Elements>
     </>
   )
   
