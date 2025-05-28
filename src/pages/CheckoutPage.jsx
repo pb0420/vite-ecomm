@@ -32,7 +32,6 @@ const CheckoutPage = () => {
   const [customerDetails, setCustomerDetails] = useState({ name: '', email: '', phone: '', address: '', deliveryNotes: '' });
   const [formErrors, setFormErrors] = useState({});
    const [termsAccepted, setTermsAccepted] = useState(false);
-   const [showStripePaymentSection, setShowStripePaymentSection] = useState(false);
 
 
   useEffect(() => {
@@ -140,13 +139,9 @@ const CheckoutPage = () => {
             </Label>
           </div>
 
-          <Button onClick={() => setShowStripePaymentSection(true)} disabled={!user || !termsAccepted}> Proceed to Payment &nbsp; <CreditCard /></Button>
+          <Button onClick={() => navigate('/stripe-payment')} disabled={!user || !termsAccepted}> Proceed to Payment &nbsp; <CreditCard /></Button>
           <p style={{ marginTop:'-25px',fontSize:'8px'}}>Secure payment powered by Stripe</p>
-          {
-            showStripePaymentSection === true ? 
-            (<PaymentSection customerDetails={customerDetails} deliveryDetails={deliveryDetails}
-            />):(<p></p>)
-          }
+         
         </div>
       </motion.div>
     </div>
