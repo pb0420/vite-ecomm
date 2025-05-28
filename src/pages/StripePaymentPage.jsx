@@ -50,7 +50,9 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
   const promise = useMemo(() => {
     return fetch('https://bcbxcnxutotjzmdjeyde.supabase.co/functions/v1/create-checkout-session', {
       method: 'POST',
-      data: product
+      data: {
+        productIds:[1,2,3]
+      }
     })
       .then((res) => res.json())
       .then((data) => data.clientSecret);
