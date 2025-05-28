@@ -89,7 +89,7 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
         </CheckoutProvider> */}
        <CheckoutProvider
       stripe={loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx')}
-      options={() => promise}
+      options={() => promise} 
     >
       {/* your components here */}
     </CheckoutProvider>
