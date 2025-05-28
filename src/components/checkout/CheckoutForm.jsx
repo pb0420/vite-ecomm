@@ -130,7 +130,6 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
             rows={3}
           />
         </div>
-       
       </div>
     </div>
   );
