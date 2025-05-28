@@ -110,7 +110,7 @@ const CheckoutPage = () => {
                   <h3 className="text-lg font-semibold mb-4">Sign in to Continue</h3>
                   <PhoneLoginForm onSuccess={() => {}} />
                 </div>
-              )}
+              ) : (<p></p>)}
             </motion.div>
           </div>
 
