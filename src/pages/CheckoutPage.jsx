@@ -135,14 +135,15 @@ const CheckoutPage = () => {
               I agree to the <Link to="/terms" className="text-primary hover:underline" target="_blank">Terms and Conditions</Link> and{' '}
               <Link to="/privacy" className="text-primary hover:underline" target="_blank">Privacy Policy</Link>
             </Label>
+
+               <Button onClick={() => navigate('/stripe-payment')} disabled={!user || !termsAccepted}> Proceed to Payment &nbsp; <CreditCard /></Button>
+          <p style={{ marginTop:'-25px',fontSize:'8px'}}>Secure payment powered by Stripe</p>
+            
           </div>
 
          
         </div>
       </motion.div>
-
-       <Button onClick={() => navigate('/stripe-payment')} disabled={!user || !termsAccepted}> Proceed to Payment &nbsp; <CreditCard /></Button>
-          <p style={{ marginTop:'-25px',fontSize:'8px'}}>Secure payment powered by Stripe</p>
       
     </div>
   );
