@@ -95,6 +95,7 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
       stripe={stripePromise}
       options={{fetchClientSecret}}
     >
+         kfgldf
       {/* your components here */}
          <StripeCheckoutForm />
     </CheckoutProvider>
