@@ -74,9 +74,22 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
     <div>
 
    
-        <CheckoutProvider
+        {/* <CheckoutProvider
+          stripe={stripePromise}
+          options={{
+            fetchClientSecret: () => promise,
+            elementsOptions: {appearance},
+          }}
+        >
+          <Routes>
+            <Route path="/checkout" element={<StripeCheckoutForm />} />
+            <Route path="/return" element={<Return />} />
+          </Routes>
+          <StripeCheckoutForm />
+        </CheckoutProvider> */}
+       <CheckoutProvider
       stripe={loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx')}
-      options={{fetchClientSecret}}
+      options={() => promise}
     >
       {/* your components here */}
     </CheckoutProvider>
