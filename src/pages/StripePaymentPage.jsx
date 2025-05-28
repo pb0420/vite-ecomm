@@ -51,6 +51,7 @@ Success. Redirecting...
 const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
   const { cart, getCartTotal, clearCart } = useCart();
   const productIds = cart.map(item => item.id);
+  const [stripeCS, setStripeCS] = useState(false);
   const promise = useMemo(() => {
     return fetch('https://bcbxcnxutotjzmdjeyde.supabase.co/functions/v1/create-checkout-session', {
       headers:{
@@ -63,6 +64,7 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
     })
       .then((res) => res.json())
       .then((data) => data.clientSecret);
+      .then(() => setStripeCS(true))
   }, []);
 
   const appearance = {
@@ -72,6 +74,7 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
   return (
     <div>
 Stripe Payment 
+      { stripeCS &&
         <CheckoutProvider
           stripe={stripePromise}
           options={{
@@ -86,6 +89,7 @@ Stripe Payment
             <Route path="/return" element={<Return />} />
           </Routes>
         </CheckoutProvider>
+      }
       
     </div>
   )
