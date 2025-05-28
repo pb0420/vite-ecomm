@@ -140,7 +140,7 @@ const CheckoutPage = () => {
             </Label>
           </div>
 
-          <Button disabled={!user || !termsAccepted} onClick={setShowStripePaymentSection(true)}}> Proceed to Payment &nbsp; <CreditCard /></Button>
+          <Button disabled={!user || !termsAccepted} onClick={setShowStripePaymentSection(true)}> Proceed to Payment &nbsp; <CreditCard /></Button>
           <p style={{ marginTop:'-25px',fontSize:'8px'}}>Secure payment powered by Stripe</p>
         </div>
       </motion.div>
