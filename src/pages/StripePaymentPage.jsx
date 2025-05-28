@@ -77,9 +77,11 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
 
   return (
    <div>
-       <EmbeddedCheckoutProvider stripe={stripePromise} options={{fetchClientSecret}} >
-       <EmbeddedCheckout />
-    </EmbeddedCheckoutProvider>
+        <form action="/create-checkout-session" method="POST">
+        <button type="submit">
+            Checkout
+        </button>
+    </form>
     </div>
   )
   
