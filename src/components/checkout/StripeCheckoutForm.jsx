@@ -4,7 +4,7 @@ import {
   useCheckout, useStripe, useElements
 } from '@stripe/react-stripe-js';
 
-export default const StripeCheckoutForm = () => {
+export default function StripeCheckoutForm (){
  // const checkout = useCheckout();
   const stripe = useStripe();
   const elements = useElements();
