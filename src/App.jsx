@@ -56,6 +56,7 @@ const App = () => {
                     <Route path="/admin" element={<AdminPage />} />
                     <Route path="/privacy" element={<PrivacyPage />} />
                     <Route path="/terms" element={<TermsPage />} />
+                    <Route path="/stripe-payment" element={<StripePaymentPage />} />
                   </Routes>
                 </AnimatePresence>
               </main>
