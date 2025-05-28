@@ -54,7 +54,7 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
   const [stripeCS, setStripeCS] = useState(false);
   // const promise = useMemo(() => {
   const fetchClientSecret = async () => {
-    return fetch('https://bcbxcnxutotjzmdjeyde.supabase.co/functions/v1/create-checkout-session', {
+    const csData = await fetch('https://bcbxcnxutotjzmdjeyde.supabase.co/functions/v1/create-checkout-session', {
       headers:{
         'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjYnhjbnh1dG90anptZGpleWRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY0NjIwODksImV4cCI6MjA2MjAzODA4OX0.sMIn31DXRvBpQsxYZV2nn1lKqdEkEk2S0jvdve2yACY'
       },
@@ -65,6 +65,8 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
     })
       .then((res) => res.json())
       .then((data) => data.clientSecret);
+    console.log(csData,'cscscs');
+    return csData;
   }
   // }, []);
 
