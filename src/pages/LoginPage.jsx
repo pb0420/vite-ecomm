@@ -16,7 +16,7 @@ const LoginPage = () => {
   mode:'payment',
   currency:'aud',
   amount:1999
-  }}>   zzz
+  }}>   =====
       <PaymentElement />
     </Elements> 
       </>
