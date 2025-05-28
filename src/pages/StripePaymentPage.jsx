@@ -52,8 +52,9 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
   const { cart, getCartTotal, clearCart } = useCart();
   const productIds = cart.map(item => item.id);
   const [stripeCS, setStripeCS] = useState(false);
+  // const promise = useMemo(() => {
   const fetchClientSecret = async () => {
-    await fetch('https://bcbxcnxutotjzmdjeyde.supabase.co/functions/v1/create-checkout-session', {
+    return fetch('https://bcbxcnxutotjzmdjeyde.supabase.co/functions/v1/create-checkout-session', {
       headers:{
         'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjYnhjbnh1dG90anptZGpleWRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY0NjIwODksImV4cCI6MjA2MjAzODA4OX0.sMIn31DXRvBpQsxYZV2nn1lKqdEkEk2S0jvdve2yACY'
       },
@@ -65,6 +66,7 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
       .then((res) => res.json())
       .then((data) => data.clientSecret);
   }
+  // }, []);
 
   const appearance = {
     theme: 'stripe',
@@ -89,9 +91,10 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
         </CheckoutProvider> */}
        <CheckoutProvider
       stripe={loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx')}
-      options={{fetchClientSecret}} 
+      options={{fetchClientSecret}}
     >
       {/* your components here */}
+         <StripeCheckoutForm />
     </CheckoutProvider>
     </div>
   )
