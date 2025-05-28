@@ -33,14 +33,6 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
     
   }, [])
 
-  
-  const appearance = {
-    theme: 'stripe',
-  };
-  const options = {
-    stripeCS,
-    appearance,
-  }
 
   return (
    <>
