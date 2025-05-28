@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import {loadStripe} from '@stripe/stripe-js';
-import {Elements,PaymentElement, CardForm} from '@stripe/react-stripe-js';
+import {Elements,PaymentElement} from '@stripe/react-stripe-js';
 import { useCart } from '@/contexts/CartContext';
 import {
   BrowserRouter as Router,
