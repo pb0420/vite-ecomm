@@ -141,7 +141,7 @@ const CheckoutPage = () => {
               deliveryDetails={deliveryDetails} 
           /> */}
           <Button disabled={!user || !termsAccepted}> Proceed to Payment &nbsp;<CreditCard /></Button>
-          <span style={{ 'text-size':'1px'}}>Secure payment powered by Stripe</span>
+          <span style={{ textSize:'1px'}}>Secure payment powered by Stripe</span>
           
         </div>
       </motion.div>
