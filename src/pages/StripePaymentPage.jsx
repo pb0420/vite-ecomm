@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import {loadStripe} from '@stripe/stripe-js';
 import {CheckoutProvider} from '@stripe/react-stripe-js';
+import { useCart } from '@/contexts/CartContext';
 import {
   BrowserRouter as Router,
   Route,
@@ -25,7 +26,6 @@ const Return = () => {
       .then((res) => res.json())
       .then((data) => {
         setStatus(data.status);
-        setCustomerEmail(data.customer_email);
       });
   }, []);
 
@@ -49,7 +49,8 @@ Success. Redirecting...
 }
 
 const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
-  
+  const { cart, getCartTotal, clearCart } = useCart();
+  const productIds = cart.map(item => item.id);
   const promise = useMemo(() => {
     return fetch('https://bcbxcnxutotjzmdjeyde.supabase.co/functions/v1/create-checkout-session', {
       headers:{
@@ -57,7 +58,7 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
       },
       method: 'POST',
       data: {
-        productIds:[1,2,3]
+        productIds:productIds
       }
     })
       .then((res) => res.json())
