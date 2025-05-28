@@ -143,10 +143,6 @@ const CheckoutPage = () => {
             </Label>
           </div>
 
-          {/* <PaymentSection 
-              customerDetails={customerDetails} 
-              deliveryDetails={deliveryDetails} 
-          /> */}
           <Button onClick=setShowStripePaymentSection(true) disabled={!user || !termsAccepted}> Proceed to Payment &nbsp; <CreditCard /></Button>
           <p style={{ marginTop:'-25px',fontSize:'8px'}}>Secure payment powered by Stripe</p>
           {
