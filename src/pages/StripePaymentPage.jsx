@@ -76,15 +76,15 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
   };
 
   return (
-   
+   <div>
+      <h2>hooo</h2>
        <CheckoutProvider
       stripe={stripePromise}
       options={{fetchClientSecret}}
     >
-      
          <div>hello</div>
     </CheckoutProvider>
-   
+    </div>
   )
   
 }
