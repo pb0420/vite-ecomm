@@ -63,8 +63,7 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
       })
     })
       .then((res) => res.json())
-      .then((data) => data.clientSecret)
-      .then(() => setStripeCS(true));
+      .then((data) => data.clientSecret);
   }, []);
 
   const appearance = {
