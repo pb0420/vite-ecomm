@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import {loadStripe} from '@stripe/stripe-js';
-import {CheckoutProvider} from '@stripe/react-stripe-js';
+import {Elements} from '@stripe/react-stripe-js';
 import { useCart } from '@/contexts/CartContext';
 import {
   BrowserRouter as Router,
@@ -78,9 +78,9 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
   return (
    <div>
     
-       <CheckoutProvider stripe={stripePromise} options={{fetchClientSecret}} >
+       <Elements stripe={stripePromise} options={{fetchClientSecret}} >
        <StripeCheckoutForm />
-    </CheckoutProvider>
+    </Elements>
     </div>
   )
   
