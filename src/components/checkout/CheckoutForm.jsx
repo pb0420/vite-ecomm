@@ -130,18 +130,7 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
             rows={3}
           />
         </div>
-        <div className="flex items-center space-x-2">
-          <Checkbox 
-            id="terms" 
-            checked={termsAccepted}
-            onCheckedChange={setTermsAccepted}
-          />
-          <Label htmlFor="terms" className="text-sm">
-            I agree to the <Link to="/terms" className="text-primary hover:underline" target="_blank">Terms and Conditions</Link> and{' '}
-            <Link to="/privacy" className="text-primary hover:underline" target="_blank">Privacy Policy</Link>
-          </Label>
-        </div>
-        {errors?.terms && <p className="text-xs text-destructive mt-1">{errors.terms}</p>}
+       
       </div>
     </div>
   );
