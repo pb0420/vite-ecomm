@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import {loadStripe} from '@stripe/stripe-js';
-import {CheckoutProvider} from '@stripe/react-stripe-js';
+import {EmbeddedCheckoutProvider,EmbeddedCheckout} from '@stripe/react-stripe-js';
 import { useCart } from '@/contexts/CartContext';
 import {
   BrowserRouter as Router,
@@ -78,12 +78,9 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
   return (
    <div>
       <h2>hooo</h2>
-       <CheckoutProvider
-      stripe={stripePromise}
-      options={{fetchClientSecret}}
-    >
-         <div>hello</div>
-    </CheckoutProvider>
+       <EmbeddedCheckoutProvider stripe={stripePromise} options={{fetchClientSecret}} >
+       <EmbeddedCheckout />
+    </EmbeddedCheckoutProvider>
     </div>
   )
   
