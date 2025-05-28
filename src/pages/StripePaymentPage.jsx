@@ -7,6 +7,8 @@ import {
   Routes,
   Navigate
 } from "react-router-dom";
+import StripeCheckoutForm from '@/components/checkout/StripeCheckoutForm';
+
 
 const stripePromise = loadStripe("pk_test_L1f0e3XAzjsG7jtp4uN7L9ql");
 
