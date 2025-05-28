@@ -49,7 +49,7 @@ Success. Redirecting...
 }
 
 const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
-  console.log('1111');
+
   const { cart, getCartTotal, clearCart } = useCart();
   const productIds = cart.map(item => item.id);
   const [stripeCS, setStripeCS] = useState(false);
@@ -77,11 +77,10 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
 
   return (
    <div>
-        <form action="/create-checkout-session" method="POST">
-        <button type="submit">
-            Checkout
-        </button>
-    </form>
+    
+       {/* <EmbeddedCheckoutProvider stripe={stripePromise} options={{fetchClientSecret}} >
+       <EmbeddedCheckout />
+    </EmbeddedCheckoutProvider> */}
     </div>
   )
   
