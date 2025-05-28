@@ -73,8 +73,8 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
 
   return (
     <div>
-Stripe Payment 
-      { stripeCS &&
+
+      { stripeCS === true ? (
         <CheckoutProvider
           stripe={stripePromise}
           options={{
@@ -88,7 +88,7 @@ Stripe Payment
             <Route path="/checkout" element={<StripeCheckoutForm />} />
             <Route path="/return" element={<Return />} />
           </Routes>
-        </CheckoutProvider>
+        </CheckoutProvider> ) : ('loading...')
       }
       
     </div>
