@@ -41,7 +41,7 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
     </Elements>  */}
 
       <Elements>
-          <CardForm fontSize={elementFontSize} />
+          <CardForm />
         </Elements>
 
      
