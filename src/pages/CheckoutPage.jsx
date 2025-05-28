@@ -14,6 +14,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/supabaseClient';
 import { formatCurrency } from '@/lib/utils';
+import { Label } from '@/components/ui/label';
 
 const CheckoutPage = () => {
   const { cart, getCartTotal, clearCart } = useCart();
