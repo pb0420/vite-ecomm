@@ -42,6 +42,7 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
        <form>
          here goes the PE
           <PaymentElement />
+         
       </form> 
 
      
