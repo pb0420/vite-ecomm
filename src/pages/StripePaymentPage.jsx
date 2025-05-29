@@ -43,6 +43,7 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
     </Elements>  */}
 
        <div className="p-4 border rounded-lg bg-gray-50">
+         here goes the PE
           <PaymentElement />
       </div> 
 
