@@ -14,7 +14,7 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
   return (
 <div>
   
-    <StripeCheckoutWrapper /> 
+    <StripeCheckoutWrapper />  
  </div>    
   )
   
