@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import {loadStripe} from '@stripe/stripe-js';
-import {Elements,PaymentElement} from '@stripe/react-stripe-js';
+import {Elements, PaymentElement, useStripe, useElements} from '@stripe/react-stripe-js';
 import { useCart } from '@/contexts/CartContext';
 import {
   BrowserRouter as Router,
@@ -13,10 +13,14 @@ import {
 
 const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
 
+  const stripe = useStripe();
+  const elements = useElements();
+  const navigate = useNavigate();
+  
   const { cart, getCartTotal, clearCart } = useCart();
   const productIds = cart.map(item => item.id);
   const [stripeCS, setStripeCS] = useState(false);
-  //const stripePromise = loadStripe("pk_test_L1f0e3XAzjsG7jtp4uN7L9ql");
+  const stripePromise = loadStripe("pk_test_L1f0e3XAzjsG7jtp4uN7L9ql");
 
 
   // useEffect(() => {
@@ -40,9 +44,9 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
        <PaymentElement />
     </Elements>  */}
 
-      <Elements>
+       <div className="p-4 border rounded-lg bg-gray-50">
           <PaymentElement />
-        </Elements>  
+      </div> 
 
      
     </>
