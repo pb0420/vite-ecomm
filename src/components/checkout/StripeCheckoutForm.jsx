@@ -45,16 +45,16 @@ const StripeCheckoutWrapper = () => {
   
   return(
     
-        <Elements
+    {stripeCS !== false && <Elements
           stripe={stripePromise}
           options={{
-            clientSecret: stripeCS,
+            clientSecret: {stripeCS},
             appearance: { theme: "stripe" },
           }}
         >
           <h1>Checkout</h1>
           <StripeCheckoutForm />
-        </Elements>
+        </Elements> }
       
   );
 }
