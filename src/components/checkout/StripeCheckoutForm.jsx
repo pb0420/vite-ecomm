@@ -72,7 +72,6 @@ const StripeCheckoutForm = ({ customerDetails, deliveryDetails }) => {
 
   return (
        <form>
-         hi
           <PaymentElement />
       </form> 
      
