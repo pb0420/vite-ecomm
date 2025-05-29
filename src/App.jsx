@@ -2,6 +2,9 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
+import {loadStripe} from '@stripe/stripe-js';
+import {Elements} from '@stripe/react-stripe-js';
+
 // Contexts
 import { CartProvider } from '@/contexts/CartContext';
 import { OrderProvider } from '@/contexts/OrderContext';
@@ -30,7 +33,7 @@ import StorePickupPage from '@/pages/StorePickupPage';
 import PrivacyPage from '@/pages/PrivacyPage';
 import TermsPage from '@/pages/TermsPage';
 import StripePaymentPage from '@/pages/StripePaymentPage';
-
+const stripePromise = loadStripe("pk_test_L1f0e3XAzjsG7jtp4uN7L9ql");
 const App = () => {
   return (
     <AuthProvider>
@@ -57,7 +60,7 @@ const App = () => {
                     <Route path="/admin" element={<AdminPage />} />
                     <Route path="/privacy" element={<PrivacyPage />} />
                     <Route path="/terms" element={<TermsPage />} />
-                    <Route path="/stripe-payment" element={<StripePaymentPage />} />
+                    <Route path="/stripe-payment" element={ <Elements stripe={stripePromise} ><StripePaymentPage /></Elements>} />
                   </Routes>
                 </AnimatePresence>
               </main>
