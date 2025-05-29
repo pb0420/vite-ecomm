@@ -6,10 +6,7 @@ import '@/index.css';
 
 const container = document.getElementById("root");
 render(
-  <React.StrictMode>
     <App />
-  </React.StrictMode>,
-  container
 );
 
 // import React from 'react';
