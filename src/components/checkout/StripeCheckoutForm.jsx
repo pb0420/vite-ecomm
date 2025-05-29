@@ -28,7 +28,7 @@ const StripeCheckoutWrapper = () => {
 const StripeCheckoutForm = ({ customerDetails, deliveryDetails }) => {
   const stripe = useStripe();
   const elements = useElements();
-  console.log('ahhha',elements);
+  
   const navigate = useNavigate();
   const { cart, getCartTotal, clearCart } = useCart();
   const productIds = cart.map(item => item.id);
