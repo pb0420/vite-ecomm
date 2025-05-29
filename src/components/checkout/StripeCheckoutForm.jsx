@@ -44,7 +44,7 @@ const StripeCheckoutWrapper = () => {
   }, []);
   
   return(
-    {stripeCS === false ? (
+    { !stripeCS ? (
         <h1>Loading ....</h1>
       ) : (
         <Elements
