@@ -20,7 +20,6 @@ const StripeCheckoutWrapper = () => {
 
 const stripePromise = loadStripe("pk_test_L1f0e3XAzjsG7jtp4uN7L9ql");
 const StripeCheckoutForm = ({ customerDetails, deliveryDetails }) => {
-  console.log('open this')
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
