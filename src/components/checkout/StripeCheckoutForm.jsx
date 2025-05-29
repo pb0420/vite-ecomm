@@ -13,7 +13,7 @@ import {
 const StripeCheckoutWrapper = () => {
   return(
 
-     <Elements options = {{ mode:'payment', appearance : {
+     <Elements options = {{ mode:'payment', amount:1000 , appearance : {
     theme: 'stripe', 
   }}} stripe={stripePromise} > 
   <StripeCheckoutForm />
