@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, memo } from "react";
+import { loadStripe } from "@stripe/stripe-js";
 import {Elements, PaymentElement, useStripe, useElements,CardElement} from '@stripe/react-stripe-js';
 import { useCart } from '@/contexts/CartContext';
 import {
@@ -8,6 +9,19 @@ import {
   Navigate,
   useNavigate
 } from "react-router-dom";
+
+const stripePromise = loadStripe(publishableKey,{
+    stripeAccount: 'acct_1RU0DpAcyZwL9ZCr'
+  });
+const StripeCheckoutWrapper = () => {
+    <Elements stripe={stripePromise} options={{
+  mode:'payment',
+  currency:'aud',
+  amount:1999
+  }}>   =====
+      <StripeCheckoutForm />
+    </Elements> 
+}
 
 const StripeCheckoutForm = ({ customerDetails, deliveryDetails }) => {
   const stripe = useStripe();
@@ -38,7 +52,6 @@ const StripeCheckoutForm = ({ customerDetails, deliveryDetails }) => {
 
 
        <form>
-           <CardElement />
           <PaymentElement />
       </form> 
      
@@ -46,4 +59,4 @@ const StripeCheckoutForm = ({ customerDetails, deliveryDetails }) => {
   
 }
 
-export default memo(StripeCheckoutForm);
+export default StripeCheckoutWrapper;
