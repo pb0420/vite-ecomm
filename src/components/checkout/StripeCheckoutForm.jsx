@@ -49,7 +49,7 @@ const StripeCheckoutWrapper = () => {
        <Elements
           stripe={stripePromise}
           options={{
-            clientSecret: {stripeCS},
+            clientSecret: stripeCS,
             appearance: { theme: "stripe" },
           }}
         >
