@@ -12,9 +12,10 @@ import StripeCheckoutWrapper from '@/components/checkout/StripeCheckoutForm';
 const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
  console.log('open this')
   return (
-
+<div>
+  <p>hiii</p>
 <StripeCheckoutWrapper /> 
-     
+ </div>    
   )
   
 }
