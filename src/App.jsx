@@ -14,6 +14,7 @@ import CartDrawer from '@/components/cart/CartDrawer';
 import { Toaster } from '@/components/ui/toaster';
 import StripeCheckoutForm from '@/components/checkout/StripeCheckoutForm';
 import {loadStripe} from '@stripe/stripe-js';
+import {Elements} from '@stripe/react-stripe-js';
 
 // Pages
 import HomePage from '@/pages/HomePage';
