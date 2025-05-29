@@ -13,8 +13,7 @@ import Footer from '@/components/layout/Footer';
 import CartDrawer from '@/components/cart/CartDrawer';
 import { Toaster } from '@/components/ui/toaster';
 import StripeCheckoutForm from '@/components/checkout/StripeCheckoutForm';
-import {loadStripe} from '@stripe/stripe-js';
-import {Elements} from '@stripe/react-stripe-js';
+
 
 // Pages
 import HomePage from '@/pages/HomePage';
@@ -32,8 +31,7 @@ import AdminPage from '@/pages/AdminPage';
 import StorePickupPage from '@/pages/StorePickupPage';
 import PrivacyPage from '@/pages/PrivacyPage';
 import TermsPage from '@/pages/TermsPage';
-// import StripePaymentPage from '@/pages/StripePaymentPage';
-const stripePromise = loadStripe("pk_test_L1f0e3XAzjsG7jtp4uN7L9ql");
+import StripePaymentPage from '@/pages/StripePaymentPage';
 const App = () => {
   return (
     <AuthProvider>
@@ -60,14 +58,8 @@ const App = () => {
                     <Route path="/admin" element={<AdminPage />} />
                     <Route path="/privacy" element={<PrivacyPage />} />
                     <Route path="/terms" element={<TermsPage />} />
-                    <Route path="/stripe-payment" element={ stripePromise ? (<Elements options = {
-                      {mode:'payment', currency:'aud', amount:1100, layout: {
-    type: 'tabs',
-    defaultCollapsed: false
-  } }
-                    } stripe={stripePromise} > 
-  <StripeCheckoutForm /> 
-  </Elements>) : (<p></p>) } />
+                    <Route path="/stripe-payment" element={
+  <StripePaymentPage /> } />
                   </Routes>
                 </AnimatePresence>
               </main>
