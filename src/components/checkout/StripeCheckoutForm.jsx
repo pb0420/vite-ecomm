@@ -14,6 +14,7 @@ const stripePromise = loadStripe("pk_test_51RU0DpAcyZwL9ZCroHLDNCalx80u736eoFCb3
     stripeAccount: 'acct_1RU0DpAcyZwL9ZCr'
   });
 const StripeCheckoutWrapper = () => {
+  return(
     <Elements stripe={stripePromise} options={{
   mode:'payment',
   currency:'aud',
@@ -22,6 +23,7 @@ const StripeCheckoutWrapper = () => {
       <StripeCheckoutForm />
     </Elements> 
 }
+);
 
 const StripeCheckoutForm = ({ customerDetails, deliveryDetails }) => {
   const stripe = useStripe();
