@@ -13,6 +13,7 @@ const stripePromise = loadStripe("pk_test_L1f0e3XAzjsG7jtp4uN7L9ql");
 
 const Wrapper = (props) => (
   <Elements stripe={stripePromise}>
+    zooo
     <StripePaymentPage {...props} />
   </Elements>
 );
