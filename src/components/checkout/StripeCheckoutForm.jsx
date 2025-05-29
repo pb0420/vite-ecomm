@@ -20,7 +20,6 @@ const StripeCheckoutWrapper = () => {
   const [stripeCS, setStripeCS] = useState(false);
 
   useEffect(() => {
-    console.log('i fire once');
     async function createPaymentIntent() {
       try {
         const response = await fetch('https://bcbxcnxutotjzmdjeyde.supabase.co/functions/v1/create-checkout-session', {
@@ -64,11 +63,11 @@ const StripeCheckoutWrapper = () => {
   );
 }
 
-const StripeCheckoutForm = ({ customerDetails, deliveryDetails }) => {
+const StripeCheckoutForm = () => {
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
-  console.log('el',elements)
+  console.log('hiiih')
 
 
   return (
