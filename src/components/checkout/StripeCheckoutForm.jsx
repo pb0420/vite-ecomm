@@ -32,7 +32,6 @@ const StripeCheckoutWrapper = () => {
       })
     }).then((res) => res.json()).then((data) => setStripeCS(data.clientSecret));
         
-        console.log("Response from create-payment-intent:", response.data);
         
       } catch (error) {
         console.error("Error creating payment intent:", error);
