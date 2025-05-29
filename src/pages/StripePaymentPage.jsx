@@ -6,14 +6,14 @@ import {
   Navigate,
   useNavigate
 } from "react-router-dom";
-import StripeCheckoutForm from '@/components/checkout/StripeCheckoutForm'; 
+import StripeCheckoutWrapper from '@/components/checkout/StripeCheckoutForm'; 
   
 
 const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
 
   return (
 
-<StripeCheckoutForm /> 
+<StripeCheckoutWrapper /> 
      
   )
   
