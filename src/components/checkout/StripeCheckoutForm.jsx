@@ -10,7 +10,7 @@ import {
   useNavigate
 } from "react-router-dom";
 
-const stripePromise = loadStripe(publishableKey,{
+const stripePromise = loadStripe("pk_test_51RU0DpAcyZwL9ZCroHLDNCalx80u736eoFCb3mNARKz2BpDuDhl2VgtPJWp8t0jkaitH7zXOFDiE7B3q95rNColr00V7gqABTc",{
     stripeAccount: 'acct_1RU0DpAcyZwL9ZCr'
   });
 const StripeCheckoutWrapper = () => {
