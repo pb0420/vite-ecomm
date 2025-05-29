@@ -22,8 +22,8 @@ const StripeCheckoutWrapper = () => {
   }}>   =====
       <StripeCheckoutForm />
     </Elements> 
+  )
 }
-);
 
 const StripeCheckoutForm = ({ customerDetails, deliveryDetails }) => {
   const stripe = useStripe();
