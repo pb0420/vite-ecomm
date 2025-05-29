@@ -42,7 +42,7 @@ const StripeCheckoutForm = ({ customerDetails, deliveryDetails }) => {
 
        <form>
          here goes the PEx
-          <CardElement />
+          <PaymentElement />
       </form> 
      
   )
