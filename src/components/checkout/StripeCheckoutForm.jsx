@@ -15,7 +15,7 @@ const stripePromise = loadStripe("pk_test_51RU0DpAcyZwL9ZCroHLDNCalx80u736eoFCb3
   });
 const StripeCheckoutWrapper = () => {
   return(
-    <Elements stripe={stripePromise}>   =====
+    <Elements stripe={stripePromise}>   ==x===
       <StripeCheckoutForm />
     </Elements> 
   )
