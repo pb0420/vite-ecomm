@@ -44,18 +44,9 @@ const StripeCheckoutWrapper = () => {
   }, []);
   
   return(
-    
-    {stripeCS !== false && <Elements
-          stripe={stripePromise}
-          options={{
-            clientSecret: {stripeCS},
-            appearance: { theme: "stripe" },
-          }}
-        >
-          <h1>Checkout</h1>
-          <StripeCheckoutForm />
-        </Elements> }
-      
+   <>
+     {stripeCS === false ? (<p>Loading...</p>) : (<p>Loaded</p>)}
+      </> 
   );
 }
 
