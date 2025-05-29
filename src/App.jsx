@@ -60,9 +60,7 @@ const App = () => {
                     <Route path="/admin" element={<AdminPage />} />
                     <Route path="/privacy" element={<PrivacyPage />} />
                     <Route path="/terms" element={<TermsPage />} />
-                    <Route path="/stripe-payment" element={   <Elements options = {{ mode:'payment', amount:2000, currency:'usd' , appearance : {
-    theme: 'stripe', 
-  }}} stripe={stripePromise} > 
+                    <Route path="/stripe-payment" element={  <Elements stripe={stripePromise} > 
   <StripeCheckoutForm />
   </Elements>} /> 
                   </Routes>
