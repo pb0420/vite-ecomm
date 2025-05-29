@@ -11,15 +11,16 @@ import {
 } from "react-router-dom";
 
 const StripeCheckoutWrapper = () => {
+  {
+  <p>yaaa</p> 
+}
   <Elements options = {{ mode:'payment', currency:'usd', amount:1999 , appearance : {
     theme: 'stripe',
   }}} stripe={stripePromise} > 
   <StripeCheckoutForm />
   </Elements>
 }
-{
-  <p>yaaa</p> 
-}
+
 
 const stripePromise = loadStripe("pk_test_L1f0e3XAzjsG7jtp4uN7L9ql");
 const StripeCheckoutForm = ({ customerDetails, deliveryDetails }) => {
