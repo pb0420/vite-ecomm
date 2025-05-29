@@ -13,7 +13,7 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
 
   return (
 
-<StripeCheckoutForm />
+<StripeCheckoutForm /> 
      
   )
   
