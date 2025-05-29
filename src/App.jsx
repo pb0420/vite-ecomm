@@ -12,6 +12,7 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import CartDrawer from '@/components/cart/CartDrawer';
 import { Toaster } from '@/components/ui/toaster';
+import StripeCheckoutForm from '@/components/checkout/StripeCheckoutForm';
 
 // Pages
 import HomePage from '@/pages/HomePage';
@@ -29,7 +30,7 @@ import AdminPage from '@/pages/AdminPage';
 import StorePickupPage from '@/pages/StorePickupPage';
 import PrivacyPage from '@/pages/PrivacyPage';
 import TermsPage from '@/pages/TermsPage';
-import StripePaymentPage from '@/pages/StripePaymentPage';
+// import StripePaymentPage from '@/pages/StripePaymentPage';
 
 const App = () => {
   return (
@@ -57,7 +58,11 @@ const App = () => {
                     <Route path="/admin" element={<AdminPage />} />
                     <Route path="/privacy" element={<PrivacyPage />} />
                     <Route path="/terms" element={<TermsPage />} />
-                    <Route path="/stripe-payment" element={ <StripePaymentPage /> } /> 
+                    <Route path="/stripe-payment" element={   <Elements options = {{ mode:'payment', amount:2000, currency:'usd' , appearance : {
+    theme: 'stripe', 
+  }}} stripe={stripePromise} > 
+  <StripeCheckoutForm />
+  </Elements>} /> 
                   </Routes>
                 </AnimatePresence>
               </main>
