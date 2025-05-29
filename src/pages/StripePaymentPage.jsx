@@ -59,4 +59,4 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
   
 }
 
-export default Wrapper;
+export default StripePaymentPage;
