@@ -45,7 +45,7 @@ const StripeCheckoutWrapper = () => {
   
   return(
     
-    { !stripeCS ? (
+    { stripeCS == false ? (
         <h1>Loading ....</h1>
       ) : (
         <Elements
@@ -59,7 +59,7 @@ const StripeCheckoutWrapper = () => {
           <StripeCheckoutForm />
         </Elements>
       )}
-  )
+  );
 }
 
 const StripeCheckoutForm = ({ customerDetails, deliveryDetails }) => {
