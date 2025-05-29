@@ -14,7 +14,6 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
 
   const stripe = useStripe();
   const elements = useElements();
-  const navigate = useNavigate();
   
   const { cart, getCartTotal, clearCart } = useCart();
   const productIds = cart.map(item => item.id);
