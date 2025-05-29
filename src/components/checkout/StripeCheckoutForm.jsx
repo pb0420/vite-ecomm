@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, memo } from "react";
 import {Elements, PaymentElement, useStripe, useElements,CardElement} from '@stripe/react-stripe-js';
 import { useCart } from '@/contexts/CartContext';
 import {
@@ -46,4 +46,4 @@ const StripeCheckoutForm = ({ customerDetails, deliveryDetails }) => {
   
 }
 
-export default StripeCheckoutForm;
+export default memo(StripeCheckoutForm);
