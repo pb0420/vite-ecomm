@@ -1,53 +1,55 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import {loadStripe} from '@stripe/stripe-js';
+import {Elements, PaymentElement, useStripe, useElements} from '@stripe/react-stripe-js';
+import { useCart } from '@/contexts/CartContext';
 import {
-  PaymentElement,
-  useCheckout, useStripe, useElements
-} from '@stripe/react-stripe-js';
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+  useNavigate
+} from "react-router-dom";
 
-export default function StripeCheckoutForm (){ 
- // const checkout = useCheckout(); 
+const stripePromise = loadStripe("pk_test_L1f0e3XAzjsG7jtp4uN7L9ql");
+const StripeCheckoutForm = ({ customerDetails, deliveryDetails }) => {
+
   const stripe = useStripe();
   const elements = useElements();
-  const [email, setEmail] = useState('');
-  const [emailError, setEmailError] = useState(null);
-  const [message, setMessage] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const { cart, getCartTotal, clearCart } = useCart();
+  const productIds = cart.map(item => item.id);
+  const [stripeCS, setStripeCS] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
 
-    setIsLoading(true);
+  // useEffect(() => {
+  //   fetch('https://bcbxcnxutotjzmdjeyde.supabase.co/functions/v1/create-checkout-session', {
+  //     headers:{
+  //       'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjYnhjbnh1dG90anptZGpleWRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY0NjIwODksImV4cCI6MjA2MjAzODA4OX0.sMIn31DXRvBpQsxYZV2nn1lKqdEkEk2S0jvdve2yACY'
+  //     },
+  //     method: 'POST',
+  //     body: JSON.stringify({
+  //       productIds:productIds
+  //     })
+  //   }).then((res) => res.json()).then((data) => setStripeCS(data.clientSecret));
+    
+  // }, [])
 
-    const { isValid, message } = await validateEmail(email, checkout);
-    if (!isValid) {
-      setEmailError(message);
-      setMessage(message);
-      setIsLoading(false);
-      return;
-    }
-
-    const confirmResult = await checkout.confirm();
-
-    // This point will only be reached if there is an immediate error when
-    // confirming the payment. Otherwise, your customer will be redirected to
-    // your `return_url`. For some payment methods like iDEAL, your customer will
-    // be redirected to an intermediate site first to authorize the payment, then
-    // redirected to the `return_url`.
-    if (confirmResult.type === 'error') {
-      setMessage(confirmResult.error.message);
-    }
-
-    setIsLoading(false);
-  };
 
   return (
-    <form onSubmit={handleSubmit}>
-      
-      <h4>Payment by Stripe</h4>
-      <PaymentElement id="payment-element" />
-      
-      {/* Show any error or success messages */}
-      {message && <div id="payment-message">{message}</div>}
-    </form>
-  );
+
+<Elements options = {{ mode:'payment', currency:'usd', amount:1999 , appearance : {
+    theme: 'stripe',
+  }}} stripe={stripePromise} >
+
+       <form>
+         here goes the PE
+          <PaymentElement />
+         
+      </form> 
+    </Elements>
+     
+  )
+  
 }
+
+export default StripeCheckoutForm;
