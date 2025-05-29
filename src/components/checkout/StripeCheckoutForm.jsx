@@ -67,7 +67,7 @@ const StripeCheckoutForm = ({ customerDetails, deliveryDetails }) => {
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
-
+  console.log('el',elements)
 
 
   return (
