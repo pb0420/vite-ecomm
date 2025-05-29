@@ -79,4 +79,4 @@ const StripeCheckoutForm = ({ customerDetails, deliveryDetails }) => {
   
 }
 
-export default StripeCheckoutWrapper;
+export default memo(StripeCheckoutWrapper);
