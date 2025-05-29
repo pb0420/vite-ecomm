@@ -60,12 +60,12 @@ const App = () => {
                     <Route path="/admin" element={<AdminPage />} />
                     <Route path="/privacy" element={<PrivacyPage />} />
                     <Route path="/terms" element={<TermsPage />} />
-                    <Route path="/stripe-payment" element={  <Elements options = {{mode:'payment', currency:'aud', amount:1100, layout: {
+                    <Route path="/stripe-payment" element={  { stripePromise ? (<Elements options = {{mode:'payment', currency:'aud', amount:1100, layout: {
     type: 'tabs',
     defaultCollapsed: false,
   } }} stripe={stripePromise} > 
   <StripeCheckoutForm /> 
-  </Elements>} />
+  </Elements> :(<p></p>)} } />
                   </Routes>
                 </AnimatePresence>
               </main>
