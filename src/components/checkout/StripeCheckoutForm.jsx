@@ -18,7 +18,7 @@ const StripeCheckoutWrapper = () => {
   </Elements>
 }
 {
-  <p>yaaa</p>
+  <p>yaaa</p> 
 }
 
 const stripePromise = loadStripe("pk_test_L1f0e3XAzjsG7jtp4uN7L9ql");
