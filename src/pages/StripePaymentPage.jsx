@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, memo } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -20,4 +20,4 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
   
 }
 
-export default StripePaymentPage;
+export default memo(StripePaymentPage);
