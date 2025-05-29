@@ -10,19 +10,6 @@ import {
   useNavigate
 } from "react-router-dom";
 
-const StripeCheckoutWrapper = () => {
-  return(
-
-     <Elements options = {{ mode:'payment', amount:2000, currency:'usd' , appearance : {
-    theme: 'stripe', 
-  }}} stripe={stripePromise} > 
-  <StripeCheckoutForm />
-  </Elements>
-    
-  )
-  
-} 
-
 const stripePromise = loadStripe("pk_test_L1f0e3XAzjsG7jtp4uN7L9ql");
 const StripeCheckoutForm = ({ customerDetails, deliveryDetails }) => {
   const stripe = useStripe();
@@ -60,4 +47,4 @@ const StripeCheckoutForm = ({ customerDetails, deliveryDetails }) => {
   
 }
 
-export default StripeCheckoutWrapper;
+export default StripeCheckoutForm;
