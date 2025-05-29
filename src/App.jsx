@@ -31,7 +31,7 @@ import StorePickupPage from '@/pages/StorePickupPage';
 import PrivacyPage from '@/pages/PrivacyPage';
 import TermsPage from '@/pages/TermsPage';
 // import StripePaymentPage from '@/pages/StripePaymentPage';
-
+const stripePromise = loadStripe("pk_test_L1f0e3XAzjsG7jtp4uN7L9ql");
 const App = () => {
   return (
     <AuthProvider>
