@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import {Elements, PaymentElement, useStripe, useElements} from '@stripe/react-stripe-js';
+import {Elements, PaymentElement, useStripe, useElements,CardElement} from '@stripe/react-stripe-js';
 import { useCart } from '@/contexts/CartContext';
 import {
   BrowserRouter as Router,
@@ -38,7 +38,7 @@ const StripeCheckoutForm = ({ customerDetails, deliveryDetails }) => {
 
        <form>
          here goes the PEx
-          <PaymentElement />
+          <CardElement />
       </form> 
      
   )
