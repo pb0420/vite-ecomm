@@ -10,7 +10,6 @@ import {
   useNavigate
 } from "react-router-dom";
 
-const stripePromise = loadStripe("pk_test_L1f0e3XAzjsG7jtp4uN7L9ql");
 const StripeCheckoutForm = ({ customerDetails, deliveryDetails }) => {
   const stripe = useStripe();
   const elements = useElements();
