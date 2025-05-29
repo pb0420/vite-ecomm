@@ -45,9 +45,6 @@ const StripeCheckoutWrapper = () => {
   
   return(
     
-    { stripeCS == false ? (
-        <h1>Loading ....</h1>
-      ) : (
         <Elements
           stripe={stripePromise}
           options={{
@@ -58,7 +55,7 @@ const StripeCheckoutWrapper = () => {
           <h1>Checkout</h1>
           <StripeCheckoutForm />
         </Elements>
-      )}
+      
   );
 }
 
