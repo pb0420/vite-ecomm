@@ -12,6 +12,10 @@ import {
 const StripeCheckoutForm = ({ customerDetails, deliveryDetails }) => {
   const stripe = useStripe();
   const elements = useElements();
+  elements.create('payment', {
+    paymentMethodOrder: ['apple_pay', 'google_pay', 'card', 'klarna']
+  });
+  console.log('ahhha');
   const navigate = useNavigate();
   const { cart, getCartTotal, clearCart } = useCart();
   const productIds = cart.map(item => item.id);
