@@ -37,7 +37,7 @@ const StripeCheckoutForm = ({ customerDetails, deliveryDetails }) => {
 
 
        <form>
-         here goes the PE
+         here goes the PEx
           <PaymentElement />
       </form> 
      
