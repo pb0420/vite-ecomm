@@ -9,7 +9,13 @@ import {
   Navigate
 } from "react-router-dom";
 
+const stripePromise = loadStripe("pk_test_L1f0e3XAzjsG7jtp4uN7L9ql");
 
+const Wrapper = (props) => (
+  <Elements stripe={stripePromise}>
+    <StripePaymentPage {...props} />
+  </Elements>
+);
 
 const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
 
@@ -20,7 +26,6 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
   const { cart, getCartTotal, clearCart } = useCart();
   const productIds = cart.map(item => item.id);
   const [stripeCS, setStripeCS] = useState(false);
-  const stripePromise = loadStripe("pk_test_L1f0e3XAzjsG7jtp4uN7L9ql");
 
 
   // useEffect(() => {
