@@ -11,8 +11,9 @@ import {
 } from "react-router-dom";
 
 const StripeCheckoutWrapper = () => {
-  
-  <p>yaaa</p> 
+  return(
+     <p>yaaa</p> 
+  )
   
 }
 
