@@ -37,14 +37,16 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
 
   return (
 
-
+<Elements options = {{ mode:'payment', currency:'usd', amount:1999 , appearance : {
+    theme: 'stripe',
+  }}} stripe={stripePromise} >
 
        <form>
          here goes the PE
           <PaymentElement />
          
       </form> 
-
+    </Elements>
      
   )
   
