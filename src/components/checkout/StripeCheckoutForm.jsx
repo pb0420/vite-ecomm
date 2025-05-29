@@ -50,6 +50,7 @@ const StripeCheckoutForm = ({ customerDetails, deliveryDetails }) => {
 
 
        <form>
+         hi
           <PaymentElement />
       </form> 
      
