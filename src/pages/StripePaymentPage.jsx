@@ -13,8 +13,8 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
  console.log('open this')
   return (
 <div>
-  <p>hiii</p>
-<StripeCheckoutWrapper /> 
+  
+    <StripeCheckoutWrapper /> 
  </div>    
   )
   
