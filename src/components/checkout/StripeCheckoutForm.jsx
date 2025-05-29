@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo } from "react";
-import {loadStripe} from '@stripe/stripe-js';
 import {Elements, PaymentElement, useStripe, useElements} from '@stripe/react-stripe-js';
 import { useCart } from '@/contexts/CartContext';
 import {
