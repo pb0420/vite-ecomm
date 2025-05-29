@@ -6,7 +6,8 @@ import {
   BrowserRouter as Router,
   Route,
   Routes,
-  Navigate
+  Navigate,
+  useNavigate
 } from "react-router-dom";
 
 
@@ -14,7 +15,7 @@ const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
 
   const stripe = useStripe();
   const elements = useElements();
-  
+  const navigate = useNavigate();
   const { cart, getCartTotal, clearCart } = useCart();
   const productIds = cart.map(item => item.id);
   const [stripeCS, setStripeCS] = useState(false);
