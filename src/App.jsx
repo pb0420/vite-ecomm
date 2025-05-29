@@ -13,6 +13,7 @@ import Footer from '@/components/layout/Footer';
 import CartDrawer from '@/components/cart/CartDrawer';
 import { Toaster } from '@/components/ui/toaster';
 import StripeCheckoutForm from '@/components/checkout/StripeCheckoutForm';
+import {loadStripe} from '@stripe/stripe-js';
 
 // Pages
 import HomePage from '@/pages/HomePage';
