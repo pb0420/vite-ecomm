@@ -173,7 +173,7 @@ console.warn = () => {};
 export default defineConfig({
 	plugins: [react(), addTransformIndexHtml],
 	server: {
-		port:4242
+		port:3000
 	},
 	resolve: {
 		extensions: ['.jsx', '.js', '.tsx', '.ts', '.json', ],
