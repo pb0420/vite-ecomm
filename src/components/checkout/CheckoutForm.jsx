@@ -4,9 +4,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import AddressSelector from '@/components/checkout/AddressSelector';
+import { supabase } from '@/lib/supabaseClient';
 
 const CheckoutForm = ({ onDetailsChange, errors }) => {
   const { user } = useAuth();
@@ -15,9 +17,11 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
     email: '', 
     phone: '', 
     address: '', 
+    postcode: '',
     deliveryNotes: '',
   });
   const [showAddressSelector, setShowAddressSelector] = useState(false);
+  const [postcodes, setPostcodes] = useState([]);
 
   // Pre-fill form if user is logged in
   useEffect(() => {
@@ -27,10 +31,30 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
         email: user.email || '',
         phone: user.phone || '',
         address: '',
+        postcode: '',
         deliveryNotes: '',
       });
     }
   }, [user]);
+
+  // Fetch postcodes
+  useEffect(() => {
+    const fetchPostcodes = async () => {
+      const { data, error } = await supabase
+        .from('postcodes')
+        .select('*')
+        .order('suburb');
+      
+      if (error) {
+        console.error('Error fetching postcodes:', error);
+        return;
+      }
+      
+      setPostcodes(data);
+    };
+
+    fetchPostcodes();
+  }, []);
 
   // Update parent component when form data changes
   useEffect(() => {
@@ -43,7 +67,14 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
   };
 
   const handleAddressSelect = (address) => {
-    setFormData(prev => ({ ...prev, address }));
+    const selectedAddress = user.addresses.find(addr => addr.address === address);
+    if (selectedAddress) {
+      setFormData(prev => ({
+        ...prev,
+        address: selectedAddress.address,
+        postcode: selectedAddress.postcode
+      }));
+    }
     setShowAddressSelector(false);
   };
 
@@ -116,6 +147,25 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
             className={errors?.address ? 'border-destructive' : ''} 
           />
           {errors?.address && <p className="text-xs text-destructive">{errors.address}</p>}
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="postcode">Suburb & Postcode</Label>
+          <Select 
+            value={formData.postcode} 
+            onValueChange={(value) => setFormData(prev => ({ ...prev, postcode: value }))}
+          >
+            <SelectTrigger className={errors?.postcode ? 'border-destructive' : ''}>
+              <SelectValue placeholder="Select suburb" />
+            </SelectTrigger>
+            <SelectContent>
+              {postcodes.map((pc) => (
+                <SelectItem key={pc.id} value={pc.postcode}>
+                  {pc.suburb} ({pc.postcode})
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors?.postcode && <p className="text-xs text-destructive">{errors.postcode}</p>}
         </div>
         <div className="space-y-2">
           <Label htmlFor="deliveryNotes">Delivery Notes (Optional)</Label>
