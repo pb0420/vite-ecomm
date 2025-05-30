@@ -1,23 +1,94 @@
-import React, { useState, useEffect, useMemo, memo } from "react";
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  Navigate,
-  useNavigate
-} from "react-router-dom";
-import StripeCheckoutWrapper from '@/components/checkout/StripeCheckoutForm'; 
-  
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useCart } from '@/contexts/CartContext';
+import StripeCheckoutForm from '@/components/checkout/StripeCheckoutForm';
+import { formatCurrency } from '@/lib/utils';
 
-const StripePaymentPage = ({ customerDetails, deliveryDetails }) => {
- console.log('open this')
+const StripePaymentPage = () => {
+  const { cart, getCartTotal } = useCart();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [clientSecret, setClientSecret] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!cart.length) {
+      navigate('/checkout');
+      return;
+    }
+
+    const createPaymentIntent = async () => {
+      try {
+        const productIds = cart.map(item => ({
+          id: item.id,
+          quantity: item.quantity
+        }));
+
+        const response = await fetch('https://bcbxcnxutotjzmdjeyde.supabase.co/functions/v1/create-checkout-session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjYnhjbnh1dG90anptZGpleWRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY0NjIwODksImV4cCI6MjA2MjAzODA4OX0.sMIn31DXRvBpQsxYZV2nn1lKqdEkEk2S0jvdve2yACY'
+          },
+          body: JSON.stringify({
+            productIds,
+            deliveryFee: location.state?.deliveryFee || 0,
+            customerDetails: location.state?.customerDetails || {},
+            deliveryType: location.state?.deliveryType || 'express',
+            scheduledTime: location.state?.scheduledTime || null
+          })
+        });
+
+        const data = await response.json();
+        
+        if (data.error) {
+          throw new Error(data.error);
+        }
+
+        setClientSecret(data.clientSecret);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    createPaymentIntent();
+  }, [cart, navigate, location.state]);
+
+  if (loading) {
+    return (
+      <div className="container flex items-center justify-center min-h-[400px]">
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container py-8 text-center">
+        <h2 className="text-xl font-semibold text-destructive mb-4">Payment Error</h2>
+        <p className="text-muted-foreground mb-4">{error}</p>
+        <button onClick={() => navigate('/checkout')} className="text-primary hover:underline">
+          Return to checkout
+        </button>
+      </div>
+    );
+  }
+
   return (
-<div>
-  
-    <StripeCheckoutWrapper />  
- </div>    
-  )
-  
-}
+    <div className="container py-8">
+      <h1 className="text-2xl font-bold mb-6">Complete Payment</h1>
+      <div className="max-w-md mx-auto">
+        <div className="mb-6 p-4 border rounded-lg bg-muted/30">
+          <p className="text-sm text-muted-foreground mb-2">Order Total</p>
+          <p className="text-2xl font-bold">{formatCurrency(getCartTotal())}</p>
+        </div>
+        <StripeCheckoutForm clientSecret={clientSecret} />
+      </div>
+    </div>
+  );
+};
 
-export default memo(StripePaymentPage);
+export default StripePaymentPage;

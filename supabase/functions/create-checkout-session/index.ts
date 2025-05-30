@@ -6,8 +6,13 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+interface CartItem {
+  id: string;
+  quantity: number;
+}
+
 interface RequestBody {
-  productIds: string[];
+  productIds: CartItem[];
   deliveryFee: number;
   customerDetails: {
     name: string;
@@ -39,21 +44,24 @@ Deno.serve(async (req) => {
     const { data: products, error: productsError } = await supabase
       .from('products')
       .select('*')
-      .in('id', productIds);
+      .in('id', productIds.map(item => item.id));
 
     if (productsError) throw productsError;
 
-    // Create Stripe line items from products
-    const lineItems = products.map(product => ({
-      price_data: {
-        currency: 'usd',
-        product_data: {
-          name: product.name,
+    // Create Stripe line items from products with quantities
+    const lineItems = products.map(product => {
+      const cartItem = productIds.find(item => item.id === product.id);
+      return {
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: product.name,
+          },
+          unit_amount: Math.round(product.price * 100), // Convert to cents
         },
-        unit_amount: Math.round(product.price * 100), // Convert to cents
-      },
-      quantity: 1,
-    }));
+        quantity: cartItem?.quantity || 1,
+      };
+    });
 
     // Add delivery fee as a separate line item
     if (deliveryFee > 0) {
@@ -69,16 +77,19 @@ Deno.serve(async (req) => {
       });
     }
 
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: lineItems,
-      mode: 'payment',
-      success_url: `${req.headers.get('origin')}/checkout?success=true&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.get('origin')}/checkout?success=false`,
-      customer_email: customerDetails.email || undefined,
+    // Calculate total amount
+    const amount = lineItems.reduce((total, item) => {
+      return total + (item.price_data.unit_amount * item.quantity);
+    }, 0);
+
+    // Create payment intent
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount,
+      currency: 'usd',
       metadata: {
         customer_name: customerDetails.name,
         customer_phone: customerDetails.phone,
+        customer_email: customerDetails.email,
         customer_address: customerDetails.address,
         delivery_notes: deliveryNotes || '',
         delivery_type: deliveryType,
@@ -87,7 +98,7 @@ Deno.serve(async (req) => {
     });
 
     return new Response(
-      JSON.stringify({ sessionId: session.id, url: session.url }),
+      JSON.stringify({ clientSecret: paymentIntent.client_secret }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       },
