@@ -343,7 +343,7 @@ const StorePickupPage = () => {
 
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <Label htmlFor="address">Delivery Address</Label>
+                      <Label htmlFor="address">Delivery Addresso</Label>
                       {user && user.addresses?.length > 0 && (
                         <span
                           variant="ghost"
