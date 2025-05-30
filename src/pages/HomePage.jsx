@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-<<<<<<< HEAD
 import { ArrowRight, Clock, ShieldCheck, MessageCircle, Handshake,ShoppingCart,CupSoda,EggFried,Cookie, Hamburger, Croissant, Apple, Banana, Beef, Candy, Fish, Utensils, Car, MapPinCheckInside  } from 'lucide-react';
-=======
-import { ArrowRight, Clock, ShieldCheck, MessageCircle, Handshake,ShoppingCart,CupSoda,EggFried,Cookie, Hamburger, Croissant, Apple, Banana, Beef, Candy, Fish, Utensils, Car  } from 'lucide-react';
->>>>>>> e1b006b2da01632d38ecf071f94374ee74bdc3fc
 import { Button } from '@/components/ui/button';
 import ProductCard from '@/components/products/ProductCard';
 import { supabase } from '@/lib/supabaseClient';

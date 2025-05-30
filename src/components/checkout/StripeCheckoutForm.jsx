@@ -45,11 +45,7 @@ const StripeCheckoutWrapper = () => {
   return(
    <>
      {stripeCS === false ? (<p>Loading...</p>) : (
-<<<<<<< HEAD
        
-=======
-
->>>>>>> e1b006b2da01632d38ecf071f94374ee74bdc3fc
        <Elements
           stripe={stripePromise}
           options={{
