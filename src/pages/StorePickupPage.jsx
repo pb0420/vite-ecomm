@@ -8,7 +8,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Calendar as CalendarPicker } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -41,6 +40,7 @@ const StorePickupPage = () => {
   const [selectedTimeSlot, setSelectedTimeSlot] = useState('');
   const [whatsappNumber, setWhatsappNumber] = useState('');
   const [address, setAddress] = useState('');
+  const [postcode, setPostcode] = useState('');
   const [notes, setNotes] = useState('');
   const [estimatedTotal, setEstimatedTotal] = useState('');
   const [showAddressSelector, setShowAddressSelector] = useState(false);
@@ -48,12 +48,13 @@ const StorePickupPage = () => {
   const [formErrors, setFormErrors] = useState({});
   const [contactPreference, setContactPreference] = useState('whatsapp');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [postcodes, setPostcodes] = useState([]);
   
   const timeSlots = generateTimeSlots();
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchStores();
+    Promise.all([fetchStores(), fetchPostcodes()]);
   }, []);
 
   const fetchStores = async () => {
@@ -73,8 +74,27 @@ const StorePickupPage = () => {
     }
   };
 
+  const fetchPostcodes = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('postcodes')
+        .select('*')
+        .order('suburb');
+      
+      if (error) throw error;
+      setPostcodes(data || []);
+    } catch (error) {
+      console.error('Error fetching postcodes:', error);
+      toast({ variant: "destructive", title: "Error", description: "Could not load postcodes." });
+    }
+  };
+
   const handleAddressSelect = (selectedAddress) => {
-    setAddress(selectedAddress);
+    const savedAddress = user.addresses.find(addr => addr.address === selectedAddress);
+    if (savedAddress) {
+      setAddress(savedAddress.address);
+      setPostcode(savedAddress.postcode);
+    }
     setShowAddressSelector(false);
   };
 
@@ -89,6 +109,7 @@ const StorePickupPage = () => {
       errors.phone = 'Phone number is required for SMS/Call communication';
     }
     if (!address) errors.address = 'Delivery address is required';
+    if (!postcode) errors.postcode = 'Please select a suburb and postcode';
     if (!estimatedTotal || parseFloat(estimatedTotal) < 50) {
       errors.estimated = 'Minimum order amount is $50';
     }
@@ -118,6 +139,7 @@ const StorePickupPage = () => {
           whatsapp_number: contactPreference === 'whatsapp' ? whatsappNumber : null,
           phone_number: contactPreference === 'phone' ? phoneNumber : null,
           delivery_address: address,
+          postcode: postcode,
           notes,
           estimated_total: parseFloat(estimatedTotal),
           status: 'pending',
@@ -346,6 +368,23 @@ const StorePickupPage = () => {
                       className={formErrors.address ? 'border-destructive' : ''}
                     />
                     {formErrors.address && <p className="text-xs text-destructive">{formErrors.address}</p>}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="postcode">Suburb & Postcode</Label>
+                    <Select value={postcode} onValueChange={setPostcode}>
+                      <SelectTrigger className={formErrors.postcode ? 'border-destructive' : ''}>
+                        <SelectValue placeholder="Select suburb" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {postcodes.map((pc) => (
+                          <SelectItem key={pc.id} value={pc.postcode}>
+                            {pc.suburb} ({pc.postcode})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {formErrors.postcode && <p className="text-xs text-destructive">{formErrors.postcode}</p>}
                   </div>
 
                   <div className="space-y-2">
