@@ -20,7 +20,7 @@ import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
 import AddressSelector from '@/components/checkout/AddressSelector';
 import { formatCurrency } from '@/lib/utils';
-import { CalendarPicker } from '@/components/ui/calendar';
+import { Calendar as CalendarPicker } from '@/components/ui/calendar';
 
 
 const generateTimeSlots = () => {
