@@ -38,7 +38,7 @@ const DeliverySettingsForm = () => {
         }
       } catch (error) {
         console.error('Error fetching delivery settings:', error);
-        toast({ variant: "destructive", title: "Fetch Error", description: "Could not load delivery settings." });
+        toast({ variant: "destructive", title: "Fetch Error", description: "Could not load deli09very settings." });
       } finally {
         setLoading(false);
       }

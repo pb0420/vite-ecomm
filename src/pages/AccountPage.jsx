@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatCurrency } from '@/lib/utils';
 import { supabase } from '@/lib/supabaseClient';
+import AddressManager from '@/components/account/AddressManager';
 
 const AccountPage = () => {
   const { user, updateUserInfo, logout, loading: authLoading } = useAuth();
@@ -21,7 +22,6 @@ const AccountPage = () => {
     name: '',
     email: '',
     phone: '',
-    address: '',
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -34,7 +34,6 @@ const AccountPage = () => {
         name: user.name || '',
         email: user.email || '',
         phone: user.phone || '',
-        address: user.address || '',
       });
       fetchUserOrders(user.id);
       fetchPickupOrders(user.id);
@@ -93,8 +92,6 @@ const AccountPage = () => {
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Email is invalid';
     }
-    if (!formData.phone.trim()) newErrors.phone = 'Phone number is required';
-    if (!formData.address.trim()) newErrors.address = 'Address is required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -104,12 +101,27 @@ const AccountPage = () => {
     if (!validateForm() || isSubmitting) return;
 
     setIsSubmitting(true);
-    await updateUserInfo({
-      name: formData.name,
-      phone: formData.phone,
-      address: formData.address,
-    });
-    setIsSubmitting(false);
+    try {
+      // Update profile info including email
+      await updateUserInfo({
+        name: formData.name,
+        email: formData.email,
+      });
+
+      toast({
+        title: "Profile Updated",
+        description: "Your profile has been updated successfully."
+      });
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      toast({
+        variant: "destructive",
+        title: "Update Failed",
+        description: error.message
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleLogout = async () => {
@@ -121,7 +133,11 @@ const AccountPage = () => {
     if (!dateString) return 'N/A';
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('en-US', {
-      year: 'numeric', month: 'short', day: 'numeric'
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric'
     }).format(date);
   };
 
@@ -152,35 +168,60 @@ const AccountPage = () => {
 
       <Tabs defaultValue="profile" className="space-y-6">
         <TabsList className="grid w-full grid-cols-2 md:w-auto md:inline-flex">
-          <TabsTrigger value="profile" className="flex items-center"><User className="w-4 h-4 mr-2" />Profile</TabsTrigger>
-          <TabsTrigger value="orders" className="flex items-center"><Package className="w-4 h-4 mr-2" />Orders</TabsTrigger>
+          <TabsTrigger value="profile" className="flex items-center">
+            <User className="w-4 h-4 mr-2" />Profile
+          </TabsTrigger>
+          <TabsTrigger value="orders" className="flex items-center">
+            <Package className="w-4 h-4 mr-2" />Orders
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="profile" className="space-y-6">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="p-6 border rounded-lg">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="p-6 border rounded-lg"
+          >
             <h2 className="text-xl font-semibold mb-4">Personal Information</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="name">Full Name</Label>
-                  <Input id="name" name="name" value={formData.name} onChange={handleChange} className={errors.name ? 'border-destructive' : ''} disabled={isSubmitting} />
+                  <Input 
+                    id="name" 
+                    name="name" 
+                    value={formData.name} 
+                    onChange={handleChange} 
+                    className={errors.name ? 'border-destructive' : ''} 
+                    disabled={isSubmitting} 
+                  />
                   {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" name="email" type="email" value={formData.email} readOnly disabled className="bg-muted/50 cursor-not-allowed" />
-                  <p className="text-xs text-muted-foreground">Email cannot be changed here.</p>
+                  <Input 
+                    id="email" 
+                    name="email" 
+                    type="email" 
+                    value={formData.email} 
+                    onChange={handleChange} 
+                    className={errors.email ? 'border-destructive' : ''} 
+                    disabled={isSubmitting}
+                  />
+                  {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone Number</Label>
-                <Input id="phone" name="phone" value={formData.phone} onChange={handleChange} className={errors.phone ? 'border-destructive' : ''} disabled={isSubmitting} />
-                {errors.phone && <p className="text-xs text-destructive">{errors.phone}</p>}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="address">Address</Label>
-                <Input id="address" name="address" value={formData.address} onChange={handleChange} className={errors.address ? 'border-destructive' : ''} disabled={isSubmitting} />
-                {errors.address && <p className="text-xs text-destructive">{errors.address}</p>}
+                <Input 
+                  id="phone" 
+                  name="phone" 
+                  value={formData.phone} 
+                  className="bg-muted/50" 
+                  disabled={true} 
+                />
+                <p className="text-xs text-muted-foreground">Phone number cannot be changed.</p>
               </div>
               <div className="flex justify-end space-x-2">
                 <Button type="submit" disabled={isSubmitting}>
@@ -189,10 +230,31 @@ const AccountPage = () => {
               </div>
             </form>
           </motion.div>
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.1 }} className="p-6 border rounded-lg">
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+            className="p-6 border rounded-lg"
+          >
+            <AddressManager />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.2 }}
+            className="p-6 border rounded-lg"
+          >
             <h2 className="text-xl font-semibold mb-4">Account Actions</h2>
-            <Button variant="destructive" className="flex items-center" onClick={handleLogout} disabled={isSubmitting}>
-              <LogOut className="w-4 h-4 mr-2" />Logout
+            <Button
+              variant="destructive"
+              className="flex items-center"
+              onClick={handleLogout}
+              disabled={isSubmitting}
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Logout
             </Button>
           </motion.div>
         </TabsContent>
@@ -241,7 +303,7 @@ const AccountPage = () => {
 
             {/* Store Pickup Orders */}
             <div className="p-6 border rounded-lg">
-              <h2 className="text-xl font-semibold mb-4">Store Pickup Orders</h2>
+              <h2 className="text-xl font-semibold mb-4">Grocery Run Summary</h2>
               {loadingOrders ? (
                 <div className="flex items-center justify-center h-40">
                   <div className="w-6 h-6 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>

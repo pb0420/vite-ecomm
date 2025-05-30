@@ -1,15 +1,14 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ChevronDown, ChevronUp, Package } from 'lucide-react';
+import { ChevronDown, ChevronUp, Package, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useOrders } from '@/contexts/OrderContext';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { formatCurrency } from '@/lib/utils';
 
-const OrderItem = ({ order }) => {
+const OrderItem = ({ order, onStatusChange, onDeliveryTimeChange }) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
-  const { updateOrderStatus } = useOrders();
   
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -33,7 +32,12 @@ const OrderItem = ({ order }) => {
   };
   
   const handleStatusChange = (value) => {
-    updateOrderStatus(order.id, value);
+    onStatusChange(order.id, value);
+  };
+
+  const handleDeliveryTimeChange = (e) => {
+    const newDateTime = e.target.value;
+    onDeliveryTimeChange(order.id, newDateTime);
   };
   
   return (
@@ -106,26 +110,42 @@ const OrderItem = ({ order }) => {
             </div>
             
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <h4 className="text-sm font-semibold">Order Status</h4>
-                <Select defaultValue={order.status} onValueChange={handleStatusChange}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="processing">Processing</SelectItem>
-                    <SelectItem value="delivered">Delivered</SelectItem>
-                    <SelectItem value="cancelled">Cancelled</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor={`status-${order.id}`}>Order Status</Label>
+                  <Select defaultValue={order.status} onValueChange={handleStatusChange}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="processing">Processing</SelectItem>
+                      <SelectItem value="delivered">Delivered</SelectItem>
+                      <SelectItem value="cancelled">Cancelled</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor={`delivery-time-${order.id}`} className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4" />
+                    Expected Delivery Time
+                  </Label>
+                  <Input
+                    id={`delivery-time-${order.id}`}
+                    type="datetime-local"
+                    value={order.expected_delivery_at ? new Date(order.expected_delivery_at).toISOString().slice(0, 16) : ''}
+                    onChange={handleDeliveryTimeChange}
+                    className="mt-1"
+                  />
+                </div>
               </div>
               
               <div className="mt-4">
                 <h4 className="text-sm font-semibold mb-2">Order Items</h4>
                 <div className="space-y-2">
-                  {order.items.map((item) => (
-                    <div key={item.id} className="flex justify-between p-2 rounded bg-background">
+                  {order.items.map((item, index) => (
+                    <div key={index} className="flex justify-between p-2 rounded bg-background">
                       <div className="flex items-center space-x-2">
                         <span className="text-sm font-medium">{item.name}</span>
                         <span className="text-xs text-muted-foreground">x{item.quantity}</span>

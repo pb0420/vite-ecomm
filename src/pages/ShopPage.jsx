@@ -21,11 +21,9 @@ const ShopPage = () => {
   const [loading, setLoading] = useState(true);
   const [filteredProducts, setFilteredProducts] = useState([]);
 
-  // Fetch products and categories from Supabase
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch products with category information
         const { data: productsData, error: productsError } = await supabase
           .from('products')
           .select(`
@@ -38,7 +36,6 @@ const ShopPage = () => {
 
         if (productsError) throw productsError;
 
-        // Fetch categories
         const { data: categoriesData, error: categoriesError } = await supabase
           .from('categories')
           .select('*')
@@ -61,12 +58,10 @@ const ShopPage = () => {
   useEffect(() => {
     let result = [...products];
     
-    // Filter by featured if specified in URL
     if (featuredParam === 'true') {
       result = result.filter(product => product.featured);
     }
     
-    // Filter by search term
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
       result = result.filter(product => 
@@ -75,12 +70,10 @@ const ShopPage = () => {
       );
     }
     
-    // Filter by category
     if (selectedCategory !== 'all') {
       result = result.filter(product => product.category_id === parseInt(selectedCategory));
     }
     
-    // Sort products
     switch (sortBy) {
       case 'name-asc':
         result.sort((a, b) => a.name.localeCompare(b.name));
@@ -112,104 +105,123 @@ const ShopPage = () => {
   }
 
   return (
-    <div className="container px-4 py-8 mx-auto md:px-6">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        <h1 className="text-3xl font-bold tracking-tight">
-          {featuredParam === 'true' ? 'Featured Products' : 'All Products'}
-        </h1>
-        <p className="mt-2 text-muted-foreground">
-          Browse our selection of fresh groceries and household essentials.
-        </p>
-      </motion.div>
-      
-      <div className="grid gap-6 mt-8 md:grid-cols-[250px_1fr]">
-        {/* Filters Sidebar */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.3, delay: 0.1 }}
-          className="space-y-6"
-        >
-          <div>
-            <h3 className="mb-2 text-lg font-medium">Search</h3>
-            <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Search products..."
-                className="pl-8"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-          </div>
-          
-          <div>
-            <h3 className="mb-2 text-lg font-medium">Categories</h3>
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                {categories.map(category => (
-                  <SelectItem key={category.id} value={category.id.toString()}>
-                    {category.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div>
-            <h3 className="mb-2 text-lg font-medium">Sort By</h3>
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger>
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="name-asc">Name (A-Z)</SelectItem>
-                <SelectItem value="name-desc">Name (Z-A)</SelectItem>
-                <SelectItem value="price-asc">Price (Low to High)</SelectItem>
-                <SelectItem value="price-desc">Price (High to Low)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <Button 
-            variant="outline" 
-            className="w-full"
-            onClick={() => {
-              setSearchTerm('');
-              setSelectedCategory('all');
-              setSortBy('name-asc');
-            }}
-          >
-            <Filter className="w-4 h-4 mr-2" />
-            Reset Filters
-          </Button>
-        </motion.div>
+    <div className="flex flex-col min-h-screen">
+      {/* Banner Section */}
+      <section className="relative h-[30vh] min-h-[200px] bg-[#F0E68C] overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src="https://images.pexels.com/photos/264636/pexels-photo-264636.jpeg" 
+            alt="Fresh groceries" 
+            className="w-full h-full object-cover opacity-20"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#2E8B57]/80 to-[#F0E68C]/50" />
+        </div>
         
-        {/* Products Grid */}
-        <div>
-          {filteredProducts.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-64 p-8 text-center border rounded-lg">
-              <h3 className="text-lg font-medium">No products found</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Try adjusting your search or filter criteria.
+        <div className="container relative h-full px-4 md:px-6">
+          <div className="flex flex-col justify-center h-full max-w-2xl">
+            <motion.div 
+              className="space-y-2"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <h1 className="text-3xl md:text-4xl font-bold text-white">
+                {featuredParam === 'true' ? 'Featured Products' : 'All Products'}
+              </h1>
+              <p className="text-white/90">
+                Browse our selection of fresh groceries and household essentials.
               </p>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      <div className="container px-4 py-8 mx-auto md:px-6">
+        <div className="grid gap-6 md:grid-cols-[250px_1fr]">
+          {/* Filters Sidebar */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+            className="space-y-6"
+          >
+            <div>
+              <h3 className="mb-2 text-lg font-medium">Search</h3>
+              <div className="relative">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Search products..."
+                  className="pl-8"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
             </div>
-          ) : (
-            <div className="product-grid">
-              {filteredProducts.map(product => (
-                <ProductCard key={product.id} product={product} />
-              ))}
+            
+            <div>
+              <h3 className="mb-2 text-lg font-medium">Categories</h3>
+              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  {categories.map(category => (
+                    <SelectItem key={category.id} value={category.id.toString()}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-          )}
+            
+            <div>
+              <h3 className="mb-2 text-lg font-medium">Sort By</h3>
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="name-asc">Name (A-Z)</SelectItem>
+                  <SelectItem value="name-desc">Name (Z-A)</SelectItem>
+                  <SelectItem value="price-asc">Price (Low to High)</SelectItem>
+                  <SelectItem value="price-desc">Price (High to Low)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <Button 
+              variant="outline" 
+              className="w-full"
+              onClick={() => {
+                setSearchTerm('');
+                setSelectedCategory('all');
+                setSortBy('name-asc');
+              }}
+            >
+              <Filter className="w-4 h-4 mr-2" />
+              Reset Filters
+            </Button>
+          </motion.div>
+          
+          {/* Products Grid */}
+          <div>
+            {filteredProducts.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-64 p-8 text-center border rounded-lg">
+                <h3 className="text-lg font-medium">No products found</h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Try adjusting your search or filter criteria.
+                </p>
+              </div>
+            ) : (
+              <div className="product-grid">
+                {filteredProducts.map(product => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -1,27 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Truck, Clock, ShieldCheck, MessageCircle, ShoppingBag, Gift, Cake, MapPin } from 'lucide-react';
+import { ArrowRight, Clock, ShieldCheck, MessageCircle, Handshake,ShoppingCart,CupSoda,EggFried,Cookie, Hamburger, Croissant, Apple, Banana, Beef, Candy, Fish, Utensils, Car, MapPinCheckInside  } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ProductCard from '@/components/products/ProductCard';
-import CategoryCard from '@/components/products/CategoryCard';
-import AiChatBot from '@/components/chat/AiChatBot';
 import { supabase } from '@/lib/supabaseClient';
-
-const CategoryIcon = ({ name }) => {
-  const icons = {
-    'Fruits & Vegetables': ShoppingBag,
-    'Dairy & Eggs': ShoppingBag,
-    'Bakery': Cake,
-    'Meat & Seafood': ShoppingBag,
-    'Pantry Staples': ShoppingBag,
-    'Beverages': ShoppingBag,
-    'Gift Packs': Gift,
-  };
-  
-  const IconComponent = icons[name] || ShoppingBag;
-  return <IconComponent className="w-6 h-6" />;
-};
 
 const HomePage = () => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -68,185 +51,177 @@ const HomePage = () => {
   const openWhatsApp = () => {
     window.open('https://wa.me/1234567890', '_blank');
   };
+
+  const iconClass = "w-8 h-8 text-primary";
+  const getCatIcon = (cName) => {
+     switch(cName.toLowerCase()){
+      case "beverages":
+      case "soda":
+      case "drinks":
+        return <CupSoda className={iconClass} />;
+      case "dairy & eggs":
+        return <EggFried className={iconClass} />;
+      case "cookies":
+      case "biscuits":
+        return <Cookie className={iconClass} />;
+      case "burgers":
+      case "fast food":
+        return <Hamburger className={iconClass} />;
+      case "bakery":
+        return <Croissant className={iconClass} />;
+      case "fruits":
+        return <Apple className={iconClass} />;
+      case "meat":
+        return <Beef className={iconClass} />;
+      case "confectionary":
+        return <Candy className={iconClass} />;
+      case "seafood":
+        return <Fish className={iconClass} />;
+      case "kitchen":
+        return <Utensils className={iconClass} />;
+      default:
+        return <Clock className={iconClass} />;
+     }
+  }
   
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <section className="hero-gradient py-16 md:py-24">
-        <div className="container px-4 md:px-6">
-          <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 items-center">
-            <div className="space-y-4">
-              <motion.div 
-                className="flex items-center text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                <span>Delivering now in</span>
-              </motion.div>
-              <motion.div
-                className="flex items-center text-3xl md:text-4xl text-primary font-bold"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-              >
-                <MapPin className="w-8 h-8 mr-2" />
-                <span>Adelaide</span>
-              </motion.div>
-              <motion.p 
-                className="max-w-[600px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-              >
-                Shop for fresh produce, pantry staples, and household essentials with fast delivery and exceptional quality.
-              </motion.p>
-              <motion.div 
-                className="flex flex-col gap-2 min-[400px]:flex-row"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-              >
+      <section className="relative h-[30vh] min-h-[300px] bg-[#F0E68C] overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src="https://images.pexels.com/photos/264636/pexels-photo-264636.jpeg" 
+            alt="Fresh groceries" 
+            className="w-full h-full object-cover opacity-20"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#2E8B57]/80 to-[#F0E68C]/50" />
+        </div>
+        
+        <div className="container relative h-full px-4 md:px-6">
+          <div className="flex flex-col justify-center h-full max-w-2xl">
+            <motion.div 
+              className="space-y-2"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <h1 className="text-2xl md:text-5xl font-bold text-white">
+                Delivering now &nbsp; </h1>
+                <h2 className="text-1xl md:text-3xl font-bold text-white"><button><MapPinCheckInside /></button> &nbsp;Adelaide </h2>
+              
+              <p className="text-xl text-white/90">
+               Get groceries and more delivered to your doorstep whenever you want.
+              </p>
+              <div className="flex flex-col gap-2 min-[400px]:flex-row pt-4">
                 <Link to="/shop">
-                  <Button size="lg" className="w-full min-[400px]:w-auto">
-                    Shop Now
+                  <Button size="lg" className="w-full min-[400px]:w-auto bg-[#2E8B69] hover:bg-[#2E8B57]/90">
+                   <ShoppingCart />&nbsp;  Shop Now
                   </Button>
                 </Link>
                 <Link to="/store-pickup">
-                  <Button size="lg" variant="outline" className="w-full min-[400px]:w-auto">
-                    Schedule Store Pickup
+                  <Button size="lg" variant="outline" className="w-full min-[400px]:w-auto bg-white/90 hover:bg-white">
+                   <Car />&nbsp; Schedule a Grocery Run
                   </Button>
                 </Link>
-              </motion.div>
-            </div>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="mx-auto w-full max-w-[500px] aspect-square rounded-xl overflow-hidden"
-            >
-              <img  
-                alt="Fresh groceries" 
-                className="w-full h-full object-cover" 
-                src="https://images.pexels.com/photos/264636/pexels-photo-264636.jpeg" 
-              />
+              </div>
             </motion.div>
           </div>
         </div>
       </section>
 
       {/* Categories Section */}
-      <section className="py-12 bg-background">
+      <section className="py-8 bg-background">
         <div className="container px-4 md:px-6">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold tracking-tight">Shop by Category</h2>
-            <Link to="/categories" className="text-primary hover:underline flex items-center">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold">Categories</h2>
+            <Link to="/categories" className="text-primary hover:underline text-sm flex items-center">
               View All <ArrowRight className="ml-1 h-4 w-4" />
             </Link>
           </div>
           
-          {loading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 animate-pulse">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="aspect-square bg-muted rounded-lg"></div>
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className="relative">
+            <div className="flex overflow-x-auto pb-4 space-x-4 scrollbar-hide">
               {categories.map((category) => (
                 <Link
                   key={category.id}
                   to={`/category/${category.id}`}
-                  className="group relative aspect-square bg-muted rounded-lg overflow-hidden hover:shadow-lg transition-all"
+                  className="flex-none w-24 group text-center"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/0" />
-                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-                    <div className="bg-white/90 rounded-full p-4 mb-2 group-hover:bg-primary group-hover:text-white transition-colors">
-                      <CategoryIcon name={category.name} />
-                    </div>
+                  <div className="w-16 h-16 mx-auto mb-2 rounded-full bg-muted/50 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                    {getCatIcon(category.name)}
                   </div>
-                  <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <h3 className="text-white text-sm font-medium text-center">{category.name}</h3>
-                  </div>
+                  <span className="text-xs font-medium block truncate">{category.name}</span>
                 </Link>
               ))}
             </div>
-          )}
+          </div>
         </div>
       </section>
 
       {/* Featured Products Section */}
-      <section className="py-12">
+      <section className="py-8">
         <div className="container px-4 md:px-6">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold tracking-tight">Featured Products</h2>
-            <Link to="/shop" className="text-primary hover:underline flex items-center">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold">Featured Products</h2>
+            <Link to="/shop" className="text-primary hover:underline text-sm flex items-center">
               View All <ArrowRight className="ml-1 h-4 w-4" />
             </Link>
           </div>
           
-          {loading ? (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="aspect-[4/5] bg-muted rounded-lg animate-pulse"></div>
-              ))}
-            </div>
-          ) : (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-              {featuredProducts.map(product => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          )}
+          <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
+            {featuredProducts.map(product => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-12 bg-muted/30">
+      <section className="py-8 bg-muted/30">
         <div className="container px-4 md:px-6">
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-3">
             <motion.div 
-              className="flex flex-col items-center text-center space-y-2 p-6 bg-background rounded-lg shadow-sm"
+              className="flex flex-col items-center text-center space-y-2 p-4 bg-background rounded-lg shadow-sm"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <div className="p-2 rounded-full bg-primary/10">
-                <Truck className="h-6 w-6 text-primary" />
+              <div className="p-2 rounded-full bg-[#2E8B57]/10">
+                <Clock className="h-5 w-5 text-[#2E8B57]" />
               </div>
-              <h3 className="text-lg font-medium">Fast Delivery</h3>
+              <h3 className="text-base font-medium">Convenience</h3>
               <p className="text-sm text-muted-foreground">
-                Get your groceries delivered within hours of ordering.
+                Get your groceries delivered right to your doorstep
               </p>
             </motion.div>
             
             <motion.div 
-              className="flex flex-col items-center text-center space-y-2 p-6 bg-background rounded-lg shadow-sm"
+              className="flex flex-col items-center text-center space-y-2 p-4 bg-background rounded-lg shadow-sm"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.1 }}
             >
-              <div className="p-2 rounded-full bg-primary/10">
-                <ShieldCheck className="h-6 w-6 text-primary" />
+              <div className="p-2 rounded-full bg-[#2E8B57]/10">
+                <ShieldCheck className="h-5 w-5 text-[#2E8B57]" />
               </div>
-              <h3 className="text-lg font-medium">Quality Guarantee</h3>
+              <h3 className="text-base font-medium">Quality</h3>
               <p className="text-sm text-muted-foreground">
-                We ensure the freshness and quality of all our products.
+                Strict quality assurance and control
               </p>
             </motion.div>
             
             <motion.div 
-              className="flex flex-col items-center text-center space-y-2 p-6 bg-background rounded-lg shadow-sm"
+              className="flex flex-col items-center text-center space-y-2 p-4 bg-background rounded-lg shadow-sm"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.2 }}
             >
-              <div className="p-2 rounded-full bg-primary/10">
-                <Clock className="h-6 w-6 text-primary" />
+              <div className="p-2 rounded-full bg-[#2E8B57]/10">
+                <Handshake className="h-5 w-5 text-[#2E8B57]" />
               </div>
-              <h3 className="text-lg font-medium">Convenient Shopping</h3>
+              <h3 className="text-base font-medium">Support</h3>
               <p className="text-sm text-muted-foreground">
-                Shop anytime, anywhere with our easy-to-use platform.
+                Super-fast customer support on WhatsApp
               </p>
             </motion.div>
           </div>
@@ -256,14 +231,11 @@ const HomePage = () => {
       {/* WhatsApp Button */}
       <Button
         onClick={openWhatsApp}
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg bg-green-500 hover:bg-green-600"
+        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg bg-[#25D366] hover:bg-[#25D366]/90"
         size="icon"
       >
-        <MessageCircle className="h-6 w-6" />
+        <MessageCircle className="h-6 w-6 text-white" />
       </Button>
-
-      {/* AI Shopping Assistant */}
-      <AiChatBot />
     </div>
   );
 };

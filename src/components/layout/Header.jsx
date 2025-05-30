@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Menu, X, User, LogOut, Package } from 'lucide-react';
@@ -7,11 +6,13 @@ import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Badge } from '@/components/ui/badge';
+import LoginDialog from '@/components/auth/LoginDialog';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
   const { getCartCount, toggleCart } = useCart();
-  const { user, isAdmin, logout, loading } = useAuth(); // Get loading state
+  const { user, isAdmin, logout, loading } = useAuth();
   const navigate = useNavigate();
 
   const cartCount = getCartCount();
@@ -34,14 +35,13 @@ const Header = () => {
     <header className="sticky top-0 z-40 w-full bg-white border-b shadow-sm">
       <div className="container flex items-center justify-between h-16 px-4 mx-auto md:px-6">
         <Link to="/" className="flex items-center space-x-2">
-          <span className="text-2xl font-bold text-primary">Groceroo</span>
+          <img src="/logo.png" alt="Groceroo Logo" style={{height: '90px'}} />
         </Link>
 
         <nav className="hidden md:flex md:items-center md:space-x-6">
-          {/* <Link to="/" className="text-sm font-medium transition-colors hover:text-primary">Home</Link> */}
+            <Link to="/store-pickup" className="text-sm font-medium transition-colors hover:text-primary">Grocery Run</Link>
           <Link to="/shop" className="text-sm font-medium transition-colors hover:text-primary">Shop</Link>
           <Link to="/categories" className="text-sm font-medium transition-colors hover:text-primary">Categories</Link>
-           <Link to="/store-pickup" className="text-sm font-medium transition-colors hover:text-primary">Store Pickup</Link>
           {isAdmin && (
             <Link to="/admin" className="text-sm font-medium transition-colors hover:text-primary">Admin Dashboard</Link>
           )}
@@ -55,23 +55,20 @@ const Header = () => {
             )}
           </Button>
 
-          {!loading && ( // Only show auth buttons when not loading
+          {!loading && (
             user ? (
               <div className="hidden md:flex md:items-center md:space-x-2">
                 <Link to="/account">
                   <Button variant="ghost" size="sm" className="flex items-center space-x-1">
                     <User className="w-4 h-4" />
-                    <span>{user.name?.split(' ')[0] || 'Account'}</span>
+                    <span>{user.name?.split(' ')[0] || 'My Account'}</span>
                   </Button>
                 </Link>
-                <Button variant="ghost" size="icon" onClick={handleLogout}>
-                  <LogOut className="w-4 h-4" />
-                </Button>
               </div>
             ) : (
-              <Link to="/login" className="hidden md:block">
-                <Button variant="outline" size="sm">Sign In</Button>
-              </Link>
+              <Button variant="outline" size="sm" onClick={() => setIsLoginOpen(true)}>
+                Sign In
+              </Button>
             )
           )}
 
@@ -115,7 +112,7 @@ const Header = () => {
                   </Link>
                 )}
 
-                {!loading && ( // Only show auth buttons when not loading
+                {!loading && (
                   user ? (
                     <>
                       <Link to="/account" className="flex items-center space-x-2 text-sm" onClick={closeMenu}>
@@ -126,7 +123,7 @@ const Header = () => {
                       </Button>
                     </>
                   ) : (
-                    <Link to="/login" onClick={closeMenu}><Button className="w-full">Sign In</Button></Link>
+                    <Button onClick={() => { closeMenu(); setIsLoginOpen(true); }}>Sign In</Button>
                   )
                 )}
               </div>
@@ -134,9 +131,10 @@ const Header = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <LoginDialog open={isLoginOpen} onOpenChange={setIsLoginOpen} />
     </header>
   );
 };
 
 export default Header;
-  

@@ -87,21 +87,21 @@ const Footer = () => {
           </div>
 
           <div className="space-y-4">
-            <h4 className="text-sm font-semibold">Account</h4>
+            <h4 className="text-sm font-semibold">More</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link to="/login" className="text-gray-600 hover:text-primary">
-                  Customer Sign In
+                <Link to="/account" className="text-gray-600 hover:text-primary">
+                  My account
                 </Link>
               </li>
               <li>
-                <Link to="/register" className="text-gray-600 hover:text-primary">
-                  Register
+                <Link to="/account" className="text-gray-600 hover:text-primary">
+                  Contact Us
                 </Link>
               </li>
               <li>
-                <Link to="/account/orders" className="text-gray-600 hover:text-primary">
-                  Order History
+                <Link to="/account" className="text-gray-600 hover:text-primary">
+                  Work
                 </Link>
               </li>
             </ul>
@@ -125,12 +125,6 @@ const Footer = () => {
               <Link to="/terms" className="hover:text-primary">
                 Terms of Service
               </Link>
-              <Link to="/cookies" className="hover:text-primary">
-                Cookie Policy
-              </Link>
-              <button onClick={clearStorage} className="hover:text-red-500 text-xs">
-                Clear Storage
-              </button>
             </div>
           </div>
         </div>

@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -62,8 +61,8 @@
 
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
 }
 
 .hero-gradient {
@@ -88,25 +87,13 @@
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
-.cart-item-enter {
-  opacity: 0;
-  transform: translateX(-20px);
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-.cart-item-enter-active {
-  opacity: 1;
-  transform: translateX(0);
-  transition: opacity 300ms, transform 300ms;
-}
-
-.cart-item-exit {
-  opacity: 1;
-}
-
-.cart-item-exit-active {
-  opacity: 0;
-  transform: translateX(20px);
-  transition: opacity 300ms, transform 300ms;
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
 
 .order-status-pending {

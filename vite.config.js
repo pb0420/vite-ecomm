@@ -173,11 +173,7 @@ console.warn = () => {};
 export default defineConfig({
 	plugins: [react(), addTransformIndexHtml],
 	server: {
-		cors: true,
-		headers: {
-			'Cross-Origin-Embedder-Policy': 'credentialless',
-		},
-		allowedHosts: true,
+		port:4242
 	},
 	resolve: {
 		extensions: ['.jsx', '.js', '.tsx', '.ts', '.json', ],
