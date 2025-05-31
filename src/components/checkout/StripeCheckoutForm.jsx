@@ -1,20 +1,17 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { Button } from '@/components/ui/button';
-import { useCart } from '@/contexts/CartContext';
+import { toast } from '@/components/ui/use-toast';
 
-const stripePromise = loadStripe("pk_test_51RU0DpAcyZwL9ZCroHLDNCalx80u736eoFCb3mNARKz2BpDuDhl2VgtPJWp8t0jkaitH7zXOFDiE7B3q95rNColr00V7gqABTc",{
+const stripePromise = loadStripe("pk_test_51RU0DpAcyZwL9ZCroHLDNCalx80u736eoFCb3mNARKz2BpDuDhl2VgtPJWp8t0jkaitH7zXOFDiE7B3q95rNColr00V7gqABTc", {
   stripeAccount: 'acct_1RU0DpAcyZwL9ZCr'
 });
 
-const CheckoutForm = () => {
+const CheckoutForm = ({ onPaymentSuccess }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-  const { clearCart } = useCart();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -50,14 +47,18 @@ const CheckoutForm = () => {
       const result = await response.json();
 
       if (result.success) {
-        clearCart();
-        navigate(`/order-confirmation/${result.orderId}`);
+        await onPaymentSuccess(result.orderData);
+        toast({ title: "Payment Successful", description: "Your order has been placed successfully." });
       } else {
-        throw new Error(result.error);
+        throw new Error(result.error || 'Payment verification failed');
       }
     } catch (error) {
       console.error('Payment error:', error);
-      alert(error.message);
+      toast({ 
+        variant: "destructive", 
+        title: "Payment Failed", 
+        description: error.message 
+      });
     } finally {
       setLoading(false);
     }
@@ -73,7 +74,7 @@ const CheckoutForm = () => {
   );
 };
 
-const StripeCheckoutForm = ({ clientSecret }) => {
+const StripeCheckoutForm = ({ clientSecret, onPaymentSuccess }) => {
   if (!clientSecret) {
     return null;
   }
@@ -91,7 +92,7 @@ const StripeCheckoutForm = ({ clientSecret }) => {
         },
       }}
     >
-      <CheckoutForm />
+      <CheckoutForm onPaymentSuccess={onPaymentSuccess} />
     </Elements>
   );
 };

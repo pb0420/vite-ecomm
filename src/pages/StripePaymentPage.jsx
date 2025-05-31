@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '@/contexts/CartContext';
+import { useOrders } from '@/contexts/OrderContext';
 import StripeCheckoutForm from '@/components/checkout/StripeCheckoutForm';
 import { formatCurrency } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
@@ -8,6 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 const StripePaymentPage = () => {
   const { user } = useAuth();
   const { cart, getCartTotal } = useCart();
+  const { addOrder } = useOrders();
   const navigate = useNavigate();
   const location = useLocation();
   const [clientSecret, setClientSecret] = useState(null);
@@ -35,7 +37,7 @@ const StripePaymentPage = () => {
           },
           body: JSON.stringify({
             productIds,
-            user_id:user.id,
+            user_id: user.id,
             deliveryFee: location.state?.deliveryFee || 0,
             customerDetails: location.state?.customerDetails || {},
             deliveryType: location.state?.deliveryType || 'express',
@@ -58,7 +60,25 @@ const StripePaymentPage = () => {
     };
 
     createPaymentIntent();
-  }, [cart, navigate, location.state]);
+  }, [cart, navigate, location.state, user.id]);
+
+  const handlePaymentSuccess = async (orderData) => {
+    try {
+      const order = await addOrder({
+        items: cart,
+        total: getCartTotal() + (location.state?.deliveryFee || 0),
+        customer: location.state?.customerDetails || {},
+        deliveryType: location.state?.deliveryType || 'express',
+        scheduledDeliveryTime: location.state?.scheduledTime || null,
+        deliveryFee: location.state?.deliveryFee || 0,
+      });
+      
+      navigate(`/order-confirmation/${order.id}`);
+    } catch (error) {
+      console.error('Error creating order:', error);
+      setError('Failed to create order. Please contact support.');
+    }
+  };
 
   if (loading) {
     return (
@@ -86,9 +106,12 @@ const StripePaymentPage = () => {
       <div className="max-w-md mx-auto">
         <div className="mb-6 p-4 border rounded-lg bg-muted/30">
           <p className="text-sm text-muted-foreground mb-2">Order Total</p>
-          <p className="text-2xl font-bold">{formatCurrency(getCartTotal())}</p>
+          <p className="text-2xl font-bold">{formatCurrency(getCartTotal() + (location.state?.deliveryFee || 0))}</p>
         </div>
-        <StripeCheckoutForm clientSecret={clientSecret} />
+        <StripeCheckoutForm 
+          clientSecret={clientSecret} 
+          onPaymentSuccess={handlePaymentSuccess}
+        />
       </div>
     </div>
   );
