@@ -34,7 +34,7 @@ const StripePaymentPage = () => {
           },
           body: JSON.stringify({
             productIds,
-            user_id:user.user_id,
+            user_id:user.id,
             deliveryFee: location.state?.deliveryFee || 0,
             customerDetails: location.state?.customerDetails || {},
             deliveryType: location.state?.deliveryType || 'express',
