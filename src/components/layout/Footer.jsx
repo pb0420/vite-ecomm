@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Instagram, Twitter, ShieldAlert } from 'lucide-react'; // Changed LogIn to ShieldAlert for admin
+import { Facebook, Instagram, Twitter, ShieldAlert, Mail, Phone } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -37,6 +36,16 @@ const Footer = () => {
                 <Twitter className="w-5 h-5" />
               </a>
             </div>
+            <div className="space-y-2">
+              <div className="flex items-center text-gray-600">
+                <Mail className="w-4 h-4 mr-2" />
+                <span>contact@groceroo.com.au</span>
+              </div>
+              <div className="flex items-center text-gray-600">
+                <Phone className="w-4 h-4 mr-2" />
+                <span>+61 478 477 036</span>
+              </div>
+            </div>
           </div>
 
           <div className="space-y-4">
@@ -69,8 +78,8 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/faq" className="text-gray-600 hover:text-primary">
-                  FAQ
+                <Link to="/work" className="text-gray-600 hover:text-primary">
+                  Work With Us
                 </Link>
               </li>
               <li>
@@ -95,12 +104,12 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/account" className="text-gray-600 hover:text-primary">
+                <Link to="/contact" className="text-gray-600 hover:text-primary">
                   Contact Us
                 </Link>
               </li>
               <li>
-                <Link to="/account" className="text-gray-600 hover:text-primary">
+                <Link to="/work" className="text-gray-600 hover:text-primary">
                   Work
                 </Link>
               </li>

@@ -14,7 +14,6 @@ import CartDrawer from '@/components/cart/CartDrawer';
 import { Toaster } from '@/components/ui/toaster';
 import StripeCheckoutForm from '@/components/checkout/StripeCheckoutForm';
 
-
 // Pages
 import HomePage from '@/pages/HomePage';
 import ShopPage from '@/pages/ShopPage';
@@ -32,6 +31,9 @@ import StorePickupPage from '@/pages/StorePickupPage';
 import PrivacyPage from '@/pages/PrivacyPage';
 import TermsPage from '@/pages/TermsPage';
 import StripePaymentPage from '@/pages/StripePaymentPage';
+import ContactPage from '@/pages/ContactPage';
+import WorkPage from '@/pages/WorkPage';
+
 const App = () => {
   return (
     <AuthProvider>
@@ -58,8 +60,9 @@ const App = () => {
                     <Route path="/admin" element={<AdminPage />} />
                     <Route path="/privacy" element={<PrivacyPage />} />
                     <Route path="/terms" element={<TermsPage />} />
-                    <Route path="/stripe-payment" element={
-  <StripePaymentPage /> } />
+                    <Route path="/stripe-payment" element={<StripePaymentPage />} />
+                    <Route path="/contact" element={<ContactPage />} />
+                    <Route path="/work" element={<WorkPage />} />
                   </Routes>
                 </AnimatePresence>
               </main>
