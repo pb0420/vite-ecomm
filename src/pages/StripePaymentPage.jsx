@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '@/contexts/CartContext';
 import StripeCheckoutForm from '@/components/checkout/StripeCheckoutForm';
 import { formatCurrency } from '@/lib/utils';
+import { useAuth } from '@/contexts/AuthContext';
 
 const StripePaymentPage = () => {
   const { user } = useAuth();
