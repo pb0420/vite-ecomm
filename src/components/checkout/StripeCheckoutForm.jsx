@@ -36,7 +36,7 @@ const CheckoutForm = () => {
       }
 
       // Verify payment status
-      const response = await fetch('https://bcbxcnxutotjzmdjeyde.supabase.co/functions/v1/verify-payment', {
+      const response = await fetch('https://bcbxcnxutotjzmdjeyde.supabase.co/functions/v1/verify-stripe-payment', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
