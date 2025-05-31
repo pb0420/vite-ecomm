@@ -5,6 +5,7 @@ import StripeCheckoutForm from '@/components/checkout/StripeCheckoutForm';
 import { formatCurrency } from '@/lib/utils';
 
 const StripePaymentPage = () => {
+  const { user } = useAuth();
   const { cart, getCartTotal } = useCart();
   const navigate = useNavigate();
   const location = useLocation();
@@ -33,6 +34,7 @@ const StripePaymentPage = () => {
           },
           body: JSON.stringify({
             productIds,
+            user_id:user.user_id,
             deliveryFee: location.state?.deliveryFee || 0,
             customerDetails: location.state?.customerDetails || {},
             deliveryType: location.state?.deliveryType || 'express',
