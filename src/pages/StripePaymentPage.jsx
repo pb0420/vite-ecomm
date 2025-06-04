@@ -8,7 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 
 const StripePaymentPage = () => {
   const { user } = useAuth();
-  const { cart, getCartTotal } = useCart();
+  const { cart, getCartTotal, clearCart } = useCart();
   const { addOrder } = useOrders();
   const navigate = useNavigate();
   const location = useLocation();
@@ -24,11 +24,11 @@ const StripePaymentPage = () => {
 
     const createPaymentIntent = async () => {
       try {
-        const productIds = cart.map(item => ({
+        const productList = cart.map(item => ({
           id: item.id,
           quantity: item.quantity
         }));
-
+        const orderData = location.state?.orderData;
         const response = await fetch('https://bcbxcnxutotjzmdjeyde.supabase.co/functions/v1/create-checkout-session', {
           method: 'POST',
           headers: {
@@ -36,12 +36,11 @@ const StripePaymentPage = () => {
             'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjYnhjbnh1dG90anptZGpleWRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY0NjIwODksImV4cCI6MjA2MjAzODA4OX0.sMIn31DXRvBpQsxYZV2nn1lKqdEkEk2S0jvdve2yACY'
           },
           body: JSON.stringify({
-            productIds,
+            productList,
             user_id: user.id,
-            deliveryFee: location.state?.deliveryFee || 0,
-            customerDetails: location.state?.customerDetails || {},
-            deliveryType: location.state?.deliveryType || 'express',
-            scheduledTime: location.state?.scheduledTime || null
+            orderData
+            // delivery_type: location.state?.deliveryType || 'express',
+            // scheduled_delivery_time: location.state?.scheduledTime || null
           })
         });
 
@@ -62,17 +61,12 @@ const StripePaymentPage = () => {
     createPaymentIntent();
   }, [cart, navigate, location.state, user.id]);
 
-  const handlePaymentSuccess = async (orderData) => {
+  const handlePaymentSuccess = async (data) => {
     try {
-      const order = await addOrder({
-        items: cart,
-        total: getCartTotal() + (location.state?.deliveryFee || 0),
-        customer: location.state?.customerDetails || {},
-        deliveryType: location.state?.deliveryType || 'express',
-        scheduledDeliveryTime: location.state?.scheduledTime || null,
-        deliveryFee: location.state?.deliveryFee || 0,
-      });
-      
+      const orderData = data.orderData;
+      console.log('Order Data:', JSON.parse(orderData));
+      const order = await addOrder(JSON.parse(orderData));
+      clearCart();
       navigate(`/order-confirmation/${order.id}`);
     } catch (error) {
       console.error('Error creating order:', error);

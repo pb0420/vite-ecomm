@@ -1,116 +1,109 @@
-import { createClient } from 'npm:@supabase/supabase-js@2.39.0';
-import Stripe from 'npm:stripe@13.6.0';
-
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "jsr:@supabase/supabase-js@2";
+import Stripe from "npm:stripe@latest";
+const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY"), {
+  apiVersion: '2025-03-31.basil'
+});
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type'
 };
-
-interface CartItem {
-  id: string;
-  quantity: number;
-}
-
-interface RequestBody {
-  productIds: CartItem[];
-  deliveryFee: number;
-  customerDetails: {
-    name: string;
-    email: string;
-    phone: string;
-    address: string;
-  };
-  deliveryNotes?: string;
-  deliveryType: string;
-  scheduledTime?: string;
-}
-
-Deno.serve(async (req) => {
+Deno.serve(async (req)=>{
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response('ok', {
+      headers: corsHeaders
+    });
   }
-
   try {
-    const { STRIPE_SECRET_KEY, SUPABASE_URL, SUPABASE_ANON_KEY } = Deno.env.toObject();
-    const stripe = new Stripe(STRIPE_SECRET_KEY, {
-      apiVersion: '2023-10-16',
-    });
-
+    const { SUPABASE_URL, SUPABASE_ANON_KEY } = Deno.env.toObject();
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    const { productIds, deliveryFee, customerDetails, deliveryNotes, deliveryType, scheduledTime } = await req.json() as RequestBody;
-
+    const { productList, user_id, orderData } = await req.json();
     // Fetch products from Supabase
-    const { data: products, error: productsError } = await supabase
-      .from('products')
-      .select('*')
-      .in('id', productIds.map(item => item.id));
-
+    const { data: products, error: productsError } = await supabase.from('products').select('*').in('id', productList.map((item)=>item.id));
     if (productsError) throw productsError;
-
-    // Create Stripe line items from products with quantities
-    const lineItems = products.map(product => {
-      const cartItem = productIds.find(item => item.id === product.id);
-      return {
+    // Fetch delivery fee based on delivery type
+    let deliveryFee = 0;
+    if (orderData && orderData.delivery_type) {
+      const feeColumn = `${orderData.delivery_type}_fee`;
+      const { data: deliverySettings, error: deliveryError } = await supabase.from('delivery_settings').select(feeColumn).single();
+      if (deliveryError) {
+        console.error("Error fetching delivery fee:", deliveryError);
+      // Fallback or throw error if fee cannot be fetched
+      // For now, we'll proceed with 0 fee if fetching fails
+      } else {
+        deliveryFee = deliverySettings ? deliverySettings[feeColumn] : 0;
+      }
+    }
+    // Create Stripe line items and items array for metadata
+    const lineItems = [];
+    const items = [];
+    products.forEach((product)=>{
+      const cartItem = productList.find((item)=>item.id === product.id);
+      const quantity = cartItem?.quantity || 1;
+      lineItems.push({
         price_data: {
-          currency: 'usd',
+          currency: 'aud',
           product_data: {
-            name: product.name,
+            name: product.name
           },
-          unit_amount: Math.round(product.price * 100), // Convert to cents
+          unit_amount: Math.round(product.price * 100)
         },
-        quantity: cartItem?.quantity || 1,
-      };
+        quantity: quantity
+      });
+      items.push({
+        name: product.name,
+        quantity: quantity
+      });
     });
-
+    if (deliveryFee === 0) {
+      deliveryFee = 9.99; // Default delivery fee if not specified
+    }
     // Add delivery fee as a separate line item
     if (deliveryFee > 0) {
       lineItems.push({
         price_data: {
-          currency: 'usd',
+          currency: 'aud',
           product_data: {
-            name: `${deliveryType} Delivery Fee`,
+            name: `${orderData.delivery_type} Delivery Fee`
           },
-          unit_amount: Math.round(deliveryFee * 100),
+          unit_amount: Math.round(deliveryFee * 100)
         },
-        quantity: 1,
+        quantity: 1
       });
     }
-
     // Calculate total amount
-    const amount = lineItems.reduce((total, item) => {
-      return total + (item.price_data.unit_amount * item.quantity);
+    const amount = lineItems.reduce((total, item)=>{
+      return total + item.price_data.unit_amount * item.quantity;
     }, 0);
-
     // Create payment intent
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
-      currency: 'usd',
+      currency: 'aud',
       metadata: {
-        customer_name: customerDetails.name,
-        customer_phone: customerDetails.phone,
-        customer_email: customerDetails.email,
-        customer_address: customerDetails.address,
-        delivery_notes: deliveryNotes || '',
-        delivery_type: deliveryType,
-        scheduled_time: scheduledTime || '',
-      },
+        user_id: user_id,
+        orderData: JSON.stringify(orderData),
+        items: JSON.stringify(items),
+        total: amount / 100
+      }
     });
-
-    return new Response(
-      JSON.stringify({ clientSecret: paymentIntent.client_secret }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      },
-    );
+    return new Response(JSON.stringify({
+      clientSecret: paymentIntent.client_secret
+    }), {
+      headers: {
+        ...corsHeaders,
+        'Content-Type': 'application/json'
+      }
+    });
   } catch (error) {
     console.error('Error:', error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      },
-    );
+    return new Response(JSON.stringify({
+      error: error.message
+    }), {
+      status: 400,
+      headers: {
+        ...corsHeaders,
+        'Content-Type': 'application/json'
+      }
+    });
   }
 });

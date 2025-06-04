@@ -21,17 +21,19 @@ export const OrderProvider = ({ children }) => {
         .from('orders')
         .insert({
           user_id: orderInput.user_id || null,
-          customer_name: orderInput.customer.name,
-          customer_email: orderInput.customer.email,
-          customer_phone: orderInput.customer.phone,
-          customer_address: orderInput.customer.address,
-          delivery_notes: orderInput.deliveryNotes,
+          customer_name: orderInput.customer_name,
+          customer_email: orderInput.customer_email,
+          customer_phone: orderInput.customer_phone,
+          customer_address: orderInput.customer_address,
+          customer_postcode: orderInput.customer_postcode,
+          delivery_notes: orderInput.delivery_notes,
           total: orderInput.total,
           status: 'pending',
-          delivery_type: orderInput.deliveryType,
-          scheduled_delivery_time: orderInput.scheduledDeliveryTime,
-          delivery_fee: orderInput.deliveryFee,
-          items: orderInput.items
+          delivery_type: orderInput.delivery_type,
+          scheduled_delivery_time: orderInput.scheduled_delivery_time,
+          delivery_fee: orderInput.delivery_fee,
+          items: orderInput.items,
+          payment_data:orderInput.payment_data
         })
         .select()
         .single();

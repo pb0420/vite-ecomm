@@ -88,6 +88,18 @@ const CheckoutPage = () => {
     );
   }
 
+  const orderData = {
+    customer_name: customerDetails.name,
+    customer_email: customerDetails.email,
+    customer_phone: customerDetails.phone,
+    customer_address: customerDetails.address,
+    customer_postcode: customerDetails.postcode,
+    customer_city: customerDetails.city,
+    delivery_notes: customerDetails.deliveryNotes,
+    delivery_type: deliveryDetails.type,
+    scheduled_delivery_time: deliveryDetails.scheduledTime,
+  };
+
   return (
     <div className="container px-4 py-8 mx-auto md:px-6">
       <motion.div 
@@ -141,7 +153,7 @@ const CheckoutPage = () => {
          
         </div>
 
-               <div style={{marginTop:'20px'}}><Button onClick={() => navigate('/stripe-payment')} disabled={!user || !termsAccepted}> Proceed to Payment &nbsp; <CreditCard /></Button>
+               <div style={{marginTop:'20px'}}><Button onClick={() => navigate('/stripe-payment',{state: {orderData:orderData,deliveryFee:deliveryDetails.fee}})} disabled={!user || !termsAccepted }> Proceed to Payment &nbsp; <CreditCard /></Button>
           {/* <p style={{ marginTop:'-25px',fontSize:'8px'}}>Secure payment powered by Stripe</p> */}
                  </div>
         

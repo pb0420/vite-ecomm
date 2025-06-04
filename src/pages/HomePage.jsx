@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Clock, ShieldCheck, MessageCircle, Handshake,ShoppingCart,CupSoda,EggFried,Cookie, Hamburger, Croissant, Apple, Banana, Beef, Candy, Fish, Utensils, Car, MapPinCheckInside  } from 'lucide-react';
+import { ArrowRight, Clock, ShieldCheck, MessageCircle, Handshake,ShoppingCart,CupSoda,EggFried,Cookie, Hamburger, Croissant, Apple, Banana, Beef, Candy, Fish, Utensils, Car, MapPinCheckInside, Truck, Store  } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ProductCard from '@/components/products/ProductCard';
 import { supabase } from '@/lib/supabaseClient';
@@ -31,8 +31,7 @@ const HomePage = () => {
         const { data: categoriesData, error: categoriesError } = await supabase
           .from('categories')
           .select('*')
-          .order('name')
-          .limit(6);
+          .order('name');
 
         if (categoriesError) throw categoriesError;
 
@@ -90,11 +89,11 @@ const HomePage = () => {
       <section className="relative h-[30vh] min-h-[300px] bg-[#F0E68C] overflow-hidden">
         <div className="absolute inset-0">
           <img 
-            src="https://images.pexels.com/photos/264636/pexels-photo-264636.jpeg" 
+            src="/banner_bg.jpg" 
             alt="Fresh groceries" 
-            className="w-full h-full object-cover opacity-20"
+            className="w-full h-full object-cover opacity-70"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#2E8B57]/80 to-[#F0E68C]/50" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#99C54F]/80 to-[#FFD580]/50" />
         </div>
         
         <div className="container relative h-full px-4 md:px-6">
@@ -106,21 +105,21 @@ const HomePage = () => {
               transition={{ duration: 0.5 }}
             >
               <h1 className="text-2xl md:text-5xl font-bold text-white">
-                Delivering now &nbsp; </h1>
+                Delivering now ...<button><Truck /></button> &nbsp; </h1>
                 <h2 className="text-1xl md:text-3xl font-bold text-white"><button><MapPinCheckInside /></button> &nbsp;Adelaide </h2>
               
               <p className="text-xl text-white/90">
-               Get groceries and more delivered to your doorstep whenever you want.
+               Get groceries and much more delivered to your doorstep!
               </p>
               <div className="flex flex-col gap-2 min-[400px]:flex-row pt-4">
                 <Link to="/shop">
-                  <Button size="lg" className="w-full min-[400px]:w-auto bg-[#2E8B69] hover:bg-[#2E8B57]/90">
-                   <ShoppingCart />&nbsp;  Shop Now
+                  <Button size="lg" className="w-full min-[400px]:w-auto bg-[#fd7507] hover:bg-[#fd7507]/90">
+                   <ShoppingCart />&nbsp;  Quick Shop
                   </Button>
                 </Link>
                 <Link to="/store-pickup">
                   <Button size="lg" variant="outline" className="w-full min-[400px]:w-auto bg-white/90 hover:bg-white">
-                   <Car />&nbsp; Schedule a Grocery Run
+                   <Store />&nbsp; Schedule a Grocery Run
                   </Button>
                 </Link>
               </div>
@@ -147,8 +146,9 @@ const HomePage = () => {
                   to={`/category/${category.id}`}
                   className="flex-none w-24 group text-center"
                 >
-                  <div className="w-16 h-16 mx-auto mb-2 rounded-full bg-muted/50 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                    {getCatIcon(category.name)}
+                  <div className="w-16 h-16 mx-auto mb-2 bg-muted/50 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                    {/* {getCatIcon(category.name)} */}
+                     <img src={category.icon_url || getCatIcon(category.name)} alt="Fresh groceries" className="w-full h-full object-cover "/>
                   </div>
                   <span className="text-xs font-medium block truncate">{category.name}</span>
                 </Link>

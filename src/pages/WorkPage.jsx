@@ -52,10 +52,10 @@ const WorkPage = () => {
       >
         <h1 className="text-3xl font-bold mb-2">Work With Us</h1>
         <p className="text-muted-foreground mb-8">
-          Join our team and be part of Adelaide's fastest-growing grocery delivery service.
+          Join our team and be part of Adelaide's growing grocery delivery service.
         </p>
 
-        <div className="grid gap-6 md:grid-cols-2 mb-8">
+        {/* <div className="grid gap-6 md:grid-cols-2 mb-8">
           <div className="p-6 border rounded-lg">
             <div className="p-3 rounded-full bg-primary/10 w-fit mb-4">
               <Car className="w-6 h-6 text-primary" />
@@ -81,7 +81,7 @@ const WorkPage = () => {
               <li>• Career growth opportunities</li>
             </ul>
           </div>
-        </div>
+        </div> */}
 
         <div className="p-6 border rounded-lg">
           <h2 className="text-xl font-semibold mb-4">Expression of Interest</h2>

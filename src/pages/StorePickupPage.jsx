@@ -168,11 +168,11 @@ const StorePickupPage = () => {
       <section className="relative h-[30vh] min-h-[200px] bg-[#F0E68C] overflow-hidden">
         <div className="absolute inset-0">
           <img 
-            src="https://images.pexels.com/photos/264636/pexels-photo-264636.jpeg" 
-            alt="Store pickup service" 
+            src="/banner_bg.jpg" 
+            alt="Fresh groceries" 
             className="w-full h-full object-cover opacity-20"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#2E8B57]/80 to-[#F0E68C]/50" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#99C54F]/80 to-[#FFD580]/50" />
         </div>
         
         <div className="container relative h-full px-4 md:px-6">
@@ -233,7 +233,7 @@ const StorePickupPage = () => {
           <div className="grid gap-12"> 
             <Card>
               <CardHeader>
-                <CardTitle>Schedule a delivery</CardTitle>
+                <CardTitle>Schedule a Run</CardTitle>
                 <CardDescription>
                   Fill in your details below
                 </CardDescription>
@@ -430,7 +430,7 @@ const StorePickupPage = () => {
                   {!user ? (
                     <PhoneLoginForm onSuccess={() => {}} />
                   ) : (
-                    <Button type="submit" className="w-full">Schedule Pickup</Button>
+                    <Button type="submit" className="w-full">Submit</Button>
                   )}
                 </form>
               </CardContent>
