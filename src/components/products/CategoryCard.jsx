@@ -17,7 +17,7 @@ const CategoryCard = ({ category }) => {
           <img  
             alt={category.name}
             className="w-full h-full object-cover"
-            src={category.image_url || "https://images.unsplash.com/photo-1491696888587-6a2c0225c9fb"} 
+            src={category.icon_url || "https://images.unsplash.com/photo-1491696888587-6a2c0225c9fb"} 
           />
         </div>
         
