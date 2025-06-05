@@ -93,7 +93,7 @@ const PhoneLoginForm = ({ onSuccess }) => {
             <Input
               id="phone"
               type="tel"
-              placeholder="412 345 678"
+              placeholder="04XXXXXXXX"
               value={phoneNumber.replace(/^\+61/, '')}
               onChange={(e) => setPhoneNumber(e.target.value)}
               disabled={loading}
