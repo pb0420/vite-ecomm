@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import CheckoutForm from '@/components/checkout/CheckoutForm';
 import OrderSummary from '@/components/checkout/OrderSummary';
 import DeliveryOptions from '@/components/checkout/DeliveryOptions';
@@ -14,23 +16,26 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/supabaseClient';
 import { formatCurrency } from '@/lib/utils';
-import { Label } from '@/components/ui/label';
 import { Link } from 'react-router-dom';
 import { CreditCard } from 'lucide-react';
-
 
 const CheckoutPage = () => {
   const { cart, getCartTotal, clearCart } = useCart();
   const { addOrder } = useOrders();
-  const { user } = useAuth();
+  const { user, updateUserInfo } = useAuth();
   const navigate = useNavigate();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deliveryDetails, setDeliveryDetails] = useState({ type: 'express', fee: 0, scheduledTime: null });
   const [customerDetails, setCustomerDetails] = useState({ name: '', email: '', phone: '', address: '', deliveryNotes: '' });
   const [formErrors, setFormErrors] = useState({});
-   const [termsAccepted, setTermsAccepted] = useState(false);
-
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [showAccountSetup, setShowAccountSetup] = useState(false);
+  const [accountDetails, setAccountDetails] = useState({
+    name: '',
+    address: '',
+    postcode: ''
+  });
 
   useEffect(() => {
     const fetchInitialFee = async () => {
@@ -48,37 +53,40 @@ const CheckoutPage = () => {
       }
     };
 
-    const checkIfAccountSet = async () => {
-      
-    }
-    
+    const checkIfAccountSet = () => {
+      if (user) {
+        const isAccountIncomplete = !user.name || !user.addresses || user.addresses.length === 0;
+        setShowAccountSetup(isAccountIncomplete);
+        if (!isAccountIncomplete) {
+          // Set cookie to remember account is set up
+          document.cookie = "accountSetup=true; max-age=86400"; // 24 hours
+        }
+      }
+    };
+
     fetchInitialFee();
-  }, []);
+    checkIfAccountSet();
+  }, [user]);
 
-  const handleDeliveryChange = useCallback((details) => {
-    setDeliveryDetails(details);
-  }, []);
-
-  const handleDetailsChange = useCallback((details) => {
-    setCustomerDetails(details);
-  }, []);
-
-  const validateCheckoutForm = () => {
-    const errors = {};
-    if (!customerDetails.name.trim()) errors.name = 'Name is required';
-    if (!customerDetails.phone.trim()) errors.phone = 'Phone number is required';
-    if (!customerDetails.address.trim()) errors.address = 'Address is required';
-    if (customerDetails.email && !/\S+@\S+\.\S+/.test(customerDetails.email)) {
-      errors.email = 'Email is invalid';
+  const handleAccountSetup = async (e) => {
+    e.preventDefault();
+    try {
+      await updateUserInfo({
+        name: accountDetails.name,
+        addresses: [{
+          id: Date.now().toString(),
+          label: 'Default',
+          address: accountDetails.address,
+          postcode: accountDetails.postcode
+        }]
+      });
+      setShowAccountSetup(false);
+      document.cookie = "accountSetup=true; max-age=86400";
+      toast({ title: "Success", description: "Account details updated successfully" });
+    } catch (error) {
+      console.error('Error updating account:', error);
+      toast({ variant: "destructive", title: "Error", description: "Failed to update account details" });
     }
-
-    if (deliveryDetails.type === 'scheduled' && !deliveryDetails.scheduledTime) {
-      errors.delivery = 'Please select a date and time for scheduled delivery.';
-      toast({ variant: "destructive", title: "Missing Information", description: errors.delivery });
-    }
-
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
   };
 
   if (cart.length === 0 && !isSubmitting) {
@@ -104,7 +112,7 @@ const CheckoutPage = () => {
     delivery_type: deliveryDetails.type,
     scheduled_delivery_time: deliveryDetails.scheduledTime,
   };
-  
+
   return (
     <div className="container px-4 py-8 mx-auto md:px-6">
       <motion.div 
@@ -121,19 +129,51 @@ const CheckoutPage = () => {
               animate={{ opacity: 1, y: 0 }} 
               transition={{ duration: 0.3, delay: 0.1 }}
             >
-               {!user ? (
+              {!user ? (
                 <div className="mt-6 p-6 border rounded-lg bg-muted/30">
                   <h3 className="text-lg font-semibold mb-4">Sign in to Continue</h3>
                   <PhoneLoginForm onSuccess={() => {}} />
-              
-                  {checkAccountSet}
-                  
                 </div>
-              ) : (<p></p>)}
-              
-              <CheckoutForm onDetailsChange={handleDetailsChange} errors={formErrors} />
-              <DeliveryOptions onDeliveryChange={handleDeliveryChange} />
-              
+              ) : showAccountSetup ? (
+                <div className="p-6 border rounded-lg bg-muted/30">
+                  <h3 className="text-lg font-semibold mb-4">Complete Your Account Details</h3>
+                  <form onSubmit={handleAccountSetup} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Full Name</Label>
+                      <Input
+                        id="name"
+                        value={accountDetails.name}
+                        onChange={(e) => setAccountDetails(prev => ({ ...prev, name: e.target.value }))}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="address">Delivery Address</Label>
+                      <Input
+                        id="address"
+                        value={accountDetails.address}
+                        onChange={(e) => setAccountDetails(prev => ({ ...prev, address: e.target.value }))}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="postcode">Postcode</Label>
+                      <Input
+                        id="postcode"
+                        value={accountDetails.postcode}
+                        onChange={(e) => setAccountDetails(prev => ({ ...prev, postcode: e.target.value }))}
+                        required
+                      />
+                    </div>
+                    <Button type="submit">Save Details</Button>
+                  </form>
+                </div>
+              ) : (
+                <>
+                  <CheckoutForm onDetailsChange={handleDetailsChange} errors={formErrors} />
+                  <DeliveryOptions onDeliveryChange={handleDeliveryChange} />
+                </>
+              )}
             </motion.div>
           </div>
 
@@ -156,18 +196,18 @@ const CheckoutPage = () => {
               I agree to the <Link to="/terms" className="text-primary hover:underline" target="_blank">Terms and Conditions</Link> and{' '}
               <Link to="/privacy" className="text-primary hover:underline" target="_blank">Privacy Policy</Link>
             </Label>
-            
           </div>
 
-         
+          <div style={{marginTop:'20px'}}>
+            <Button 
+              onClick={() => navigate('/stripe-payment',{state: {orderData:orderData,deliveryFee:deliveryDetails.fee}})} 
+              disabled={!user || !termsAccepted || showAccountSetup}
+            >
+              Proceed to Payment &nbsp; <CreditCard />
+            </Button>
+          </div>
         </div>
-
-               <div style={{marginTop:'20px'}}><Button onClick={() => navigate('/stripe-payment',{state: {orderData:orderData,deliveryFee:deliveryDetails.fee}})} disabled={!user || !termsAccepted }> Proceed to Payment &nbsp; <CreditCard /></Button>
-          {/* <p style={{ marginTop:'-25px',fontSize:'8px'}}>Secure payment powered by Stripe</p> */}
-                 </div>
-        
       </motion.div>
-      
     </div>
   );
 };
