@@ -10,7 +10,7 @@ export function cn(...inputs) {
 export function formatCurrency(amount) {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'USD',
+    currency: 'AUD',
     minimumFractionDigits: 2
   }).format(amount);
 }
