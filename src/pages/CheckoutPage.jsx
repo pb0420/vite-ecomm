@@ -89,6 +89,14 @@ const CheckoutPage = () => {
     }
   };
 
+   const handleDeliveryChange = useCallback((details) => {
+    setDeliveryDetails(details);
+  }, []);
+
+  const handleDetailsChange = useCallback((details) => {
+    setCustomerDetails(details);
+  }, []);
+  
   if (cart.length === 0 && !isSubmitting) {
     return (
       <div className="container px-4 py-8 mx-auto md:px-6">
