@@ -56,7 +56,7 @@ const TermsPage = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">4. Pricing and Payment</h2>
             <p className="mb-4">
-              All prices are in USD and include applicable taxes. Additional fees may apply:
+              All prices are in AUD and include applicable taxes. Additional fees may apply:
             </p>
             <ul className="list-disc pl-6 mb-4">
               <li>Delivery fees</li>
