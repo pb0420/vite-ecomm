@@ -47,6 +47,11 @@ const CheckoutPage = () => {
         setDeliveryDetails(prev => ({ ...prev, fee: 9.99 }));
       }
     };
+
+    const checkIfAccountSet = async () => {
+      
+    }
+    
     fetchInitialFee();
   }, []);
 
@@ -99,7 +104,7 @@ const CheckoutPage = () => {
     delivery_type: deliveryDetails.type,
     scheduled_delivery_time: deliveryDetails.scheduledTime,
   };
-
+  
   return (
     <div className="container px-4 py-8 mx-auto md:px-6">
       <motion.div 
@@ -116,15 +121,19 @@ const CheckoutPage = () => {
               animate={{ opacity: 1, y: 0 }} 
               transition={{ duration: 0.3, delay: 0.1 }}
             >
-              <CheckoutForm onDetailsChange={handleDetailsChange} errors={formErrors} />
-              <DeliveryOptions onDeliveryChange={handleDeliveryChange} />
-              
-              {!user ? (
+               {!user ? (
                 <div className="mt-6 p-6 border rounded-lg bg-muted/30">
                   <h3 className="text-lg font-semibold mb-4">Sign in to Continue</h3>
                   <PhoneLoginForm onSuccess={() => {}} />
+              
+                  {checkAccountSet}
+                  
                 </div>
               ) : (<p></p>)}
+              
+              <CheckoutForm onDetailsChange={handleDetailsChange} errors={formErrors} />
+              <DeliveryOptions onDeliveryChange={handleDeliveryChange} />
+              
             </motion.div>
           </div>
 
