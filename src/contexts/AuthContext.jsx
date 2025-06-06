@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }) => {
 
       if (data) {
         // format phone number if required
-         const formattedNumber = phoneNumber.startsWith('61') ? phoneNumber : `0${phoneNumber.replace(/^61/, '')}`;
+         const formattedNumber = data.phone.startsWith('61') ? phoneNumber : `0${phoneNumber.replace(/^61/, '')}`;
         setProfile(data);
         setIsAdmin(data.is_admin === true);
         return data;
