@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { toast } from '@/components/ui/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabaseClient';
+import AddressAutocomplete from '@/components/ui/address-autocomplete';
 
 const AddressManager = () => {
   const { user, updateUserInfo } = useAuth();
@@ -88,6 +89,14 @@ const AddressManager = () => {
     }
   };
 
+  const handleAddressAutocomplete = (addressDetails) => {
+    setFormData(prev => ({
+      ...prev,
+      address: addressDetails.address,
+      postcode: addressDetails.postcode
+    }));
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -119,11 +128,11 @@ const AddressManager = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="address">Address</Label>
-                <Input
-                  id="address"
-                  placeholder="Enter street address"
+                <AddressAutocomplete
                   value={formData.address}
-                  onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
+                  onChange={(value) => setFormData(prev => ({ ...prev, address: value }))}
+                  onAddressSelect={handleAddressAutocomplete}
+                  placeholder="Start typing your address..."
                   disabled={loading}
                 />
               </div>

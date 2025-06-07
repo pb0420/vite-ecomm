@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import AddressSelector from '@/components/checkout/AddressSelector';
+import AddressAutocomplete from '@/components/ui/address-autocomplete';
 import { supabase } from '@/lib/supabaseClient';
 
 const CheckoutForm = ({ onDetailsChange, errors }) => {
@@ -78,6 +79,14 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
     setShowAddressSelector(false);
   };
 
+  const handleAddressAutocomplete = (addressDetails) => {
+    setFormData(prev => ({
+      ...prev,
+      address: addressDetails.address,
+      postcode: addressDetails.postcode
+    }));
+  };
+
   return (
     <div className="p-6 border rounded-lg">
       <h2 className="flex items-center text-xl font-semibold mb-4">
@@ -139,12 +148,12 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
           {showAddressSelector && (
             <AddressSelector onSelect={handleAddressSelect} />
           )}
-          <Input 
-            id="address" 
-            name="address" 
-            value={formData.address} 
-            onChange={handleChange} 
-            className={errors?.address ? 'border-destructive' : ''} 
+          <AddressAutocomplete
+            value={formData.address}
+            onChange={(value) => setFormData(prev => ({ ...prev, address: value }))}
+            onAddressSelect={handleAddressAutocomplete}
+            placeholder="Start typing your address..."
+            className={errors?.address ? 'border-destructive' : ''}
           />
           {errors?.address && <p className="text-xs text-destructive">{errors.address}</p>}
         </div>

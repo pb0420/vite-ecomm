@@ -5,11 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import CheckoutForm from '@/components/checkout/CheckoutForm';
 import OrderSummary from '@/components/checkout/OrderSummary';
 import DeliveryOptions from '@/components/checkout/DeliveryOptions';
 import PaymentSection from '@/components/checkout/PaymentSection';
 import PhoneLoginForm from '@/components/auth/PhoneLoginForm';
+import AddressAutocomplete from '@/components/ui/address-autocomplete';
 import { useCart } from '@/contexts/CartContext';
 import { useOrders } from '@/contexts/OrderContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -36,6 +38,7 @@ const CheckoutPage = () => {
     address: '',
     postcode: ''
   });
+  const [postcodes, setPostcodes] = useState([]);
 
   useEffect(() => {
     const fetchInitialFee = async () => {
@@ -53,6 +56,20 @@ const CheckoutPage = () => {
       }
     };
 
+    const fetchPostcodes = async () => {
+      const { data, error } = await supabase
+        .from('postcodes')
+        .select('*')
+        .order('suburb');
+      
+      if (error) {
+        console.error('Error fetching postcodes:', error);
+        return;
+      }
+      
+      setPostcodes(data);
+    };
+
     const checkIfAccountSet = () => {
       if (user) {
         const isAccountIncomplete = !user.name || !user.addresses || user.addresses.length === 0;
@@ -65,6 +82,7 @@ const CheckoutPage = () => {
     };
 
     fetchInitialFee();
+    fetchPostcodes();
     checkIfAccountSet();
   }, [user]);
 
@@ -87,6 +105,14 @@ const CheckoutPage = () => {
       console.error('Error updating account:', error);
       toast({ variant: "destructive", title: "Error", description: "Failed to update account details" });
     }
+  };
+
+  const handleAddressAutocomplete = (addressDetails) => {
+    setAccountDetails(prev => ({
+      ...prev,
+      address: addressDetails.address,
+      postcode: addressDetails.postcode
+    }));
   };
 
    const handleDeliveryChange = useCallback((details) => {
@@ -157,21 +183,32 @@ const CheckoutPage = () => {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="address">Delivery Address</Label>
-                      <Input
-                        id="address"
+                      <AddressAutocomplete
                         value={accountDetails.address}
-                        onChange={(e) => setAccountDetails(prev => ({ ...prev, address: e.target.value }))}
+                        onChange={(value) => setAccountDetails(prev => ({ ...prev, address: value }))}
+                        onAddressSelect={handleAddressAutocomplete}
+                        placeholder="Start typing your address..."
                         required
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="postcode">Postcode</Label>
-                      <Input
-                        id="postcode"
-                        value={accountDetails.postcode}
-                        onChange={(e) => setAccountDetails(prev => ({ ...prev, postcode: e.target.value }))}
+                      <Label htmlFor="postcode">Suburb & Postcode</Label>
+                      <Select 
+                        value={accountDetails.postcode} 
+                        onValueChange={(value) => setAccountDetails(prev => ({ ...prev, postcode: value }))}
                         required
-                      />
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select suburb" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {postcodes.map((pc) => (
+                            <SelectItem key={pc.id} value={pc.postcode}>
+                              {pc.suburb} ({pc.postcode})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                     <Button type="submit">Save Details</Button>
                   </form>

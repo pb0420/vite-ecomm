@@ -12,6 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import PhoneLoginForm from '@/components/auth/PhoneLoginForm';
+import AddressAutocomplete from '@/components/ui/address-autocomplete';
 import { format } from 'date-fns';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabaseClient';
@@ -98,6 +99,11 @@ const StorePickupPage = () => {
       setPostcode(savedAddress.postcode);
     }
     setShowAddressSelector(false);
+  };
+
+  const handleAddressAutocomplete = (addressDetails) => {
+    setAddress(addressDetails.address);
+    setPostcode(addressDetails.postcode);
   };
 
   const validateForm = () => {
@@ -362,11 +368,11 @@ const StorePickupPage = () => {
                     {showAddressSelector && (
                       <AddressSelector onSelect={handleAddressSelect} />
                     )}
-                    <Input
-                      id="address"
+                    <AddressAutocomplete
                       value={address}
-                      onChange={(e) => setAddress(e.target.value)}
-                      placeholder="Enter your delivery address"
+                      onChange={setAddress}
+                      onAddressSelect={handleAddressAutocomplete}
+                      placeholder="Start typing your address..."
                       className={formErrors.address ? 'border-destructive' : ''}
                     />
                     {formErrors.address && <p className="text-xs text-destructive">{formErrors.address}</p>}
