@@ -81,7 +81,7 @@ const transformData = (data) => {
     return transformedItem;
   }); }
 
-      console.log(data);
+      //console.log(data);
      // setSuggestions(response.data);
      //  setShowSuggestions(response.data.length > 0);
     }
