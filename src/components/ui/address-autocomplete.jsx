@@ -73,6 +73,7 @@ const data = response.data;
 // Transform function
 const transformData = (data) => {
   return data.map(item => {
+    console.log(item);
     const transformedItem = {};
     for (const key in item) {
       transformedItem[keyMap[key] || key] = item[key];
