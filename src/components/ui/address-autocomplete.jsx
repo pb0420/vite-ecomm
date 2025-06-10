@@ -78,7 +78,7 @@ const transformData = (data) => {
       transformedItem[keyMap[key] || key] = item[key];
     }
     return transformedItem;
-  });
+  }); }
       
       return transformData;
     }
@@ -87,7 +87,7 @@ const transformData = (data) => {
       console.log(filtered);
     setSuggestions(filtered);
     setShowSuggestions(filtered.length > 0);
-  }, [value,filteredResponse]);
+  }, [value]);
 
   // Handle input change
   const handleInputChange = (e) => {
