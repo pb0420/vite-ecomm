@@ -42,7 +42,7 @@ const AddressAutocomplete = ({
   // }, []);
 
   // Filter suggestions based on input
-  useEffect(() => {
+  useEffect(async () => {
     if (!value || value.length < 2) {
       setSuggestions([]);
       setShowSuggestions(false);
