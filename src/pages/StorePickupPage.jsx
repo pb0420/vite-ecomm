@@ -151,7 +151,7 @@ const StorePickupPage = () => {
       errors.phone = 'Phone number is required for SMS/Call communication';
     }
     if (!address) errors.address = 'Delivery address is required';
-    if (!postcode) errors.postcode = 'Please select a suburb and postcode';
+    if (!postcode) errors.postcode = 'Please select a postcode';
     
     // Validate minimum order amounts
     selectedStores.forEach((store, index) => {
