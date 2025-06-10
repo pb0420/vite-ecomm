@@ -104,7 +104,7 @@ const PhoneLoginForm = ({ onSuccess }) => {
             <Label htmlFor="phone" className="text-sm font-semibold text-gray-700">
               Phone Number
             </Label>
-            <div className="relative">
+            <div classNamxge="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                 <span className="text-gray-500 text-sm font-medium">+61</span>
               </div>
