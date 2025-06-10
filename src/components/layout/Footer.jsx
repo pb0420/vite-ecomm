@@ -70,7 +70,7 @@ const Footer = () => {
           </div>
 
           <div className="space-y-4">
-            <h4 className="text-sm font-semibold">Customer Service</h4>
+            <h4 className="text-sm font-semibold">Connect</h4>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link to="/contact" className="text-gray-600 hover:text-primary">
