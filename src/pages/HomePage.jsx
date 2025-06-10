@@ -109,7 +109,7 @@ const HomePage = () => {
                 <h2 className="text-1xl md:text-3xl font-bold text-white"><button><MapPinCheckInside /></button> &nbsp;Adelaide </h2>
               
               <p className="text-xl text-white/90">
-               Get groceries and much more delivered to your doorstep!
+               Get groceries and more delivered to your doorstep!
               </p>
               <div className="flex flex-col gap-2 min-[400px]:flex-row pt-4">
                 <Link to="/shop">
