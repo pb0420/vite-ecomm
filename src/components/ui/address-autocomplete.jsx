@@ -56,14 +56,31 @@ const AddressAutocomplete = ({
     // ).slice(0, 5); // Limit to 5 suggestions
 
     const filteredResponse = async () => {
-      const response = await supabase
+      const data = await supabase
         .from('adelaide_address_data')
         .select('*')
         .ilike('ADDRESS_LA', `%${value.toUpperCase()}%`)
         .limit(50);
-      console.log(response);
+      
       // const filtered = await response.json();
-      return response;
+
+      const keyMap = {
+  ADDRESS_LA: "address",
+  LOCALITY_N: "suburb",
+  POSTCODE: "postcode"
+};
+
+// Transform function
+const transformData = (data) => {
+  return data.map(item => {
+    const transformedItem = {};
+    for (const key in item) {
+      transformedItem[keyMap[key] || key] = item[key];
+    }
+    return transformedItem;
+  });
+      
+      return transformData;
     }
 
     const filtered = filteredResponse();
