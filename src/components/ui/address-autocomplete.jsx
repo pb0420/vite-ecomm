@@ -58,7 +58,7 @@ const AddressAutocomplete = ({
     const filteredResponse = async () => {
       const response = await supabase
         .from('adelaide_address_data')
-        .select('ADDRESS_LA as address, LOCALITY_N , POSTCODE')
+        .select('ADDRESS_LA, LOCALITY_N , POSTCODE')
         .ilike('ADDRESS_LA', `%${value}%`)
       const filtered = await response.json();
       return filtered;
