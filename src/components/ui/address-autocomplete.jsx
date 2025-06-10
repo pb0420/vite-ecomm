@@ -81,7 +81,7 @@ const transformData = (data) => {
     return transformedItem;
   }); }
 
-      const filtered = transformData(jsonResponse);
+      const filtered = transformData(response.data);
 
       console.log(filtered);
      // setSuggestions(response.data);
