@@ -81,8 +81,8 @@ const transformData = (data) => {
   }); }
 
       console.log(data.data);
-     setSuggestions(data);
-      setShowSuggestions(data.length > 0);
+     setSuggestions(data.data);
+      setShowSuggestions(data.data.length > 0);
     }
 
    filteredResponse();
