@@ -80,6 +80,7 @@ const transformData = (data) => {
     return transformedItem;
   }); }
 
+      console.log(data.data);
      setSuggestions(data);
       setShowSuggestions(data.length > 0);
     }
