@@ -192,7 +192,7 @@ const CheckoutPage = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="postcode">Suburb & Postcode</Label>
+                      <Label htmlFor="postcode">Postcode</Label>
                       <Select 
                         value={accountDetails.postcode} 
                         onValueChange={(value) => setAccountDetails(prev => ({ ...prev, postcode: value }))}
