@@ -42,7 +42,7 @@ const AddressAutocomplete = ({
   // }, []);
 
   // Filter suggestions based on input
-  useEffect(async () => {
+  useEffect(() => {
     if (!value || value.length < 2) {
       setSuggestions([]);
       setShowSuggestions(false);
@@ -55,13 +55,16 @@ const AddressAutocomplete = ({
     //   addr.postcode.includes(value)
     // ).slice(0, 5); // Limit to 5 suggestions
 
-    const response = await supabase
+    const filteredResponse = async () => {
+      const response = await supabase
         .from('adelaide_address_data')
         .select('ADDRESS_LA as address, LOCALITY_NA as suburb, POSTCODE as postcode')
         .ilike('ADDRESS_LA', `%${value}%`)
-        .limit(5);
-        const filtered = await response.json();
+      const filtered = await response.json();
+      return filtered;
+    }
 
+    const filtered = filteredResponse();
     setSuggestions(filtered);
     setShowSuggestions(filtered.length > 0);
   }, [value]);
