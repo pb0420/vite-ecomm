@@ -80,12 +80,11 @@ const transformData = (data) => {
     return transformedItem;
   }); }
       
-      return transformData;
+     setSuggestions(transformData);
+      setShowSuggestions(transformData.length > 0);
     }
 
-   filteredResponse.then((value) => {
-  console.log(value);
-});
+   filteredResponse();
       // console.log(filtered);
     // setSuggestions(filtered);
     // setShowSuggestions(filtered.length > 0);
