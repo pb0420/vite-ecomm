@@ -83,7 +83,7 @@ const transformData = (data) => {
       return transformData;
     }
 
-    const filtered = filteredResponse();
+    const filtered = await filteredResponse();
       console.log(filtered);
     setSuggestions(filtered);
     setShowSuggestions(filtered.length > 0);
