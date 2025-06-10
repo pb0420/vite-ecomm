@@ -51,10 +51,15 @@ const StoreSelector = ({ stores, selectedStores, onStoreToggle, onNotesChange, o
     return selectedStores.reduce((total, store) => total + (store.estimatedTotal || 0), 0);
   };
 
-  const getTotalDeliveryFee = () => {
-    return selectedStores.reduce((total, selectedStore) => {
+  const getServiceCharge = () => {
+    return getTotalEstimated() * 0.12; // 12% service charge
+  };
+
+  const getHighestDeliveryFee = () => {
+    return selectedStores.reduce((highest, selectedStore) => {
       const store = stores.find(s => s.id === selectedStore.id);
-      return total + (store?.store_delivery_fee || 0);
+      const deliveryFee = store?.store_delivery_fee || 0;
+      return Math.max(highest, deliveryFee);
     }, 0);
   };
 
@@ -83,6 +88,7 @@ const StoreSelector = ({ stores, selectedStores, onStoreToggle, onNotesChange, o
                         {store.name}
                       </CardTitle>
                       <Button
+                        type="button"
                         variant={isSelected ? "default" : "outline"}
                         size="sm"
                         onClick={() => handleStoreSelect(store)}
@@ -161,12 +167,16 @@ const StoreSelector = ({ stores, selectedStores, onStoreToggle, onNotesChange, o
               <span>{formatCurrency(getTotalEstimated())}</span>
             </div>
             <div className="flex justify-between">
-              <span>Total Delivery Fees:</span>
-              <span>{formatCurrency(getTotalDeliveryFee())}</span>
+              <span>Service Charge (12%):</span>
+              <span>{formatCurrency(getServiceCharge())}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Delivery Fee (Highest):</span>
+              <span>{formatCurrency(getHighestDeliveryFee())}</span>
             </div>
             <div className="flex justify-between font-semibold pt-2 border-t">
               <span>Estimated Total:</span>
-              <span>{formatCurrency(getTotalEstimated() + getTotalDeliveryFee())}</span>
+              <span>{formatCurrency(getTotalEstimated() + getServiceCharge() + getHighestDeliveryFee())}</span>
             </div>
           </div>
         </motion.div>

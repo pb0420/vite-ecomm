@@ -268,6 +268,30 @@ const StorePickupPage = () => {
     }
   };
 
+  // Calculate totals with service charge and highest delivery fee
+  const getOrderSummary = () => {
+    const subtotal = selectedStores.reduce((total, store) => total + (store.estimatedTotal || 0), 0);
+    const serviceCharge = subtotal * 0.12; // 12% service charge
+    
+    // Get highest delivery fee instead of sum
+    const highestDeliveryFee = selectedStores.reduce((highest, selectedStore) => {
+      const store = stores.find(s => s.id === selectedStore.id);
+      const deliveryFee = store?.store_delivery_fee || 0;
+      return Math.max(highest, deliveryFee);
+    }, 0);
+    
+    const total = subtotal + serviceCharge + highestDeliveryFee;
+    
+    return {
+      subtotal,
+      serviceCharge,
+      deliveryFee: highestDeliveryFee,
+      total
+    };
+  };
+
+  const orderSummary = getOrderSummary();
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Banner Section */}
@@ -387,6 +411,7 @@ const StorePickupPage = () => {
                           <Popover>
                             <PopoverTrigger asChild>
                               <Button
+                                type="button"
                                 variant="outline"
                                 className={cn(
                                   "w-full justify-start text-left font-normal",
@@ -475,16 +500,16 @@ const StorePickupPage = () => {
                         <div className="flex items-center justify-between">
                           <Label htmlFor="address">Delivery Address</Label>
                           {user && user.addresses?.length > 0 && (
-                            <span
+                            <Button
+                              type="button"
                               variant="ghost"
                               size="sm"
                               onClick={() => setShowAddressSelector(!showAddressSelector)}
                               className="flex items-center text-primary"
-                              style={{ cursor: 'pointer' }}
                             >
                               <MapPin className="w-4 h-4 mr-1" />
                               {showAddressSelector ? 'Hide saved addresses' : 'Use saved address'}
-                            </span>
+                            </Button>
                           )}
                         </div>
                         {showAddressSelector && (
@@ -522,6 +547,35 @@ const StorePickupPage = () => {
                         onPhotosChange={setPhotos}
                         maxPhotos={10}
                       />
+
+                      {/* Order Summary with Service Charge */}
+                      {selectedStores.length > 0 && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="p-4 border rounded-lg bg-muted/30"
+                        >
+                          <h4 className="font-semibold mb-2">Order Summary</h4>
+                          <div className="space-y-2 text-sm">
+                            <div className="flex justify-between">
+                              <span>Estimated Subtotal:</span>
+                              <span>{formatCurrency(orderSummary.subtotal)}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Service Charge (12%):</span>
+                              <span>{formatCurrency(orderSummary.serviceCharge)}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Delivery Fee (Highest):</span>
+                              <span>{formatCurrency(orderSummary.deliveryFee)}</span>
+                            </div>
+                            <div className="flex justify-between font-semibold pt-2 border-t">
+                              <span>Estimated Total:</span>
+                              <span>{formatCurrency(orderSummary.total)}</span>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
 
                       <div className="flex items-center space-x-2">
                         <Checkbox 
