@@ -61,6 +61,7 @@ const AddressAutocomplete = ({
         .select('ADDRESS_LA, LOCALITY_N , POSTCODE')
         .ilike('ADDRESS_LA', `%${value.toUpperCase()}%`)
         .limit(50);
+      console.log(response);
       const filtered = await response.json();
       return filtered;
     }
