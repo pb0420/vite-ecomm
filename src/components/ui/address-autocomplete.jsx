@@ -60,6 +60,7 @@ const AddressAutocomplete = ({
         .from('adelaide_address_data')
         .select('ADDRESS_LA, LOCALITY_N , POSTCODE')
         .ilike('ADDRESS_LA', `%${value}%`)
+        .limit(50);
       const filtered = await response.json();
       return filtered;
     }
