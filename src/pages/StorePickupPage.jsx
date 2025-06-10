@@ -7,12 +7,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import PhoneLoginForm from '@/components/auth/PhoneLoginForm';
 import AddressAutocomplete from '@/components/ui/address-autocomplete';
+import StoreSelector from '@/components/pickup/StoreSelector';
+import PhotoUpload from '@/components/pickup/PhotoUpload';
+import UpcomingOrders from '@/components/pickup/UpcomingOrders';
 import { format } from 'date-fns';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabaseClient';
@@ -22,7 +25,6 @@ import { Link } from 'react-router-dom';
 import AddressSelector from '@/components/checkout/AddressSelector';
 import { formatCurrency } from '@/lib/utils';
 import { Calendar as CalendarPicker } from '@/components/ui/calendar';
-
 
 const generateTimeSlots = () => {
   const slots = [];
@@ -37,28 +39,32 @@ const generateTimeSlots = () => {
 const StorePickupPage = () => {
   const { user } = useAuth();
   const [stores, setStores] = useState([]);
+  const [upcomingOrders, setUpcomingOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedStore, setSelectedStore] = useState('');
+  const [selectedStores, setSelectedStores] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTimeSlot, setSelectedTimeSlot] = useState('');
   const [whatsappNumber, setWhatsappNumber] = useState('');
   const [address, setAddress] = useState('');
   const [postcode, setPostcode] = useState('');
-  const [notes, setNotes] = useState('');
-  const [estimatedTotal, setEstimatedTotal] = useState('');
+  const [photos, setPhotos] = useState([]);
   const [showAddressSelector, setShowAddressSelector] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   const [contactPreference, setContactPreference] = useState('whatsapp');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [postcodes, setPostcodes] = useState([]);
+  const [activeTab, setActiveTab] = useState('new-order');
   
   const timeSlots = generateTimeSlots();
   const navigate = useNavigate();
 
   useEffect(() => {
     Promise.all([fetchStores(), fetchPostcodes()]);
-  }, []);
+    if (user) {
+      fetchUpcomingOrders();
+    }
+  }, [user]);
 
   const fetchStores = async () => {
     try {
@@ -92,6 +98,34 @@ const StorePickupPage = () => {
     }
   };
 
+  const fetchUpcomingOrders = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('pickup_orders')
+        .select(`
+          *,
+          stores (name),
+          pickup_order_stores (
+            store_id,
+            estimated_total,
+            actual_total,
+            notes,
+            status,
+            stores (name)
+          )
+        `)
+        .eq('user_id', user.id)
+        .gte('pickup_date', new Date().toISOString().split('T')[0])
+        .order('pickup_date', { ascending: true });
+
+      if (error) throw error;
+      setUpcomingOrders(data || []);
+    } catch (error) {
+      console.error('Error fetching upcoming orders:', error);
+      toast({ variant: "destructive", title: "Error", description: "Could not load upcoming orders." });
+    }
+  };
+
   const handleAddressSelect = (selectedAddress) => {
     const savedAddress = user.addresses.find(addr => addr.address === selectedAddress);
     if (savedAddress) {
@@ -108,7 +142,7 @@ const StorePickupPage = () => {
 
   const validateForm = () => {
     const errors = {};
-    if (!selectedStore) errors.store = 'Please select a store';
+    if (selectedStores.length === 0) errors.stores = 'Please select at least one store';
     if (!selectedTimeSlot) errors.timeSlot = 'Please select a time slot';
     if (contactPreference === 'whatsapp' && !whatsappNumber) {
       errors.whatsapp = 'WhatsApp number is required for WhatsApp communication';
@@ -118,9 +152,15 @@ const StorePickupPage = () => {
     }
     if (!address) errors.address = 'Delivery address is required';
     if (!postcode) errors.postcode = 'Please select a suburb and postcode';
-    if (!estimatedTotal || parseFloat(estimatedTotal) < 50) {
-      errors.estimated = 'Minimum order amount is $50';
-    }
+    
+    // Validate minimum order amounts
+    selectedStores.forEach((store, index) => {
+      const minimumOrder = 50 + index * 25;
+      if (!store.estimatedTotal || store.estimatedTotal < minimumOrder) {
+        errors[`store_${store.id}`] = `Minimum order for this store is ${formatCurrency(minimumOrder)}`;
+      }
+    });
+
     if (!termsAccepted) {
       errors.terms = 'You must accept the terms and conditions';
     }
@@ -137,36 +177,96 @@ const StorePickupPage = () => {
     }
 
     try {
-      const { data, error } = await supabase
+      // Create the main pickup order
+      const { data: pickupOrder, error: orderError } = await supabase
         .from('pickup_orders')
         .insert({
           user_id: user.id,
-          store_id: selectedStore,
-          pickup_date: selectedDate.toISOString(),
+          pickup_date: selectedDate.toISOString().split('T')[0],
           time_slot: selectedTimeSlot,
           whatsapp_number: contactPreference === 'whatsapp' ? whatsappNumber : null,
           phone_number: contactPreference === 'phone' ? phoneNumber : null,
           delivery_address: address,
           postcode: postcode,
-          notes,
-          estimated_total: parseFloat(estimatedTotal),
+          photos: photos,
           status: 'pending',
-          payment_status: 'pending'
+          payment_status: 'pending',
+          estimated_total: selectedStores.reduce((total, store) => total + store.estimatedTotal, 0)
         })
         .select()
         .single();
 
-      if (error) throw error;
+      if (orderError) throw orderError;
+
+      // Create entries for each selected store
+      const storeOrders = selectedStores.map(store => ({
+        pickup_order_id: pickupOrder.id,
+        store_id: store.id,
+        estimated_total: store.estimatedTotal,
+        notes: store.notes,
+        status: 'pending'
+      }));
+
+      const { error: storeOrdersError } = await supabase
+        .from('pickup_order_stores')
+        .insert(storeOrders);
+
+      if (storeOrdersError) throw storeOrdersError;
 
       toast({ title: "Order Created", description: "Your pickup order has been scheduled. We'll contact you shortly." });
-      navigate('/account/orders');
+      
+      // Reset form
+      setSelectedStores([]);
+      setSelectedTimeSlot('');
+      setWhatsappNumber('');
+      setPhoneNumber('');
+      setPhotos([]);
+      setTermsAccepted(false);
+      
+      // Refresh upcoming orders and switch to that tab
+      fetchUpcomingOrders();
+      setActiveTab('upcoming-orders');
+      
     } catch (error) {
       console.error('Error creating pickup order:', error);
       toast({ variant: "destructive", title: "Error", description: "Could not create pickup order." });
     }
   };
 
-  const selectedStoreData = stores.find(store => store.id === selectedStore);
+  const handleSendMessage = async (orderId, message) => {
+    try {
+      // Get current order
+      const { data: currentOrder, error: fetchError } = await supabase
+        .from('pickup_orders')
+        .select('admin_messages')
+        .eq('id', orderId)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      const currentMessages = currentOrder.admin_messages || [];
+      const newMessage = {
+        from: 'customer',
+        message: message,
+        timestamp: new Date().toISOString()
+      };
+
+      const { error: updateError } = await supabase
+        .from('pickup_orders')
+        .update({
+          admin_messages: [...currentMessages, newMessage]
+        })
+        .eq('id', orderId);
+
+      if (updateError) throw updateError;
+
+      toast({ title: "Message sent", description: "Your message has been sent to the admin." });
+      fetchUpcomingOrders(); // Refresh to show new message
+    } catch (error) {
+      console.error('Error sending message:', error);
+      toast({ variant: "destructive", title: "Error", description: "Could not send message." });
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -190,7 +290,7 @@ const StorePickupPage = () => {
               transition={{ duration: 0.5 }}
             >
               <h1 className="text-3xl md:text-4xl font-bold text-white">Grocery Run</h1>
-              <p className="text-white/90">Let us do the shopping for you!</p>
+              <p className="text-white/90">Let us do the shopping for you at multiple stores!</p>
             </motion.div>
           </div>
         </div>
@@ -201,247 +301,257 @@ const StorePickupPage = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className="max-w-4xl mx-auto"
+          className="max-w-6xl mx-auto"
         >
           {/* How it works section */}
           <Card className="mb-8">
             <CardHeader>
               <CardTitle>How it works</CardTitle>
-              <CardDescription>Simple steps to get your groceries</CardDescription>
+              <CardDescription>Simple steps to get your groceries from multiple stores</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-6 md:grid-cols-3">
+              <div className="grid gap-6 md:grid-cols-4">
                 <div className="flex flex-col items-center text-center space-y-2">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                     <Store className="w-6 h-6 text-primary" />
                   </div>
-                  <h3 className="font-medium">1. Choose Store</h3>
-                  <p className="text-sm text-muted-foreground">Select your preferred store and pickup time</p>
+                  <h3 className="font-medium">1. Choose Stores</h3>
+                  <p className="text-sm text-muted-foreground">Select multiple stores and set your budget for each</p>
                 </div>
                 <div className="flex flex-col items-center text-center space-y-2">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                     <MessageCircle className="w-6 h-6 text-primary" />
                   </div>
-                  <h3 className="font-medium">2. Share List</h3>
-                  <p className="text-sm text-muted-foreground">We'll contact you to get your shopping list</p>
+                  <h3 className="font-medium">2. Share Lists</h3>
+                  <p className="text-sm text-muted-foreground">Add shopping lists and photos for each store</p>
                 </div>
                 <div className="flex flex-col items-center text-center space-y-2">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                     <Clock className="w-6 h-6 text-primary" />
                   </div>
                   <h3 className="font-medium">3. We Shop</h3>
-                  <p className="text-sm text-muted-foreground">We'll shop and deliver to your address</p>
+                  <p className="text-sm text-muted-foreground">We'll shop at all selected stores during your time slot</p>
+                </div>
+                <div className="flex flex-col items-center text-center space-y-2">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <MapPin className="w-6 h-6 text-primary" />
+                  </div>
+                  <h3 className="font-medium">4. Delivery</h3>
+                  <p className="text-sm text-muted-foreground">All items delivered to your address in one trip</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <div className="grid gap-12"> 
+          {!user ? (
             <Card>
               <CardHeader>
-                <CardTitle>Schedule a Run</CardTitle>
-                <CardDescription>
-                  Fill in your details below
-                </CardDescription>
+                <CardTitle>Sign in to Continue</CardTitle>
+                <CardDescription>Please sign in to schedule a grocery run</CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="store">Select Store</Label>
-                    <Select value={selectedStore} onValueChange={setSelectedStore}>
-                      <SelectTrigger className={formErrors.store ? 'border-destructive' : ''}>
-                        <SelectValue placeholder="Choose a store" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {stores.map(store => (
-                          <SelectItem key={store.id} value={store.id}>
-                            {store.name} - Delivery Fee: {formatCurrency(store.store_delivery_fee)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {formErrors.store && <p className="text-xs text-destructive">{formErrors.store}</p>}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Select Date</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full justify-start text-left font-normal",
-                            !selectedDate && "text-muted-foreground"
-                          )}
-                        >
-                          <Calendar className="mr-2 h-4 w-4" />
-                          {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <CalendarPicker
-                          mode="single"
-                          selected={selectedDate}
-                          onSelect={setSelectedDate}
-                          disabled={(date) => date < new Date()}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Time Slot</Label>
-                    <Select value={selectedTimeSlot} onValueChange={setSelectedTimeSlot}>
-                      <SelectTrigger className={formErrors.timeSlot ? 'border-destructive' : ''}>
-                        <SelectValue placeholder="Choose a time slot" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {timeSlots.map(slot => (
-                          <SelectItem key={slot.id} value={slot.id}>
-                            {slot.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {formErrors.timeSlot && <p className="text-xs text-destructive">{formErrors.timeSlot}</p>}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Contact Preference</Label>
-                    <RadioGroup value={contactPreference} onValueChange={setContactPreference} className="grid gap-2">
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="whatsapp" id="whatsapp" />
-                        <Label htmlFor="whatsapp">WhatsApp</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="phone" id="phone" />
-                        <Label htmlFor="phone">SMS/Call</Label>
-                      </div>
-                    </RadioGroup>
-                  </div>
-
-                  {contactPreference === 'whatsapp' && (
-                    <div className="space-y-2">
-                      <Label htmlFor="whatsapp">WhatsApp Number</Label>
-                      <Input
-                        id="whatsapp"
-                        value={whatsappNumber}
-                        onChange={(e) => setWhatsappNumber(e.target.value)}
-                        placeholder="Enter your WhatsApp number"
-                        className={formErrors.whatsapp ? 'border-destructive' : ''}
-                      />
-                      {formErrors.whatsapp && <p className="text-xs text-destructive">{formErrors.whatsapp}</p>}
-                    </div>
-                  )}
-
-                  {contactPreference === 'phone' && (
-                    <div className="space-y-2">
-                      <Label htmlFor="phone">Phone Number</Label>
-                      <Input
-                        id="phone"
-                        value={phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
-                        placeholder="Enter your phone number"
-                        className={formErrors.phone ? 'border-destructive' : ''}
-                      />
-                      {formErrors.phone && <p className="text-xs text-destructive">{formErrors.phone}</p>}
-                    </div>
-                  )}
-
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Label htmlFor="address">Delivery Address</Label>
-                      {user && user.addresses?.length > 0 && (
-                        <span
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setShowAddressSelector(!showAddressSelector)}
-                          className="flex items-center text-primary"
-                          style={{ cursor: 'pointer' }}
-                        >
-                          <MapPin className="w-4 h-4 mr-1" />
-                          {showAddressSelector ? 'Hide saved addresses' : 'Use saved address'}
-                        </span>
-                      )}
-                    </div>
-                    {showAddressSelector && (
-                      <AddressSelector onSelect={handleAddressSelect} />
-                    )}
-                    <AddressAutocomplete
-                      value={address}
-                      onChange={setAddress}
-                      onAddressSelect={handleAddressAutocomplete}
-                      placeholder="Start typing your address..."
-                      className={formErrors.address ? 'border-destructive' : ''}
-                    />
-                    {formErrors.address && <p className="text-xs text-destructive">{formErrors.address}</p>}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="postcode">Suburb & Postcode</Label>
-                    <Select value={postcode} onValueChange={setPostcode}>
-                      <SelectTrigger className={formErrors.postcode ? 'border-destructive' : ''}>
-                        <SelectValue placeholder="Select suburb" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {postcodes.map((pc) => (
-                          <SelectItem key={pc.id} value={pc.postcode}>
-                            {pc.suburb} ({pc.postcode})
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {formErrors.postcode && <p className="text-xs text-destructive">{formErrors.postcode}</p>}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="estimated">Estimated Total ($)</Label>
-                    <Input
-                      id="estimated"
-                      type="number"
-                      min="50"
-                      value={estimatedTotal}
-                      onChange={(e) => setEstimatedTotal(e.target.value)}
-                      placeholder="Enter estimated total amount (min $50)"
-                      className={formErrors.estimated ? 'border-destructive' : ''}
-                    />
-                    {formErrors.estimated && <p className="text-xs text-destructive">{formErrors.estimated}</p>}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="notes">Additional Notes (Optional)</Label>
-                    <Textarea
-                      id="notes"
-                      value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
-                      placeholder="Any special instructions?"
-                      rows={3}
-                    />
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="terms" 
-                      checked={termsAccepted}
-                      onCheckedChange={setTermsAccepted}
-                    />
-                    <Label htmlFor="terms" className="text-sm">
-                      I agree to the <Link to="/terms" className="text-primary hover:underline" target="_blank">Terms and Conditions</Link> and{' '}
-                      <Link to="/privacy" className="text-primary hover:underline" target="_blank">Privacy Policy</Link>
-                    </Label>
-                  </div>
-                  {formErrors.terms && <p className="text-xs text-destructive">{formErrors.terms}</p>}
-
-                  {!user ? (
-                    <PhoneLoginForm onSuccess={() => {}} />
-                  ) : (
-                    <Button type="submit" className="w-full">Submit</Button>
-                  )}
-                </form>
+                <PhoneLoginForm onSuccess={() => {}} />
               </CardContent>
             </Card>
-          </div>
+          ) : (
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="new-order">New Order</TabsTrigger>
+                <TabsTrigger value="upcoming-orders">
+                  Upcoming Orders ({upcomingOrders.length})
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="new-order" className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Schedule a Multi-Store Run</CardTitle>
+                    <CardDescription>
+                      Select multiple stores and we'll shop at all of them for you
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                      <StoreSelector
+                        stores={stores}
+                        selectedStores={selectedStores}
+                        onStoreToggle={setSelectedStores}
+                        onNotesChange={() => {}}
+                        onEstimatedTotalChange={() => {}}
+                      />
+                      {formErrors.stores && <p className="text-xs text-destructive">{formErrors.stores}</p>}
+
+                      <div className="grid gap-6 md:grid-cols-2">
+                        <div className="space-y-2">
+                          <Label>Select Date</Label>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className={cn(
+                                  "w-full justify-start text-left font-normal",
+                                  !selectedDate && "text-muted-foreground"
+                                )}
+                              >
+                                <Calendar className="mr-2 h-4 w-4" />
+                                {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <CalendarPicker
+                                mode="single"
+                                selected={selectedDate}
+                                onSelect={setSelectedDate}
+                                disabled={(date) => date < new Date()}
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Time Slot</Label>
+                          <Select value={selectedTimeSlot} onValueChange={setSelectedTimeSlot}>
+                            <SelectTrigger className={formErrors.timeSlot ? 'border-destructive' : ''}>
+                              <SelectValue placeholder="Choose a time slot" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {timeSlots.map(slot => (
+                                <SelectItem key={slot.id} value={slot.id}>
+                                  {slot.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          {formErrors.timeSlot && <p className="text-xs text-destructive">{formErrors.timeSlot}</p>}
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label>Contact Preference</Label>
+                          <RadioGroup value={contactPreference} onValueChange={setContactPreference} className="grid gap-2">
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="whatsapp" id="whatsapp" />
+                              <Label htmlFor="whatsapp">WhatsApp</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="phone" id="phone" />
+                              <Label htmlFor="phone">SMS/Call</Label>
+                            </div>
+                          </RadioGroup>
+                        </div>
+
+                        {contactPreference === 'whatsapp' && (
+                          <div className="space-y-2">
+                            <Label htmlFor="whatsapp">WhatsApp Number</Label>
+                            <Input
+                              id="whatsapp"
+                              value={whatsappNumber}
+                              onChange={(e) => setWhatsappNumber(e.target.value)}
+                              placeholder="Enter your WhatsApp number"
+                              className={formErrors.whatsapp ? 'border-destructive' : ''}
+                            />
+                            {formErrors.whatsapp && <p className="text-xs text-destructive">{formErrors.whatsapp}</p>}
+                          </div>
+                        )}
+
+                        {contactPreference === 'phone' && (
+                          <div className="space-y-2">
+                            <Label htmlFor="phone">Phone Number</Label>
+                            <Input
+                              id="phone"
+                              value={phoneNumber}
+                              onChange={(e) => setPhoneNumber(e.target.value)}
+                              placeholder="Enter your phone number"
+                              className={formErrors.phone ? 'border-destructive' : ''}
+                            />
+                            {formErrors.phone && <p className="text-xs text-destructive">{formErrors.phone}</p>}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="address">Delivery Address</Label>
+                          {user && user.addresses?.length > 0 && (
+                            <span
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setShowAddressSelector(!showAddressSelector)}
+                              className="flex items-center text-primary"
+                              style={{ cursor: 'pointer' }}
+                            >
+                              <MapPin className="w-4 h-4 mr-1" />
+                              {showAddressSelector ? 'Hide saved addresses' : 'Use saved address'}
+                            </span>
+                          )}
+                        </div>
+                        {showAddressSelector && (
+                          <AddressSelector onSelect={handleAddressSelect} />
+                        )}
+                        <AddressAutocomplete
+                          value={address}
+                          onChange={setAddress}
+                          onAddressSelect={handleAddressAutocomplete}
+                          placeholder="Start typing your address..."
+                          className={formErrors.address ? 'border-destructive' : ''}
+                        />
+                        {formErrors.address && <p className="text-xs text-destructive">{formErrors.address}</p>}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="postcode">Suburb & Postcode</Label>
+                        <Select value={postcode} onValueChange={setPostcode}>
+                          <SelectTrigger className={formErrors.postcode ? 'border-destructive' : ''}>
+                            <SelectValue placeholder="Select suburb" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {postcodes.map((pc) => (
+                              <SelectItem key={pc.id} value={pc.postcode}>
+                                {pc.suburb} ({pc.postcode})
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {formErrors.postcode && <p className="text-xs text-destructive">{formErrors.postcode}</p>}
+                      </div>
+
+                      <PhotoUpload
+                        photos={photos}
+                        onPhotosChange={setPhotos}
+                        maxPhotos={10}
+                      />
+
+                      <div className="flex items-center space-x-2">
+                        <Checkbox 
+                          id="terms" 
+                          checked={termsAccepted}
+                          onCheckedChange={setTermsAccepted}
+                        />
+                        <Label htmlFor="terms" className="text-sm">
+                          I agree to the <Link to="/terms" className="text-primary hover:underline" target="_blank">Terms and Conditions</Link> and{' '}
+                          <Link to="/privacy" className="text-primary hover:underline" target="_blank">Privacy Policy</Link>
+                        </Label>
+                      </div>
+                      {formErrors.terms && <p className="text-xs text-destructive">{formErrors.terms}</p>}
+
+                      <Button type="submit" className="w-full" disabled={selectedStores.length === 0}>
+                        Schedule Multi-Store Run
+                      </Button>
+                    </form>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="upcoming-orders">
+                <UpcomingOrders 
+                  orders={upcomingOrders} 
+                  onSendMessage={handleSendMessage}
+                />
+              </TabsContent>
+            </Tabs>
+          )}
         </motion.div>
       </div>
     </div>
