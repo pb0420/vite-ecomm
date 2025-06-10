@@ -71,7 +71,7 @@ const AddressAutocomplete = ({
 };
 
 // Transform function
-const filtered = (data) => {
+const transformData = (data) => {
   return data.map(item => {
     const transformedItem = {};
     for (const key in item) {
@@ -80,13 +80,13 @@ const filtered = (data) => {
     return transformedItem;
   }); }
       
-    
-       setSuggestions(filtered);
-      setShowSuggestions(filtered.length > 0);
+      return transformData;
     }
 
-    filteredResponse();
-   
+    const filtered = await filteredResponse();
+      console.log(filtered);
+    setSuggestions(filtered);
+    setShowSuggestions(filtered.length > 0);
   }, [value]);
 
   // Handle input change
