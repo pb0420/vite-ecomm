@@ -5,7 +5,7 @@ import PhoneLoginForm from '@/components/auth/PhoneLoginForm';
 const LoginDialog = ({ open, onOpenChange }) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[400px]">
         <DialogHeader>
           <DialogTitle>Hi there!</DialogTitle>
         </DialogHeader>
