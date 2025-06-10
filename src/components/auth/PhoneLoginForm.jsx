@@ -93,10 +93,10 @@ const PhoneLoginForm = ({ onSuccess }) => {
         </div>
 
         {/* Security Badge */}
-        <div className="flex items-center justify-center mb-6 p-3 bg-green-50 rounded-lg border border-green-200">
+        {/* <div className="flex items-center justify-center mb-6 p-3 bg-green-50 rounded-lg border border-green-200">
           <Shield className="w-4 h-4 text-green-600 mr-2" />
           <span className="text-sm text-green-700 font-medium">Secure SMS verification</span>
-        </div>
+        </div> */} 
         
         <form onSubmit={codeSent ? handleVerifyOtp : handleSendOtp} className="space-y-6">
           {/* Phone Number Input */}
