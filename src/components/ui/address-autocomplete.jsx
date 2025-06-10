@@ -69,7 +69,7 @@ const AddressAutocomplete = ({
   LOCALITY_N: "suburb",
   POSTCODE: "postcode"
 };
-
+const data = response.data;
 // Transform function
 const transformData = (data) => {
   return response.data.map(item => {
@@ -81,8 +81,8 @@ const transformData = (data) => {
   }); }
 
       console.log(data);
-     setSuggestions(response.data);
-      setShowSuggestions(response.data.length > 0);
+     // setSuggestions(response.data);
+     //  setShowSuggestions(response.data.length > 0);
     }
 
    filteredResponse();
