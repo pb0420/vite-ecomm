@@ -158,7 +158,7 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
           {errors?.address && <p className="text-xs text-destructive">{errors.address}</p>}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="postcode">Suburb & Postcode</Label>
+          <Label htmlFor="postcode">Postcode</Label>
           <Select 
             value={formData.postcode} 
             onValueChange={(value) => setFormData(prev => ({ ...prev, postcode: value }))}
