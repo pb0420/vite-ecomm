@@ -82,7 +82,7 @@ const Footer = () => {
                   Work With Us
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link to="/shipping" className="text-gray-600 hover:text-primary">
                   Shipping & Delivery
                 </Link>
@@ -91,7 +91,7 @@ const Footer = () => {
                 <Link to="/returns" className="text-gray-600 hover:text-primary">
                   Returns Policy
                 </Link>
-              </li>
+              </li> */} 
             </ul>
           </div>
 
