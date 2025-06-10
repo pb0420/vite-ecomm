@@ -22,7 +22,7 @@ import CategoryPage from '@/pages/CategoryPage';
 import ProductPage from '@/pages/ProductPage';
 import CheckoutPage from '@/pages/CheckoutPage';
 import OrderConfirmationPage from '@/pages/OrderConfirmationPage';
-import LoginPage from '@/pages/LoginPage';
+// import LoginPage from '@/pages/LoginPage';
 import AdminLoginPage from '@/pages/AdminLoginPage';
 import RegisterPage from '@/pages/RegisterPage';
 import AccountPage from '@/pages/AccountPage';
@@ -53,7 +53,7 @@ const App = () => {
                     <Route path="/checkout" element={<CheckoutPage />} />
                     <Route path="/store-pickup" element={<StorePickupPage />} />
                     <Route path="/order-confirmation/:id" element={<OrderConfirmationPage />} />
-                    <Route path="/login" element={<LoginPage />} />
+                    {/* <Route path="/login" element={<LoginPage />} /> */}
                     <Route path="/admin-login" element={<AdminLoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
                     <Route path="/account/*" element={<AccountPage />} />
