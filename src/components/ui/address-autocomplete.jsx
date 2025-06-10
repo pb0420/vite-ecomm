@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/lib/supabaseClient';
 
 const AddressAutocomplete = ({ 
   value, 
@@ -19,22 +20,26 @@ const AddressAutocomplete = ({
   const suggestionsRef = useRef(null);
 
   // Load addresses from JSON file
-  useEffect(() => {
-    const loadAddresses = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('/adelaide-addresses.json');
-        const data = await response.json();
-        setAddresses(data.addresses || []);
-      } catch (error) {
-        console.error('Error loading addresses:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   const loadAddresses = async () => {
+  //     try {
+  //       setLoading(true);
+  //       const response = await supabase
+  //       .from('adelaide_addresses')
+  //       .select('ADDRESS_LA as address, LOCALITY_NA as suburb, POSTCODE as postcode')
+  //       .ilike('ADDRESS_LA', `%${value}%`)
+  //       .limit(5);
+  //       const data = await response.json();
+  //       setAddresses(data.addresses || []);
+  //     } catch (error) {
+  //       console.error('Error loading addresses:', error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    loadAddresses();
-  }, []);
+  //   loadAddresses();
+  // }, []);
 
   // Filter suggestions based on input
   useEffect(() => {
@@ -44,15 +49,22 @@ const AddressAutocomplete = ({
       return;
     }
 
-    const filtered = addresses.filter(addr => 
-      addr.address.toLowerCase().includes(value.toLowerCase()) ||
-      addr.suburb.toLowerCase().includes(value.toLowerCase()) ||
-      addr.postcode.includes(value)
-    ).slice(0, 5); // Limit to 5 suggestions
+    // const filtered = addresses.filter(addr => 
+    //   addr.address.toLowerCase().includes(value.toLowerCase()) ||
+    //   addr.suburb.toLowerCase().includes(value.toLowerCase()) ||
+    //   addr.postcode.includes(value)
+    // ).slice(0, 5); // Limit to 5 suggestions
+
+    const response = = await supabase
+        .from('adelaide_address_data')
+        .select('ADDRESS_LA as address, LOCALITY_NA as suburb, POSTCODE as postcode')
+        .ilike('ADDRESS_LA', `%${value}%`)
+        .limit(5);
+        const filtered = await response.json();
 
     setSuggestions(filtered);
     setShowSuggestions(filtered.length > 0);
-  }, [value, addresses]);
+  }, [value]);
 
   // Handle input change
   const handleInputChange = (e) => {
