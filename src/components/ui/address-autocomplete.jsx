@@ -77,6 +77,7 @@ const transformData = (data) => {
     for (const key in item) {
       transformedItem[keyMap[key] || key] = item[key];
     }
+    console.log(transformedItem)
     return transformedItem;
   }); }
 
