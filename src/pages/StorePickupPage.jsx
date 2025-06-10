@@ -526,7 +526,7 @@ const StorePickupPage = () => {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="postcode">Suburb & Postcode</Label>
+                        <Label htmlFor="postcode">Postcode</Label>
                         <Select value={postcode} onValueChange={setPostcode}>
                           <SelectTrigger className={formErrors.postcode ? 'border-destructive' : ''}>
                             <SelectValue placeholder="Select suburb" />
