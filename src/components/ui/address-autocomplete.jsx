@@ -14,7 +14,7 @@ const AddressAutocomplete = ({
 }) => {
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [addresses, setAddresses] = useState([]);
+  // const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef(null);
   const suggestionsRef = useRef(null);
@@ -55,7 +55,7 @@ const AddressAutocomplete = ({
     //   addr.postcode.includes(value)
     // ).slice(0, 5); // Limit to 5 suggestions
 
-    const response = = await supabase
+    const response = await supabase
         .from('adelaide_address_data')
         .select('ADDRESS_LA as address, LOCALITY_NA as suburb, POSTCODE as postcode')
         .ilike('ADDRESS_LA', `%${value}%`)
