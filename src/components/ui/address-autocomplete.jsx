@@ -72,7 +72,7 @@ const AddressAutocomplete = ({
 const data = response.data;
 // Transform function
 const transformData = (data) => {
-  return response.data.map(item => {
+  return data.map(item => {
     const transformedItem = {};
     for (const key in item) {
       transformedItem[keyMap[key] || key] = item[key];
