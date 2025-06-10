@@ -64,7 +64,7 @@ const AddressAutocomplete = ({
       
       // const filtered = await response.json();
 
-      const keyMap = {
+const keyMap = {
   ADDRESS_LA: "address",
   LOCALITY_N: "suburb",
   POSTCODE: "postcode"
@@ -72,20 +72,16 @@ const AddressAutocomplete = ({
 // Transform function
 const transformData = (data) => {
   return data.map(item => {
-    console.log(item);
     const transformedItem = {};
     for (const key in item) {
       transformedItem[keyMap[key] || key] = item[key];
     }
-    console.log(transformedItem)
     return transformedItem;
   }); }
 
       const filtered = transformData(response.data);
-
-      console.log(filtered);
-     // setSuggestions(response.data);
-     //  setShowSuggestions(response.data.length > 0);
+       setSuggestions(filtered);
+      setShowSuggestions(filtered.length > 0);
     }
 
    filteredResponse();
