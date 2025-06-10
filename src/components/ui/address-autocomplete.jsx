@@ -59,7 +59,7 @@ const AddressAutocomplete = ({
       const response = await supabase
         .from('adelaide_address_data')
         .select('*')
-        .ilike('ADDRESS_LA', `%128%`)
+        .ilike('ADDRESS_LA', `%${value.toUpperCase()}%`)
         .limit(50);
       console.log(response);
       // const filtered = await response.json();
