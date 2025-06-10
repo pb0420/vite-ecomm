@@ -87,7 +87,7 @@ const transformData = (data) => {
       console.log(filtered);
     setSuggestions(filtered);
     setShowSuggestions(filtered.length > 0);
-  }, [value]);
+  }, [value,filteredResponse]);
 
   // Handle input change
   const handleInputChange = (e) => {
