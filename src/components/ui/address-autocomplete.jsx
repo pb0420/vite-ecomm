@@ -56,7 +56,7 @@ const AddressAutocomplete = ({
     // ).slice(0, 5); // Limit to 5 suggestions
 
     const filteredResponse = async () => {
-      const data = await supabase
+      const response = await supabase
         .from('adelaide_address_data')
         .select('*')
         .ilike('ADDRESS_LA', `%${value.toUpperCase()}%`)
@@ -71,8 +71,8 @@ const AddressAutocomplete = ({
 };
 
 // Transform function
-const transformData = (data) => {
-  return data.map(item => {
+const transformData = (response.data) => {
+  return response.data.map(item => {
     const transformedItem = {};
     for (const key in item) {
       transformedItem[keyMap[key] || key] = item[key];
@@ -80,9 +80,9 @@ const transformData = (data) => {
     return transformedItem;
   }); }
 
-      console.log(data.data);
-     setSuggestions(data.data);
-      setShowSuggestions(data.data.length > 0);
+      console.log(response.data);
+     setSuggestions(response.data);
+      setShowSuggestions(response.data.length > 0);
     }
 
    filteredResponse();
