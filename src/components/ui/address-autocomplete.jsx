@@ -85,10 +85,10 @@ const transformData = (data) => {
 
    filteredResponse.then((value) => {
   console.log(value);
-});;
-      console.log(filtered);
-    setSuggestions(filtered);
-    setShowSuggestions(filtered.length > 0);
+});
+      // console.log(filtered);
+    // setSuggestions(filtered);
+    // setShowSuggestions(filtered.length > 0);
   }, [value]);
 
   // Handle input change
