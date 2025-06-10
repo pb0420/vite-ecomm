@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Link } from 'react-router-dom';
+import { Phone, MessageSquare, Shield, CheckCircle } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from '@/components/ui/use-toast';
 
@@ -78,65 +79,138 @@ const PhoneLoginForm = ({ onSuccess }) => {
   };
 
   return (
-    <div className="space-y-4 p-6 border rounded-lg bg-card">
-      <div className="text-center mb-6">
-        <h3 className="text-lg font-semibold">Sign in to continue</h3>
-        <p className="text-sm text-muted-foreground">
-          Please verify your phone number
-        </p>
-      </div>
-      
-      <form onSubmit={handleVerifyOtp} className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="phone">Phone Number</Label>
-          <div className="flex space-x-2">
-            <Input
-              id="phone"
-              type="tel"
-              placeholder="04XXXXXXXX"
-              value={phoneNumber.replace(/^\+61/, '')}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              disabled={loading}
-              className="flex-1"
-            />
-            <Button 
-              type="button" 
-              variant="outline"
-              onClick={handleSendOtp}
-              disabled={loading || (countdown > 0)}
-            >
-              {countdown > 0 ? `Resend (${countdown}s)` : codeSent ? 'Resend Code' : 'Send Code'}
-            </Button>
+    <div className="w-full max-w-md mx-auto">
+      <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl p-8 border border-primary/20 shadow-lg">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Phone className="w-8 h-8 text-primary" />
           </div>
+          <h3 className="text-2xl font-bold text-gray-900 mb-2">Welcome to Groceroo</h3>
+          <p className="text-gray-600">
+            Enter your phone number to get started
+          </p>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="otp">Verification Code</Label>
-          <Input
-            id="otp"
-            type="text"
-            maxLength={6}
-            placeholder="Enter 6-digit code"
-            value={otp}
-            onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-            disabled={loading}
-          />
+        {/* Security Badge */}
+        <div className="flex items-center justify-center mb-6 p-3 bg-green-50 rounded-lg border border-green-200">
+          <Shield className="w-4 h-4 text-green-600 mr-2" />
+          <span className="text-sm text-green-700 font-medium">Secure SMS verification</span>
         </div>
+        
+        <form onSubmit={codeSent ? handleVerifyOtp : handleSendOtp} className="space-y-6">
+          {/* Phone Number Input */}
+          <div className="space-y-2">
+            <Label htmlFor="phone" className="text-sm font-semibold text-gray-700">
+              Phone Number
+            </Label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <span className="text-gray-500 text-sm font-medium">+61</span>
+              </div>
+              <Input
+                id="phone"
+                type="tel"
+                placeholder="04XXXXXXXX"
+                value={phoneNumber.replace(/^\+61/, '')}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                disabled={loading || codeSent}
+                className="pl-12 h-12 text-lg border-2 focus:border-primary transition-colors"
+              />
+            </div>
+          </div>
 
-        <Button 
-          type="submit" 
-          className="w-full" 
-          disabled={loading || !codeSent || otp.length !== 6}
-        >
-          {loading ? 'Verifying...' : 'Verify & Sign In'}
-        </Button>
+          {/* OTP Input - Only show after code is sent */}
+          {codeSent && (
+            <div className="space-y-2">
+              <Label htmlFor="otp" className="text-sm font-semibold text-gray-700">
+                Verification Code
+              </Label>
+              <div className="relative">
+                <Input
+                  id="otp"
+                  type="text"
+                  maxLength={6}
+                  placeholder="Enter 6-digit code"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  disabled={loading}
+                  className="h-12 text-lg text-center tracking-widest border-2 focus:border-primary transition-colors"
+                />
+                {otp.length === 6 && (
+                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                    <CheckCircle className="w-5 h-5 text-green-500" />
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
-        <p className="text-xs text-center text-muted-foreground mt-4">
-          By continuing, you agree to our{' '}
-          <Link to="/terms" className="text-primary hover:underline" target="_blank">Terms and Conditions</Link> and{' '}
-          <Link to="/privacy" className="text-primary hover:underline" target="_blank">Privacy Policy</Link>
-        </p>
-      </form>
+          {/* Action Buttons */}
+          <div className="space-y-3">
+            {!codeSent ? (
+              <Button 
+                type="submit" 
+                className="w-full h-12 text-lg font-semibold bg-primary hover:bg-primary/90 transition-colors"
+                disabled={loading || !phoneNumber.trim()}
+              >
+                {loading ? (
+                  <div className="flex items-center">
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                    Sending Code...
+                  </div>
+                ) : (
+                  <div className="flex items-center">
+                    <MessageSquare className="w-5 h-5 mr-2" />
+                    Send Verification Code
+                  </div>
+                )}
+              </Button>
+            ) : (
+              <div className="space-y-3">
+                <Button 
+                  type="submit" 
+                  className="w-full h-12 text-lg font-semibold bg-primary hover:bg-primary/90 transition-colors"
+                  disabled={loading || otp.length !== 6}
+                >
+                  {loading ? (
+                    <div className="flex items-center">
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                      Verifying...
+                    </div>
+                  ) : (
+                    'Verify & Sign In'
+                  )}
+                </Button>
+                
+                <Button 
+                  type="button"
+                  variant="outline"
+                  className="w-full h-10"
+                  onClick={handleSendOtp}
+                  disabled={loading || countdown > 0}
+                >
+                  {countdown > 0 ? `Resend in ${countdown}s` : 'Resend Code'}
+                </Button>
+              </div>
+            )}
+          </div>
+        </form>
+
+        {/* Footer */}
+        <div className="mt-8 pt-6 border-t border-gray-200">
+          <p className="text-xs text-center text-gray-500 leading-relaxed">
+            By continuing, you agree to our{' '}
+            <Link to="/terms" className="text-primary hover:underline font-medium" target="_blank">
+              Terms of Service
+            </Link>{' '}
+            and{' '}
+            <Link to="/privacy" className="text-primary hover:underline font-medium" target="_blank">
+              Privacy Policy
+            </Link>
+          </p>
+        </div>
+      </div>
     </div>
   );
 };
