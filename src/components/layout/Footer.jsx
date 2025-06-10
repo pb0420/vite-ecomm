@@ -99,18 +99,18 @@ const Footer = () => {
             <h4 className="text-sm font-semibold">More</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link to="/account" className="text-gray-600 hover:text-primary">
-                  My account
+                <Link to="/" className="text-gray-600 hover:text-primary">
+                  Home
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="text-gray-600 hover:text-primary">
-                  Contact Us
+                <Link to="/privacy" className="text-gray-600 hover:text-primary">
+                  Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link to="/work" className="text-gray-600 hover:text-primary">
-                  Work
+                <Link to="/terms" className="text-gray-600 hover:text-primary">
+                  Terms and conditions
                 </Link>
               </li>
             </ul>
