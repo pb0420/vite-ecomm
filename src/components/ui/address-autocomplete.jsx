@@ -71,8 +71,8 @@ const AddressAutocomplete = ({
 };
 
 // Transform function
-const transformData = (response.data) => {
-  return data.map(item => {
+const transformData = (data) => {
+  return response.data.map(item => {
     const transformedItem = {};
     for (const key in item) {
       transformedItem[keyMap[key] || key] = item[key];
@@ -80,7 +80,7 @@ const transformData = (response.data) => {
     return transformedItem;
   }); }
 
-      console.log(response.data);
+      console.log(data);
      setSuggestions(response.data);
       setShowSuggestions(response.data.length > 0);
     }
