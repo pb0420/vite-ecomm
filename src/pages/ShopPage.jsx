@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 import { Search, Filter } from 'lucide-react';
@@ -16,6 +16,7 @@ const ShopPage = () => {
   const featuredParam = queryParams.get('featured');
   
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchInput, setSearchInput] = useState(''); // Separate state for input
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('name-asc');
   const [products, setProducts] = useState([]);
@@ -24,6 +25,17 @@ const ShopPage = () => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
+
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchInput.length >= 2 || searchInput.length === 0) {
+        setSearchTerm(searchInput);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchInput]);
 
   useEffect(() => {
     fetchCategories();
@@ -76,7 +88,7 @@ const ShopPage = () => {
         query = query.eq('featured', true);
       }
 
-      if (searchTerm) {
+      if (searchTerm && searchTerm.length >= 2) {
         query = query.or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
       }
 
@@ -139,8 +151,8 @@ const ShopPage = () => {
     }
   };
 
-  const handleSearchChange = (value) => {
-    setSearchTerm(value);
+  const handleSearchInputChange = (value) => {
+    setSearchInput(value);
   };
 
   const handleCategoryChange = (value) => {
@@ -152,6 +164,7 @@ const ShopPage = () => {
   };
 
   const handleResetFilters = () => {
+    setSearchInput('');
     setSearchTerm('');
     setSelectedCategory('all');
     setSortBy('name-asc');
@@ -214,12 +227,17 @@ const ShopPage = () => {
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
-                  placeholder="Search products..."
+                  placeholder="Search products... (min 2 chars)"
                   className="pl-8"
-                  value={searchTerm}
-                  onChange={(e) => handleSearchChange(e.target.value)}
+                  value={searchInput}
+                  onChange={(e) => handleSearchInputChange(e.target.value)}
                 />
               </div>
+              {searchInput.length > 0 && searchInput.length < 2 && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  Enter at least 2 characters to search
+                </p>
+              )}
             </div>
             
             <div>
