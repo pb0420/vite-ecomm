@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import ProductCard from '@/components/products/ProductCard';
 import { supabase } from '@/lib/supabaseClient';
 
+const PRODUCTS_PER_PAGE = 25;
+
 const ShopPage = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -19,81 +21,142 @@ const ShopPage = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [currentPage, setCurrentPage] = useState(0);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { data: productsData, error: productsError } = await supabase
-          .from('products')
-          .select(`
-            *,
-            categories (
-              id,
-              name
-            )
-          `);
-
-        if (productsError) throw productsError;
-
-        const { data: categoriesData, error: categoriesError } = await supabase
-          .from('categories')
-          .select('*')
-          .order('name');
-
-        if (categoriesError) throw categoriesError;
-
-        setProducts(productsData || []);
-        setCategories(categoriesData || []);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+    fetchCategories();
   }, []);
-  
+
   useEffect(() => {
-    let result = [...products];
-    
-    if (featuredParam === 'true') {
-      result = result.filter(product => product.featured);
+    // Reset pagination when filters change
+    setCurrentPage(0);
+    setProducts([]);
+    setHasMore(true);
+    fetchProducts(true);
+  }, [searchTerm, selectedCategory, sortBy, featuredParam]);
+
+  const fetchCategories = async () => {
+    try {
+      const { data: categoriesData, error: categoriesError } = await supabase
+        .from('categories')
+        .select('*')
+        .order('name');
+
+      if (categoriesError) throw categoriesError;
+      setCategories(categoriesData || []);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
     }
+  };
+
+  const fetchProducts = async (reset = false) => {
+    const pageToFetch = reset ? 0 : currentPage;
     
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      result = result.filter(product => 
-        product.name.toLowerCase().includes(term) || 
-        product.description?.toLowerCase().includes(term)
-      );
+    if (reset) {
+      setLoading(true);
+    } else {
+      setLoadingMore(true);
     }
-    
-    if (selectedCategory !== 'all') {
-      result = result.filter(product => product.category_id === parseInt(selectedCategory));
+
+    try {
+      let query = supabase
+        .from('products')
+        .select(`
+          *,
+          categories (
+            id,
+            name
+          )
+        `);
+
+      // Apply filters
+      if (featuredParam === 'true') {
+        query = query.eq('featured', true);
+      }
+
+      if (searchTerm) {
+        query = query.or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
+      }
+
+      if (selectedCategory !== 'all') {
+        query = query.eq('category_id', parseInt(selectedCategory));
+      }
+
+      // Apply sorting
+      switch (sortBy) {
+        case 'name-asc':
+          query = query.order('name', { ascending: true });
+          break;
+        case 'name-desc':
+          query = query.order('name', { ascending: false });
+          break;
+        case 'price-asc':
+          query = query.order('price', { ascending: true });
+          break;
+        case 'price-desc':
+          query = query.order('price', { ascending: false });
+          break;
+        default:
+          query = query.order('name', { ascending: true });
+          break;
+      }
+
+      // Apply pagination
+      const from = pageToFetch * PRODUCTS_PER_PAGE;
+      const to = from + PRODUCTS_PER_PAGE - 1;
+      query = query.range(from, to);
+
+      const { data: productsData, error: productsError } = await query;
+
+      if (productsError) throw productsError;
+
+      const newProducts = productsData || [];
+      
+      if (reset) {
+        setProducts(newProducts);
+        setCurrentPage(1);
+      } else {
+        setProducts(prev => [...prev, ...newProducts]);
+        setCurrentPage(prev => prev + 1);
+      }
+
+      // Check if there are more products
+      setHasMore(newProducts.length === PRODUCTS_PER_PAGE);
+
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
     }
-    
-    switch (sortBy) {
-      case 'name-asc':
-        result.sort((a, b) => a.name.localeCompare(b.name));
-        break;
-      case 'name-desc':
-        result.sort((a, b) => b.name.localeCompare(a.name));
-        break;
-      case 'price-asc':
-        result.sort((a, b) => a.price - b.price);
-        break;
-      case 'price-desc':
-        result.sort((a, b) => b.price - a.price);
-        break;
-      default:
-        break;
+  };
+
+  const handleLoadMore = () => {
+    if (!loadingMore && hasMore) {
+      fetchProducts(false);
     }
-    
-    setFilteredProducts(result);
-  }, [searchTerm, selectedCategory, sortBy, featuredParam, products]);
-  
+  };
+
+  const handleSearchChange = (value) => {
+    setSearchTerm(value);
+  };
+
+  const handleCategoryChange = (value) => {
+    setSelectedCategory(value);
+  };
+
+  const handleSortChange = (value) => {
+    setSortBy(value);
+  };
+
+  const handleResetFilters = () => {
+    setSearchTerm('');
+    setSelectedCategory('all');
+    setSortBy('name-asc');
+  };
+
   if (loading) {
     return (
       <div className="container px-4 py-8 mx-auto md:px-6">
@@ -154,14 +217,14 @@ const ShopPage = () => {
                   placeholder="Search products..."
                   className="pl-8"
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e) => handleSearchChange(e.target.value)}
                 />
               </div>
             </div>
             
             <div>
               <h3 className="mb-2 text-lg font-medium">Categories</h3>
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <Select value={selectedCategory} onValueChange={handleCategoryChange}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
@@ -178,7 +241,7 @@ const ShopPage = () => {
             
             <div>
               <h3 className="mb-2 text-lg font-medium">Sort By</h3>
-              <Select value={sortBy} onValueChange={setSortBy}>
+              <Select value={sortBy} onValueChange={handleSortChange}>
                 <SelectTrigger>
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
@@ -194,11 +257,7 @@ const ShopPage = () => {
             <Button 
               variant="outline" 
               className="w-full"
-              onClick={() => {
-                setSearchTerm('');
-                setSelectedCategory('all');
-                setSortBy('name-asc');
-              }}
+              onClick={handleResetFilters}
             >
               <Filter className="w-4 h-4 mr-2" />
               Reset Filters
@@ -207,7 +266,7 @@ const ShopPage = () => {
           
           {/* Products Grid */}
           <div>
-            {filteredProducts.length === 0 ? (
+            {products.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-64 p-8 text-center border rounded-lg">
                 <h3 className="text-lg font-medium">No products found</h3>
                 <p className="mt-2 text-sm text-muted-foreground">
@@ -215,11 +274,34 @@ const ShopPage = () => {
                 </p>
               </div>
             ) : (
-              <div className="product-grid">
-                {filteredProducts.map(product => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
+              <>
+                <div className="product-grid">
+                  {products.map(product => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+                
+                {/* Load More Button */}
+                {hasMore && (
+                  <div className="flex justify-center mt-8">
+                    <Button 
+                      onClick={handleLoadMore}
+                      disabled={loadingMore}
+                      variant="outline"
+                      size="lg"
+                    >
+                      {loadingMore ? (
+                        <>
+                          <div className="mr-2 h-4 w-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                          Loading...
+                        </>
+                      ) : (
+                        'Load More Products'
+                      )}
+                    </Button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
