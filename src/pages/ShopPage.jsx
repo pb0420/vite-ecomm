@@ -211,7 +211,7 @@ const ShopPage = () => {
             transition={{ duration: 0.3, delay: 0.1 }}
             className="space-y-6"
           >
-            <div className="p-2">
+            <div className="p-4">
               <h3 className="mb-2 text-lg font-medium">Search</h3>
               <div className="relative">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
