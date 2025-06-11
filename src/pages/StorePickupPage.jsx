@@ -533,7 +533,7 @@ const StorePickupPage = () => {
                           </SelectTrigger>
                           <SelectContent>
                             {postcodes.map((pc) => (
-                              <SelectItem key={pc.id} value={pc.id}>
+                              <SelectItem key={pc.id} value={pc.postcode}>
                                 {pc.suburb} ({pc.postcode})
                               </SelectItem>
                             ))}
