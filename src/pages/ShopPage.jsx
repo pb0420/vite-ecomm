@@ -217,7 +217,7 @@ const ShopPage = () => {
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
-                  placeholder="Search products... (min 2 chars)"
+                  placeholder="Search for products..."
                   className="pl-8"
                   value={searchInput}
                   onChange={(e) => handleSearchInputChange(e.target.value)}
