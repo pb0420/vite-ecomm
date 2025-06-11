@@ -15,13 +15,13 @@ const ShopPage = () => {
   const queryParams = new URLSearchParams(location.search);
   const featuredParam = queryParams.get('featured');
   
-  const [searchTerm, setSearchTerm] = useState('');
-  const [searchInput, setSearchInput] = useState(''); // Separate state for input
+  const [searchInput, setSearchInput] = useState(''); // Input state for UI
+  const [searchTerm, setSearchTerm] = useState(''); // Actual search term for API
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('name-asc');
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
@@ -67,7 +67,7 @@ const ShopPage = () => {
     const pageToFetch = reset ? 0 : currentPage;
     
     if (reset) {
-      setLoading(true);
+      setInitialLoading(true);
     } else {
       setLoadingMore(true);
     }
@@ -140,7 +140,7 @@ const ShopPage = () => {
     } catch (error) {
       console.error('Error fetching products:', error);
     } finally {
-      setLoading(false);
+      setInitialLoading(false);
       setLoadingMore(false);
     }
   };
@@ -169,16 +169,6 @@ const ShopPage = () => {
     setSelectedCategory('all');
     setSortBy('name-asc');
   };
-
-  if (loading) {
-    return (
-      <div className="container px-4 py-8 mx-auto md:px-6">
-        <div className="flex items-center justify-center h-64">
-          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -217,7 +207,7 @@ const ShopPage = () => {
           {/* Filters Sidebar */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.1 }}
             className="space-y-6"
           >
@@ -284,7 +274,11 @@ const ShopPage = () => {
           
           {/* Products Grid */}
           <div>
-            {products.length === 0 ? (
+            {initialLoading ? (
+              <div className="flex items-center justify-center h-64">
+                <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            ) : products.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-64 p-8 text-center border rounded-lg">
                 <h3 className="text-lg font-medium">No products found</h3>
                 <p className="mt-2 text-sm text-muted-foreground">
