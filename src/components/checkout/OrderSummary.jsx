@@ -1,14 +1,12 @@
-
 import React from 'react';
 import { Separator } from '@/components/ui/separator';
 import { useCart } from '@/contexts/CartContext';
 import { formatCurrency } from '@/lib/utils';
 
-// Accept deliveryFee as a prop
-const OrderSummary = ({ deliveryFee = 0 }) => {
+const OrderSummary = ({ deliveryFee = 0, appliedPromo = null, discountAmount = 0 }) => {
   const { cart, getCartTotal } = useCart();
   const subtotal = getCartTotal();
-  const total = subtotal + deliveryFee;
+  const total = subtotal - discountAmount + deliveryFee;
 
   return (
     <div className="sticky top-20 p-6 border rounded-lg bg-muted/20">
@@ -37,11 +35,21 @@ const OrderSummary = ({ deliveryFee = 0 }) => {
           <span className="text-muted-foreground">Subtotal</span>
           <span>{formatCurrency(subtotal)}</span>
         </div>
+        
+        {appliedPromo && discountAmount > 0 && (
+          <div className="flex justify-between text-green-600">
+            <span>Discount ({appliedPromo.code})</span>
+            <span>-{formatCurrency(discountAmount)}</span>
+          </div>
+        )}
+        
         <div className="flex justify-between">
           <span className="text-muted-foreground">Delivery Fee</span>
           <span>{formatCurrency(deliveryFee)}</span>
         </div>
+        
         <Separator className="my-2" />
+        
         <div className="flex justify-between font-bold text-base pt-1">
           <span>Total</span>
           <span>{formatCurrency(total)}</span>
@@ -52,4 +60,3 @@ const OrderSummary = ({ deliveryFee = 0 }) => {
 };
 
 export default OrderSummary;
-  

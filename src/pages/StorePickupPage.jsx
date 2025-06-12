@@ -16,6 +16,7 @@ import AddressAutocomplete from '@/components/ui/address-autocomplete';
 import StoreSelector from '@/components/pickup/StoreSelector';
 import PhotoUpload from '@/components/pickup/PhotoUpload';
 import UpcomingOrders from '@/components/pickup/UpcomingOrders';
+import PromoCodeInput from '@/components/checkout/PromoCodeInput';
 import { format } from 'date-fns';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabaseClient';
@@ -55,6 +56,7 @@ const StorePickupPage = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [postcodes, setPostcodes] = useState([]);
   const [activeTab, setActiveTab] = useState('new-order');
+  const [appliedPromo, setAppliedPromo] = useState(null);
   
   const timeSlots = generateTimeSlots();
   const navigate = useNavigate();
@@ -140,6 +142,14 @@ const StorePickupPage = () => {
     setPostcode(addressDetails.postcode);
   };
 
+  const handlePromoApplied = (promo) => {
+    setAppliedPromo(promo);
+  };
+
+  const handlePromoRemoved = () => {
+    setAppliedPromo(null);
+  };
+
   const validateForm = () => {
     const errors = {};
     if (selectedStores.length === 0) errors.stores = 'Please select at least one store';
@@ -177,6 +187,10 @@ const StorePickupPage = () => {
     }
 
     try {
+      const subtotal = selectedStores.reduce((total, store) => total + store.estimatedTotal, 0);
+      const discountAmount = appliedPromo ? appliedPromo.discountAmount : 0;
+      const finalTotal = subtotal - discountAmount;
+
       // Create the main pickup order
       const { data: pickupOrder, error: orderError } = await supabase
         .from('pickup_orders')
@@ -191,7 +205,9 @@ const StorePickupPage = () => {
           photos: photos,
           status: 'pending',
           payment_status: 'pending',
-          estimated_total: selectedStores.reduce((total, store) => total + store.estimatedTotal, 0)
+          estimated_total: finalTotal,
+          promo_code: appliedPromo?.code || null,
+          discount_amount: discountAmount
         })
         .select()
         .single();
@@ -213,6 +229,11 @@ const StorePickupPage = () => {
 
       if (storeOrdersError) throw storeOrdersError;
 
+      // Update promo code usage if applied
+      if (appliedPromo) {
+        await supabase.rpc('increment_promo_usage', { promo_code: appliedPromo.code });
+      }
+
       toast({ title: "Order Created", description: "Your pickup order has been scheduled. We'll contact you shortly." });
       
       // Reset form
@@ -222,6 +243,7 @@ const StorePickupPage = () => {
       setPhoneNumber('');
       setPhotos([]);
       setTermsAccepted(false);
+      setAppliedPromo(null);
       
       // Refresh upcoming orders and switch to that tab
       fetchUpcomingOrders();
@@ -279,13 +301,15 @@ const StorePickupPage = () => {
       const deliveryFee = store?.store_delivery_fee || 0;
       return Math.max(highest, deliveryFee);
     }, 0);
-    
-    const total = subtotal + serviceCharge + highestDeliveryFee;
+
+    const discountAmount = appliedPromo ? appliedPromo.discountAmount : 0;
+    const total = subtotal + serviceCharge + highestDeliveryFee - discountAmount;
     
     return {
       subtotal,
       serviceCharge,
       deliveryFee: highestDeliveryFee,
+      discountAmount,
       total
     };
   };
@@ -548,6 +572,19 @@ const StorePickupPage = () => {
                         maxPhotos={10}
                       />
 
+                      {/* Promo Code Section */}
+                      {selectedStores.length > 0 && (
+                        <div className="p-4 border rounded-lg">
+                          <h4 className="font-semibold mb-4">Promo Code</h4>
+                          <PromoCodeInput
+                            subtotal={orderSummary.subtotal}
+                            onPromoApplied={handlePromoApplied}
+                            appliedPromo={appliedPromo}
+                            onPromoRemoved={handlePromoRemoved}
+                          />
+                        </div>
+                      )}
+
                       {/* Order Summary with Service Charge */}
                       {selectedStores.length > 0 && (
                         <motion.div
@@ -569,6 +606,12 @@ const StorePickupPage = () => {
                               <span>Delivery Fee (Highest):</span>
                               <span>{formatCurrency(orderSummary.deliveryFee)}</span>
                             </div>
+                            {appliedPromo && orderSummary.discountAmount > 0 && (
+                              <div className="flex justify-between text-green-600">
+                                <span>Discount ({appliedPromo.code}):</span>
+                                <span>-{formatCurrency(orderSummary.discountAmount)}</span>
+                              </div>
+                            )}
                             <div className="flex justify-between font-semibold pt-2 border-t">
                               <span>Estimated Total:</span>
                               <span>{formatCurrency(orderSummary.total)}</span>

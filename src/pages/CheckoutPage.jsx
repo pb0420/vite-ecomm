@@ -10,6 +10,7 @@ import CheckoutForm from '@/components/checkout/CheckoutForm';
 import OrderSummary from '@/components/checkout/OrderSummary';
 import DeliveryOptions from '@/components/checkout/DeliveryOptions';
 import PaymentSection from '@/components/checkout/PaymentSection';
+import PromoCodeInput from '@/components/checkout/PromoCodeInput';
 import PhoneLoginForm from '@/components/auth/PhoneLoginForm';
 import AddressAutocomplete from '@/components/ui/address-autocomplete';
 import { useCart } from '@/contexts/CartContext';
@@ -39,6 +40,7 @@ const CheckoutPage = () => {
     postcode: ''
   });
   const [postcodes, setPostcodes] = useState([]);
+  const [appliedPromo, setAppliedPromo] = useState(null);
 
   useEffect(() => {
     const fetchInitialFee = async () => {
@@ -115,13 +117,36 @@ const CheckoutPage = () => {
     }));
   };
 
-   const handleDeliveryChange = useCallback((details) => {
+  const handleDeliveryChange = useCallback((details) => {
     setDeliveryDetails(details);
   }, []);
 
   const handleDetailsChange = useCallback((details) => {
     setCustomerDetails(details);
   }, []);
+
+  const handlePromoApplied = (promo) => {
+    setAppliedPromo(promo);
+  };
+
+  const handlePromoRemoved = () => {
+    setAppliedPromo(null);
+  };
+
+  const getSubtotal = () => {
+    return getCartTotal();
+  };
+
+  const getDiscountAmount = () => {
+    return appliedPromo ? appliedPromo.discountAmount : 0;
+  };
+
+  const getFinalTotal = () => {
+    const subtotal = getSubtotal();
+    const discount = getDiscountAmount();
+    const deliveryFee = deliveryDetails.fee;
+    return subtotal - discount + deliveryFee;
+  };
   
   if (cart.length === 0 && !isSubmitting) {
     return (
@@ -145,6 +170,8 @@ const CheckoutPage = () => {
     delivery_notes: customerDetails.deliveryNotes,
     delivery_type: deliveryDetails.type,
     scheduled_delivery_time: deliveryDetails.scheduledTime,
+    promo_code: appliedPromo?.code || null,
+    discount_amount: getDiscountAmount(),
   };
 
   return (
@@ -217,6 +244,15 @@ const CheckoutPage = () => {
                 <>
                   <CheckoutForm onDetailsChange={handleDetailsChange} errors={formErrors} />
                   <DeliveryOptions onDeliveryChange={handleDeliveryChange} />
+                  <div className="p-6 border rounded-lg">
+                    <h3 className="text-lg font-semibold mb-4">Promo Code</h3>
+                    <PromoCodeInput
+                      subtotal={getSubtotal()}
+                      onPromoApplied={handlePromoApplied}
+                      appliedPromo={appliedPromo}
+                      onPromoRemoved={handlePromoRemoved}
+                    />
+                  </div>
                 </>
               )}
             </motion.div>
@@ -228,7 +264,11 @@ const CheckoutPage = () => {
             transition={{ duration: 0.3, delay: 0.2 }}
             className="lg:sticky lg:top-20"
           >
-            <OrderSummary deliveryFee={deliveryDetails.fee} />
+            <OrderSummary 
+              deliveryFee={deliveryDetails.fee} 
+              appliedPromo={appliedPromo}
+              discountAmount={getDiscountAmount()}
+            />
           </motion.div>
 
           <div className="flex items-center space-x-2">
@@ -243,9 +283,9 @@ const CheckoutPage = () => {
             </Label>
           </div>
 
-          <div style={{marginTop:'20px'}}>
+          <div style={{marginTop:'20px',zIndex:1}}>
             <Button 
-              onClick={() => navigate('/stripe-payment',{state: {orderData:orderData,deliveryFee:deliveryDetails.fee}})} 
+              onClick={() => navigate('/stripe-payment',{state: {orderData:orderData,deliveryFee:deliveryDetails.fee, finalTotal: getFinalTotal()}})} 
               disabled={!user || !termsAccepted || showAccountSetup}
             >
               Proceed to Payment &nbsp; <CreditCard />
