@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, Link } from 'react-router-dom';
-import { User, Package, LogOut } from 'lucide-react';
+import { User, Package, LogOut, Store } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,6 +10,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { formatCurrency } from '@/lib/utils';
 import { supabase } from '@/lib/supabaseClient';
 import AddressManager from '@/components/account/AddressManager';
+import UpcomingOrders from '@/components/pickup/UpcomingOrders';
 
 const AccountPage = () => {
   const { user, updateUserInfo, logout, loading: authLoading } = useAuth();
@@ -61,7 +62,16 @@ const AccountPage = () => {
       const { data, error } = await supabase
         .from('pickup_orders')
         .select(`
-          *
+          *,
+          pickup_order_stores (
+            id,
+            store_id,
+            estimated_total,
+            actual_total,
+            notes,
+            status,
+            stores (name, address)
+          )
         `)
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
@@ -72,6 +82,40 @@ const AccountPage = () => {
       console.error('Error fetching pickup orders:', error);
     } finally {
       setLoadingOrders(false);
+    }
+  };
+
+  const handleSendMessage = async (orderId, message) => {
+    try {
+      // Get current order
+      const { data: currentOrder, error: fetchError } = await supabase
+        .from('pickup_orders')
+        .select('admin_messages')
+        .eq('id', orderId)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      const currentMessages = currentOrder.admin_messages || [];
+      const newMessage = {
+        from: 'customer',
+        message: message,
+        timestamp: new Date().toISOString()
+      };
+
+      const { error: updateError } = await supabase
+        .from('pickup_orders')
+        .update({
+          admin_messages: [...currentMessages, newMessage]
+        })
+        .eq('id', orderId);
+
+      if (updateError) throw updateError;
+
+      // Refresh pickup orders to show new message
+      fetchPickupOrders(user.id);
+    } catch (error) {
+      console.error('Error sending message:', error);
     }
   };
 
@@ -166,12 +210,15 @@ const AccountPage = () => {
       </motion.h1>
 
       <Tabs defaultValue="profile" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2 md:w-auto md:inline-flex">
+        <TabsList className="grid w-full grid-cols-3 md:w-auto md:inline-flex">
           <TabsTrigger value="profile" className="flex items-center">
             <User className="w-4 h-4 mr-2" />Profile
           </TabsTrigger>
           <TabsTrigger value="orders" className="flex items-center">
             <Package className="w-4 h-4 mr-2" />Orders
+          </TabsTrigger>
+          <TabsTrigger value="grocery-runs" className="flex items-center">
+            <Store className="w-4 h-4 mr-2" />Grocery Runs
           </TabsTrigger>
         </TabsList>
 
@@ -260,7 +307,6 @@ const AccountPage = () => {
 
         <TabsContent value="orders" className="space-y-6">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="space-y-6">
-            {/* Regular Orders */}
             <div className="p-6 border rounded-lg">
               <h2 className="text-xl font-semibold mb-4">Delivery Orders</h2>
               {loadingOrders ? (
@@ -299,49 +345,27 @@ const AccountPage = () => {
                 </div>
               )}
             </div>
+          </motion.div>
+        </TabsContent>
 
-            {/* Store Pickup Orders */}
+        <TabsContent value="grocery-runs" className="space-y-6">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
             <div className="p-6 border rounded-lg">
-              <h2 className="text-xl font-semibold mb-4">Grocery Run Summary</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold">Your Grocery Runs</h2>
+                <Link to="/store-pickup">
+                  <Button>Schedule New Run</Button>
+                </Link>
+              </div>
               {loadingOrders ? (
                 <div className="flex items-center justify-center h-40">
                   <div className="w-6 h-6 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
                 </div>
-              ) : pickupOrders.length === 0 ? (
-                <div className="text-center py-8">
-                  <Package className="w-12 h-12 mx-auto text-muted-foreground" />
-                  <h3 className="mt-4 text-lg font-medium">No pickup orders yet</h3>
-                  <p className="mt-2 text-sm text-muted-foreground">Schedule a store pickup to get started.</p>
-                  <Link to="/store-pickup"><Button className="mt-4">Schedule Pickup</Button></Link>
-                </div>
               ) : (
-                <div className="space-y-4">
-                  {pickupOrders.map(order => (
-                    <div key={order.id} className="p-4 border rounded-lg">
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                          <div className="flex items-center space-x-2">
-                            <h3 className="font-medium">Order #{order.id.substring(0, 6)}</h3>
-                            <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusClass(order.status)}`}>
-                              {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                            </span>
-                          </div>
-                          <p className="text-sm text-muted-foreground">
-                            {formatDate(order.created_at)} • {order.stores?.name}
-                          </p>
-                          <p className="text-sm text-muted-foreground mt-1">
-                            Estimated Total: {formatCurrency(order.estimated_total)}
-                          </p>
-                        </div>
-                        <div className="mt-2 sm:mt-0 text-right">
-                          <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusClass(order.payment_status)}`}>
-                            {order.payment_status.charAt(0).toUpperCase() + order.payment_status.slice(1)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <UpcomingOrders 
+                  orders={pickupOrders} 
+                  onSendMessage={handleSendMessage}
+                />
               )}
             </div>
           </motion.div>
