@@ -106,7 +106,6 @@ const StorePickupPage = () => {
         .from('pickup_orders')
         .select(`
           *,
-          stores (name),
           pickup_order_stores (
             store_id,
             estimated_total,
