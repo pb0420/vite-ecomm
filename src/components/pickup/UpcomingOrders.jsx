@@ -51,8 +51,7 @@ const UpcomingOrders = ({ orders, onSendMessage }) => {
   }
 
   return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Your Upcoming Orders</h3>
+    <div className="space-y-2">
       {orders.map((order) => (
         <motion.div
           key={order.id}
