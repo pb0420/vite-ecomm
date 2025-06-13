@@ -363,7 +363,7 @@ const StorePickupPage = () => {
                     <Store className="w-6 h-6 text-primary" />
                   </div>
                   <h3 className="font-medium">1. Choose Stores</h3>
-                  <p className="text-sm text-muted-foreground">Select multiple stores and set your budget for each</p>
+                  <p className="text-sm text-muted-foreground">Select one or more stores and set your budget for each</p>
                 </div>
                 <div className="flex flex-col items-center text-center space-y-2">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
@@ -414,7 +414,7 @@ const StorePickupPage = () => {
                   <CardHeader>
                     <CardTitle>Schedule a Multi-Store Run</CardTitle>
                     <CardDescription>
-                      Select multiple stores and we'll shop at all of them for you
+                      Add one or more stores and we'll shop at all of them for you
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
