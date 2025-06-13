@@ -61,8 +61,7 @@ const AccountPage = () => {
       const { data, error } = await supabase
         .from('pickup_orders')
         .select(`
-          *,
-          stores (name)
+          *
         `)
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
