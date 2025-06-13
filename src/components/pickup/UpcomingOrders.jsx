@@ -98,7 +98,8 @@ const UpcomingOrders = ({ orders, onSendMessage }) => {
 
               <div className="flex items-center text-sm">
                 <Store className="w-4 h-4 mr-2 text-muted-foreground" />
-                {order.stores?.name || 'Store information unavailable'}
+                {order.pickup_order_stores?.map(store => store.stores?.name).filter(Boolean).join(', ')}
+
               </div>
 
               <div className="flex justify-between items-center text-sm">
