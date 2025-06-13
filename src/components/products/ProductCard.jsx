@@ -30,7 +30,7 @@ const ProductCard = ({ product }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="product-card overflow-hidden rounded-lg border bg-card"
+      className={`product-card overflow-hidden rounded-lg border bg-card ${!product.in_stock ? 'opacity-60' : ''}`}
     >
       <Link to={`/product/${product.id}`} className="block">
         <div className="relative aspect-square w-full max-h-48 bg-muted">
@@ -48,6 +48,15 @@ const ProductCard = ({ product }) => {
               Featured
             </Badge>
           )}
+
+          {!product.in_stock && (
+            <Badge 
+              variant="destructive" 
+              className="absolute top-2 right-2 text-xs"
+            >
+              Out of Stock
+            </Badge>
+          )}
         </div>
         
         <div className="p-3">
@@ -58,30 +67,40 @@ const ProductCard = ({ product }) => {
               <span className="text-xs text-muted-foreground">per {product.unit}</span>
             </div>
             
-            {quantity > 0 ? (
-              <div className="flex items-center space-x-1" onClick={(e) => e.preventDefault()}>
+            {product.in_stock ? (
+              quantity > 0 ? (
+                <div className="flex items-center space-x-1" onClick={(e) => e.preventDefault()}>
+                  <Button 
+                    size="icon" 
+                    variant="outline"
+                    className="h-6 w-6"
+                    onClick={(e) => handleQuantityChange(e, quantity - 1)}
+                  >
+                    <Minus className="h-3 w-3" />
+                  </Button>
+                  <span className="text-xs font-medium w-4 text-center">{quantity}</span>
+                  <Button 
+                    size="icon"
+                    className="h-6 w-6"
+                    onClick={(e) => handleQuantityChange(e, quantity + 1)}
+                  >
+                    <Plus className="h-3 w-3" />
+                  </Button>
+                </div>
+              ) : (
                 <Button 
                   size="icon" 
-                  variant="outline"
-                  className="h-6 w-6"
-                  onClick={(e) => handleQuantityChange(e, quantity - 1)}
+                  className="h-7 w-7 rounded-full"
+                  onClick={handleAddToCart}
                 >
-                  <Minus className="h-3 w-3" />
+                  <ShoppingCart className="h-3 w-3" />
                 </Button>
-                <span className="text-xs font-medium w-4 text-center">{quantity}</span>
-                <Button 
-                  size="icon"
-                  className="h-6 w-6"
-                  onClick={(e) => handleQuantityChange(e, quantity + 1)}
-                >
-                  <Plus className="h-3 w-3" />
-                </Button>
-              </div>
+              )
             ) : (
               <Button 
                 size="icon" 
                 className="h-7 w-7 rounded-full"
-                onClick={handleAddToCart}
+                disabled
               >
                 <ShoppingCart className="h-3 w-3" />
               </Button>
