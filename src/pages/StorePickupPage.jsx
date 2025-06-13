@@ -487,26 +487,18 @@ const StorePickupPage = () => {
 
                         <div className="space-y-2">
                           <Label>Time Slot</Label>
-                          <div className="relative">
-                            <Input
-                              placeholder="Choose a time slot"
-                              value={selectedTimeSlot ? timeSlots.find(slot => slot.id === selectedTimeSlot)?.label : ''}
-                              readOnly
-                              onClick={() => setShowPostcodeDropdown(false)}
-                              className={formErrors.timeSlot ? 'border-destructive cursor-pointer' : 'cursor-pointer'}
-                            />
-                            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                          <Select value={selectedTimeSlot} onValueChange={setSelectedTimeSlot}>
+                            <SelectTrigger className={formErrors.timeSlot ? 'border-destructive' : ''}>
+                              <SelectValue placeholder="Choose a time slot" />
+                            </SelectTrigger>
+                            <SelectContent>
                               {timeSlots.map(slot => (
-                                <div
-                                  key={slot.id}
-                                  className="px-4 py-2 cursor-pointer hover:bg-gray-100 border-b border-gray-100 last:border-b-0"
-                                  onClick={() => setSelectedTimeSlot(slot.id)}
-                                >
-                                  <div className="text-sm font-medium">{slot.label}</div>
-                                </div>
+                                <SelectItem key={slot.id} value={slot.id}>
+                                  {slot.label}
+                                </SelectItem>
                               ))}
-                            </div>
-                          </div>
+                            </SelectContent>
+                          </Select>
                           {formErrors.timeSlot && <p className="text-xs text-destructive">{formErrors.timeSlot}</p>}
                         </div>
                       </div>
