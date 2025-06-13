@@ -321,7 +321,7 @@ const AccountPage = () => {
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
                           <div className="flex items-center space-x-2">
-                            <h3 className="font-medium">Pickup #{order.id.substring(0, 8)}...</h3>
+                            <h3 className="font-medium">Order #{order.id.substring(0, 6)}</h3>
                             <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusClass(order.status)}`}>
                               {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                             </span>
