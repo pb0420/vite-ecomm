@@ -108,7 +108,6 @@ const StorePickupPage = () => {
           *,
           pickup_order_stores (
             store_id,
-            stores (name),
             estimated_total,
             actual_total,
             notes,
