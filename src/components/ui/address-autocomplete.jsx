@@ -14,32 +14,9 @@ const AddressAutocomplete = ({
 }) => {
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  // const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef(null);
   const suggestionsRef = useRef(null);
-
-  // Load addresses from JSON file
-  // useEffect(() => {
-  //   const loadAddresses = async () => {
-  //     try {
-  //       setLoading(true);
-  //       const response = await supabase
-  //       .from('adelaide_addresses')
-  //       .select('ADDRESS_LA as address, LOCALITY_NA as suburb, POSTCODE as postcode')
-  //       .ilike('ADDRESS_LA', `%${value}%`)
-  //       .limit(5);
-  //       const data = await response.json();
-  //       setAddresses(data.addresses || []);
-  //     } catch (error) {
-  //       console.error('Error loading addresses:', error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   loadAddresses();
-  // }, []);
 
   // Filter suggestions based on input
   useEffect(() => {
@@ -49,12 +26,6 @@ const AddressAutocomplete = ({
       return;
     }
 
-    // const filtered = addresses.filter(addr => 
-    //   addr.address.toLowerCase().includes(value.toLowerCase()) ||
-    //   addr.suburb.toLowerCase().includes(value.toLowerCase()) ||
-    //   addr.postcode.includes(value)
-    // ).slice(0, 5); // Limit to 5 suggestions
-
     const filteredResponse = async () => {
       const response = await supabase
         .from('adelaide_address_data')
@@ -62,32 +33,29 @@ const AddressAutocomplete = ({
         .ilike('ADDRESS_LA', `%${value.toUpperCase()}%`)
         .limit(50);
       
-      // const filtered = await response.json();
-
-const keyMap = {
-  ADDRESS_LA: "address",
-  LOCALITY_N: "suburb",
-  POSTCODE: "postcode"
-};
-// Transform function
-const transformData = (data) => {
-  return data.map(item => {
-    const transformedItem = {};
-    for (const key in item) {
-      transformedItem[keyMap[key] || key] = item[key];
-    }
-    return transformedItem;
-  }); }
+      const keyMap = {
+        ADDRESS_LA: "address",
+        LOCALITY_N: "suburb",
+        POSTCODE: "postcode"
+      };
+      
+      // Transform function
+      const transformData = (data) => {
+        return data.map(item => {
+          const transformedItem = {};
+          for (const key in item) {
+            transformedItem[keyMap[key] || key] = item[key];
+          }
+          return transformedItem;
+        }); 
+      }
 
       const filtered = transformData(response.data);
-       setSuggestions(filtered);
+      setSuggestions(filtered);
       setShowSuggestions(filtered.length > 0);
     }
 
-   filteredResponse();
-      // console.log(filtered);
-    // setSuggestions(filtered);
-    // setShowSuggestions(filtered.length > 0);
+    filteredResponse();
   }, [value]);
 
   // Handle input change
@@ -104,7 +72,7 @@ const transformData = (data) => {
     if (onAddressSelect) {
       onAddressSelect({
         address: suggestion.address,
-        suburb: suggestion.suburb,
+        suburb: suggestion.suburb.toUpperCase(), // Convert to uppercase to match LOCALITY_N
         postcode: suggestion.postcode
       });
     }
