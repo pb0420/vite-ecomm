@@ -4,7 +4,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import AddressSelector from '@/components/checkout/AddressSelector';
@@ -23,6 +22,9 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
   });
   const [showAddressSelector, setShowAddressSelector] = useState(false);
   const [postcodes, setPostcodes] = useState([]);
+  const [filteredPostcodes, setFilteredPostcodes] = useState([]);
+  const [postcodeSearch, setPostcodeSearch] = useState('');
+  const [showPostcodeDropdown, setShowPostcodeDropdown] = useState(false);
 
   // Pre-fill form if user is logged in
   useEffect(() => {
@@ -52,10 +54,23 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
       }
       
       setPostcodes(data);
+      setFilteredPostcodes(data);
     };
 
     fetchPostcodes();
   }, []);
+
+  useEffect(() => {
+    if (postcodeSearch.length === 0) {
+      setFilteredPostcodes(postcodes);
+    } else {
+      const filtered = postcodes.filter(pc => 
+        pc.suburb.toLowerCase().includes(postcodeSearch.toLowerCase()) ||
+        pc.postcode.includes(postcodeSearch)
+      );
+      setFilteredPostcodes(filtered);
+    }
+  }, [postcodeSearch, postcodes]);
 
   // Update parent component when form data changes
   useEffect(() => {
@@ -75,6 +90,11 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
         address: selectedAddress.address,
         postcode: selectedAddress.postcode
       }));
+      // Find and set the postcode search
+      const postcodeData = postcodes.find(pc => pc.postcode === selectedAddress.postcode);
+      if (postcodeData) {
+        setPostcodeSearch(`${postcodeData.suburb}, ${postcodeData.postcode}`);
+      }
     }
     setShowAddressSelector(false);
   };
@@ -85,6 +105,13 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
       address: addressDetails.address,
       postcode: addressDetails.postcode
     }));
+    setPostcodeSearch(`${addressDetails.suburb.toUpperCase()}, ${addressDetails.postcode}`);
+  };
+
+  const handlePostcodeSelect = (postcode) => {
+    setFormData(prev => ({ ...prev, postcode: postcode.postcode }));
+    setPostcodeSearch(`${postcode.suburb}, ${postcode.postcode}`);
+    setShowPostcodeDropdown(false);
   };
 
   return (
@@ -158,22 +185,34 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
           {errors?.address && <p className="text-xs text-destructive">{errors.address}</p>}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="postcode">Postcode</Label>
-          <Select 
-            value={formData.postcode} 
-            onValueChange={(value) => setFormData(prev => ({ ...prev, postcode: value }))}
-          >
-            <SelectTrigger className={errors?.postcode ? 'border-destructive' : ''}>
-              <SelectValue placeholder="Select suburb" />
-            </SelectTrigger>
-            <SelectContent>
-              {postcodes.map((pc) => (
-                <SelectItem key={pc.id} value={pc.postcode}>
-                  {pc.suburb} ({pc.postcode})
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Label htmlFor="postcode">Suburb & Postcode</Label>
+          <div className="relative">
+            <Input
+              id="postcode"
+              placeholder="Search suburb or postcode..."
+              value={postcodeSearch}
+              onChange={(e) => {
+                setPostcodeSearch(e.target.value);
+                setShowPostcodeDropdown(true);
+              }}
+              onFocus={() => setShowPostcodeDropdown(true)}
+              className={errors?.postcode ? 'border-destructive' : ''}
+            />
+            {showPostcodeDropdown && filteredPostcodes.length > 0 && (
+              <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                {filteredPostcodes.slice(0, 10).map((pc) => (
+                  <div
+                    key={`${pc.suburb}-${pc.postcode}`}
+                    className="px-4 py-2 cursor-pointer hover:bg-gray-100 border-b border-gray-100 last:border-b-0"
+                    onClick={() => handlePostcodeSelect(pc)}
+                  >
+                    <div className="text-sm font-medium">{pc.suburb}</div>
+                    <div className="text-xs text-gray-500">{pc.postcode}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
           {errors?.postcode && <p className="text-xs text-destructive">{errors.postcode}</p>}
         </div>
         <div className="space-y-2">

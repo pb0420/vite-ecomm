@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { Store, Clock, Calendar, MessageCircle, Bot, MapPin, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -55,6 +54,9 @@ const StorePickupPage = () => {
   const [contactPreference, setContactPreference] = useState('whatsapp');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [postcodes, setPostcodes] = useState([]);
+  const [filteredPostcodes, setFilteredPostcodes] = useState([]);
+  const [postcodeSearch, setPostcodeSearch] = useState('');
+  const [showPostcodeDropdown, setShowPostcodeDropdown] = useState(false);
   const [activeTab, setActiveTab] = useState('new-order');
   const [appliedPromo, setAppliedPromo] = useState(null);
   
@@ -67,6 +69,18 @@ const StorePickupPage = () => {
       fetchUpcomingOrders();
     }
   }, [user]);
+
+  useEffect(() => {
+    if (postcodeSearch.length === 0) {
+      setFilteredPostcodes(postcodes);
+    } else {
+      const filtered = postcodes.filter(pc => 
+        pc.suburb.toLowerCase().includes(postcodeSearch.toLowerCase()) ||
+        pc.postcode.includes(postcodeSearch)
+      );
+      setFilteredPostcodes(filtered);
+    }
+  }, [postcodeSearch, postcodes]);
 
   const fetchStores = async () => {
     try {
@@ -94,6 +108,7 @@ const StorePickupPage = () => {
       
       if (error) throw error;
       setPostcodes(data || []);
+      setFilteredPostcodes(data || []);
     } catch (error) {
       console.error('Error fetching postcodes:', error);
       toast({ variant: "destructive", title: "Error", description: "Could not load postcodes." });
@@ -132,6 +147,11 @@ const StorePickupPage = () => {
     if (savedAddress) {
       setAddress(savedAddress.address);
       setPostcode(savedAddress.postcode);
+      // Find and set the postcode search
+      const postcodeData = postcodes.find(pc => pc.postcode === savedAddress.postcode);
+      if (postcodeData) {
+        setPostcodeSearch(`${postcodeData.suburb}, ${postcodeData.postcode}`);
+      }
     }
     setShowAddressSelector(false);
   };
@@ -139,6 +159,13 @@ const StorePickupPage = () => {
   const handleAddressAutocomplete = (addressDetails) => {
     setAddress(addressDetails.address);
     setPostcode(addressDetails.postcode);
+    setPostcodeSearch(`${addressDetails.suburb.toUpperCase()}, ${addressDetails.postcode}`);
+  };
+
+  const handlePostcodeSelect = (postcodeData) => {
+    setPostcode(postcodeData.postcode);
+    setPostcodeSearch(`${postcodeData.suburb}, ${postcodeData.postcode}`);
+    setShowPostcodeDropdown(false);
   };
 
   const handlePromoApplied = (promo) => {
@@ -243,6 +270,7 @@ const StorePickupPage = () => {
       setPhotos([]);
       setTermsAccepted(false);
       setAppliedPromo(null);
+      setPostcodeSearch('');
       
       // Refresh upcoming orders and switch to that tab
       fetchUpcomingOrders();
@@ -459,18 +487,26 @@ const StorePickupPage = () => {
 
                         <div className="space-y-2">
                           <Label>Time Slot</Label>
-                          <Select value={selectedTimeSlot} onValueChange={setSelectedTimeSlot}>
-                            <SelectTrigger className={formErrors.timeSlot ? 'border-destructive' : ''}>
-                              <SelectValue placeholder="Choose a time slot" />
-                            </SelectTrigger>
-                            <SelectContent>
+                          <div className="relative">
+                            <Input
+                              placeholder="Choose a time slot"
+                              value={selectedTimeSlot ? timeSlots.find(slot => slot.id === selectedTimeSlot)?.label : ''}
+                              readOnly
+                              onClick={() => setShowPostcodeDropdown(false)}
+                              className={formErrors.timeSlot ? 'border-destructive cursor-pointer' : 'cursor-pointer'}
+                            />
+                            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
                               {timeSlots.map(slot => (
-                                <SelectItem key={slot.id} value={slot.id}>
-                                  {slot.label}
-                                </SelectItem>
+                                <div
+                                  key={slot.id}
+                                  className="px-4 py-2 cursor-pointer hover:bg-gray-100 border-b border-gray-100 last:border-b-0"
+                                  onClick={() => setSelectedTimeSlot(slot.id)}
+                                >
+                                  <div className="text-sm font-medium">{slot.label}</div>
+                                </div>
                               ))}
-                            </SelectContent>
-                          </Select>
+                            </div>
+                          </div>
                           {formErrors.timeSlot && <p className="text-xs text-destructive">{formErrors.timeSlot}</p>}
                         </div>
                       </div>
@@ -549,19 +585,34 @@ const StorePickupPage = () => {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="postcode">Postcode</Label>
-                        <Select value={postcode} onValueChange={setPostcode}>
-                          <SelectTrigger className={formErrors.postcode ? 'border-destructive' : ''}>
-                            <SelectValue placeholder="Select suburb" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {postcodes.map((pc) => (
-                              <SelectItem key={pc.id} value={pc.postcode}>
-                                {pc.suburb} ({pc.postcode})
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <Label htmlFor="postcode">Suburb & Postcode</Label>
+                        <div className="relative">
+                          <Input
+                            id="postcode"
+                            placeholder="Search suburb or postcode..."
+                            value={postcodeSearch}
+                            onChange={(e) => {
+                              setPostcodeSearch(e.target.value);
+                              setShowPostcodeDropdown(true);
+                            }}
+                            onFocus={() => setShowPostcodeDropdown(true)}
+                            className={formErrors.postcode ? 'border-destructive' : ''}
+                          />
+                          {showPostcodeDropdown && filteredPostcodes.length > 0 && (
+                            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                              {filteredPostcodes.slice(0, 10).map((pc) => (
+                                <div
+                                  key={`${pc.suburb}-${pc.postcode}`}
+                                  className="px-4 py-2 cursor-pointer hover:bg-gray-100 border-b border-gray-100 last:border-b-0"
+                                  onClick={() => handlePostcodeSelect(pc)}
+                                >
+                                  <div className="text-sm font-medium">{pc.suburb}</div>
+                                  <div className="text-xs text-gray-500">{pc.postcode}</div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                         {formErrors.postcode && <p className="text-xs text-destructive">{formErrors.postcode}</p>}
                       </div>
 
