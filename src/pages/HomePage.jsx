@@ -63,7 +63,7 @@ const HomePage = () => {
     window.open('https://wa.me/1234567890', '_blank');
   };
 
-  const iconClass = "w-8 h-8 text-primary";
+  const iconClass = "w-6 h-6 text-primary";
   const getCatIcon = (cName) => {
      switch(cName.toLowerCase()){
       case "beverages":
@@ -98,7 +98,7 @@ const HomePage = () => {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-[35vh] min-h-[350px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
+      <section className="relative h-[35vh] min-h-[300px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
         <div className="absolute inset-0">
           <img 
             src="/banner_bg.jpg" 
@@ -109,28 +109,28 @@ const HomePage = () => {
         </div>
         
         <div className="container relative h-full px-4 md:px-6">
-          <div className="flex flex-col justify-center h-full max-w-3xl mx-auto text-center">
+          <div className="flex flex-col justify-center h-full max-w-3xl mx-auto text-center py-4">
             <motion.div 
-              className="space-y-8"
+              className="space-y-6"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
               {/* Location Pill */}
               <motion.div 
-                className="inline-flex items-center bg-white/95 backdrop-blur-sm rounded-full px-6 py-3 shadow-lg mx-auto"
+                className="inline-flex items-center bg-white/95 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg mx-auto"
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.4 }}
               >
-                <MapPinCheckInside className="w-5 h-6 text-[#2E8B57] mr-2" />
-                <span className="text-[#2E8B57] font-semibold text-lg">Adelaide</span>
+                <MapPinCheckInside className="w-4 h-4 text-[#2E8B57] mr-2" />
+                <span className="text-[#2E8B57] font-semibold text-sm">Adelaide</span>
               </motion.div>
 
               {/* Search Bar */}
               <motion.form 
                 onSubmit={handleSearch} 
-                className="flex gap-3 max-w-lg mx-auto"
+                className="flex gap-2 max-w-md mx-auto"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4, duration: 0.5 }}
@@ -141,15 +141,15 @@ const HomePage = () => {
                     placeholder="Search for groceries..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="h-14 pl-6 pr-6 bg-white/95 backdrop-blur-sm border-0 shadow-lg text-gray-800 placeholder:text-gray-500 rounded-full text-lg"
+                    className="h-10 pl-4 pr-4 bg-white/95 backdrop-blur-sm border-0 shadow-lg text-gray-800 placeholder:text-gray-500 rounded-full text-sm"
                   />
                 </div>
                 <Button 
                   type="submit"
-                  size="lg" 
-                  className="h-14 px-8 bg-[#fd7507] hover:bg-[#fd7507]/90 shadow-lg rounded-full font-semibold"
+                  size="sm" 
+                  className="h-10 px-6 bg-[#fd7507] hover:bg-[#fd7507]/90 shadow-lg rounded-full font-semibold text-sm"
                 >
-                  <Search className="w-5 h-5 mr-2" />
+                  <Search className="w-4 h-4 mr-1" />
                   Search
                 </Button>
               </motion.form>
@@ -161,28 +161,28 @@ const HomePage = () => {
                 transition={{ delay: 0.6, duration: 0.5 }}
                 className="relative"
               >
-                <div className="flex overflow-x-auto pb-4 space-x-6 scrollbar-hide justify-center">
+                <div className="flex overflow-x-auto pb-2 space-x-4 scrollbar-hide justify-center">
                   {categories.slice(0, 6).map((category) => (
                     <Link
                       key={category.id}
                       to={`/category/${category.id}`}
                       className="flex-none group text-center"
                     >
-                      <div className="w-16 h-16 mx-auto mb-2 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:bg-white/30 transition-all duration-300 shadow-lg">
+                      <div className="w-12 h-12 mx-auto mb-1 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:bg-white/30 transition-all duration-300 shadow-lg">
                         <img 
                           src={category.icon_url} 
                           alt={category.name}
-                          className="w-10 h-10 object-cover rounded-full"
+                          className="w-7 h-7 object-cover rounded-full"
                           onError={(e) => {
                             e.target.style.display = 'none';
                             e.target.nextSibling.style.display = 'flex';
                           }}
                         />
-                        <div className="w-10 h-10 hidden items-center justify-center">
+                        <div className="w-7 h-7 hidden items-center justify-center">
                           {getCatIcon(category.name)}
                         </div>
                       </div>
-                      <span className="text-sm font-medium text-white/90 group-hover:text-white transition-colors block truncate max-w-[80px]">
+                      <span className="text-xs font-medium text-white/90 group-hover:text-white transition-colors block truncate max-w-[60px]">
                         {category.name}
                       </span>
                     </Link>
@@ -192,7 +192,7 @@ const HomePage = () => {
 
               {/* Grocery Run Button */}
               <motion.div 
-                className="pt-2"
+                className="pt-1"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.8, duration: 0.5 }}
@@ -201,9 +201,9 @@ const HomePage = () => {
                   <Button 
                     size="lg" 
                     variant="outline" 
-                    className="w-full max-w-md h-16 bg-white/95 hover:bg-white border-2 border-white/50 shadow-lg text-[#2E8B57] hover:text-[#2E8B57] font-bold text-xl rounded-full mx-auto backdrop-blur-sm transition-all duration-300 hover:scale-105"
+                    className="w-full max-w-sm h-12 bg-white/95 hover:bg-white border-2 border-white/50 shadow-lg text-[#2E8B57] hover:text-[#2E8B57] font-bold text-lg rounded-full mx-auto backdrop-blur-sm transition-all duration-300 hover:scale-105"
                   >
-                    <Store className="w-4 h-4 mr-3" />
+                    <Store className="w-4 h-4 mr-2" />
                     Schedule a Grocery Run
                   </Button>
                 </Link>

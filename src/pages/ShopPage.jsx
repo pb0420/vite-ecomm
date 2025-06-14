@@ -174,14 +174,14 @@ const ShopPage = () => {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Banner Section */}
-      <section className="relative h-[30vh] min-h-[200px] bg-[#F0E68C] overflow-hidden">
+      <section className="relative h-[30vh] min-h-[200px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
         <div className="absolute inset-0">
           <img 
             src="/banner_bg.jpg" 
             alt="Fresh groceries" 
             className="w-full h-full object-cover opacity-20"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#99C54F]/80 to-[#FFD580]/50" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#2E8B57]/90 via-[#3CB371]/80 to-[#98FB98]/70" />
         </div>
         
         <div className="container relative h-full px-4 md:px-6">

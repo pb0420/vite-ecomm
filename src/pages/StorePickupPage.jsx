@@ -367,58 +367,58 @@ const StorePickupPage = () => {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Banner Section with How it Works */}
-      <section className="relative h-[50vh] min-h-[400px] bg-[#F0E68C] overflow-hidden">
+      <section className="relative h-[45vh] min-h-[350px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
         <div className="absolute inset-0">
           <img 
             src="/banner_bg.jpg" 
             alt="Fresh groceries" 
             className="w-full h-full object-cover opacity-20"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#99C54F]/80 to-[#FFD580]/50" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#2E8B57]/90 via-[#3CB371]/80 to-[#98FB98]/70" />
         </div>
         
         <div className="container relative h-full px-4 md:px-6">
-          <div className="flex flex-col justify-center h-full">
+          <div className="flex flex-col justify-center h-full py-4">
             <motion.div 
-              className="space-y-6"
+              className="space-y-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <div className="text-center mb-8">
-                <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Grocery Run</h1>
-                <p className="text-white/90 text-lg">Let us do the shopping for you at multiple stores!</p>
+              <div className="text-center mb-4">
+                <h1 className="text-2xl md:text-3xl font-bold text-white mb-1">Grocery Run</h1>
+                <p className="text-white/90 text-sm md:text-base">Let us do the shopping for you at multiple stores!</p>
               </div>
 
               {/* How it works steps */}
-              <div className="grid gap-4 md:grid-cols-4 max-w-4xl mx-auto">
-                <div className="flex flex-col items-center text-center space-y-2 bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                  <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
-                    <Store className="w-6 h-6 text-white" />
+              <div className="grid gap-3 grid-cols-2 md:grid-cols-4 max-w-4xl mx-auto">
+                <div className="flex flex-col items-center text-center space-y-1 bg-white/10 backdrop-blur-sm rounded-lg p-3">
+                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/20 flex items-center justify-center">
+                    <Store className="w-4 h-4 md:w-5 md:h-5 text-white" />
                   </div>
-                  <h3 className="font-medium text-white">1. Choose Stores</h3>
-                  <p className="text-sm text-white/80">Select stores and set your budget</p>
+                  <h3 className="font-medium text-white text-xs md:text-sm">1. Choose Stores</h3>
+                  <p className="text-xs text-white/80 hidden md:block">Select stores and set your budget</p>
                 </div>
-                <div className="flex flex-col items-center text-center space-y-2 bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                  <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
-                    <MessageCircle className="w-6 h-6 text-white" />
+                <div className="flex flex-col items-center text-center space-y-1 bg-white/10 backdrop-blur-sm rounded-lg p-3">
+                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/20 flex items-center justify-center">
+                    <MessageCircle className="w-4 h-4 md:w-5 md:h-5 text-white" />
                   </div>
-                  <h3 className="font-medium text-white">2. Share Lists</h3>
-                  <p className="text-sm text-white/80">Add shopping lists and photos</p>
+                  <h3 className="font-medium text-white text-xs md:text-sm">2. Share Lists</h3>
+                  <p className="text-xs text-white/80 hidden md:block">Add shopping lists and photos</p>
                 </div>
-                <div className="flex flex-col items-center text-center space-y-2 bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                  <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
-                    <Clock className="w-6 h-6 text-white" />
+                <div className="flex flex-col items-center text-center space-y-1 bg-white/10 backdrop-blur-sm rounded-lg p-3">
+                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/20 flex items-center justify-center">
+                    <Clock className="w-4 h-4 md:w-5 md:h-5 text-white" />
                   </div>
-                  <h3 className="font-medium text-white">3. We Shop</h3>
-                  <p className="text-sm text-white/80">We shop at all selected stores</p>
+                  <h3 className="font-medium text-white text-xs md:text-sm">3. We Shop</h3>
+                  <p className="text-xs text-white/80 hidden md:block">We shop at all selected stores</p>
                 </div>
-                <div className="flex flex-col items-center text-center space-y-2 bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                  <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
-                    <MapPin className="w-6 h-6 text-white" />
+                <div className="flex flex-col items-center text-center space-y-1 bg-white/10 backdrop-blur-sm rounded-lg p-3">
+                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/20 flex items-center justify-center">
+                    <MapPin className="w-4 h-4 md:w-5 md:h-5 text-white" />
                   </div>
-                  <h3 className="font-medium text-white">4. Delivery</h3>
-                  <p className="text-sm text-white/80">All items delivered in one trip</p>
+                  <h3 className="font-medium text-white text-xs md:text-sm">4. Delivery</h3>
+                  <p className="text-xs text-white/80 hidden md:block">All items delivered in one trip</p>
                 </div>
               </div>
             </motion.div>
