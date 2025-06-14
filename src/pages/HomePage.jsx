@@ -118,7 +118,7 @@ const HomePage = () => {
             >
               {/* Location Pill */}
               <motion.div 
-                className="inline-flex items-center bg-white/95 backdrop-blur-sm rounded-full px-6 py-4 shadow-lg mx-auto"
+                className="inline-flex items-center bg-white/95 backdrop-blur-sm rounded-full px-6 py-3 shadow-lg mx-auto"
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.4 }}
@@ -203,7 +203,7 @@ const HomePage = () => {
                     variant="outline" 
                     className="w-full max-w-md h-16 bg-white/95 hover:bg-white border-2 border-white/50 shadow-lg text-[#2E8B57] hover:text-[#2E8B57] font-bold text-xl rounded-full mx-auto backdrop-blur-sm transition-all duration-300 hover:scale-105"
                   >
-                    <Store className="w-6 h-6 mr-3" />
+                    <Store className="w-6 h-4 mr-3" />
                     Schedule a Grocery Run
                   </Button>
                 </Link>
