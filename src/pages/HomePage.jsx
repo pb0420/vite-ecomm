@@ -108,7 +108,7 @@ const HomePage = () => {
           <div className="absolute inset-0 bg-gradient-to-br from-[#2E8B57]/90 via-[#3CB371]/80 to-[#98FB98]/70" />
         </div>
         
-        <div className="container relative h-full px-2 md:px-6">
+        <div className="container relative h-full px-4 md:px-6">
           <div className="flex flex-col justify-center h-full max-w-3xl mx-auto text-center">
             <motion.div 
               className="space-y-8"
