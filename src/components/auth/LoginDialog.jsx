@@ -7,7 +7,7 @@ const LoginDialog = ({ open, onOpenChange }) => {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader
-          <DialogTitle><h1></h1></DialogTitle>
+          <DialogTitle></DialogTitle>
         </DialogHeader>
         <PhoneLoginForm onSuccess={() => onOpenChange(false)} />
       </DialogContent>
