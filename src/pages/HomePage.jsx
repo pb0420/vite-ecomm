@@ -105,7 +105,7 @@ const HomePage = () => {
             alt="Fresh groceries" 
             className="w-full h-full object-cover opacity-30"
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-[#2E8B57]/90 via-[#3CB371]/80 to-[#98FB98]/70" />
+          <div className="absolute inset-0" />
         </div>
         
         <div className="container relative h-full px-4 md:px-6">
