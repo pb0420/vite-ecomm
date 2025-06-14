@@ -72,9 +72,9 @@ const Header = () => {
             )
           )}
 
-          <Button variant="ghost" size="icon" className="md:hidden" onClick={toggleMenu}>
+          {/* <Button variant="ghost" size="icon" className="md:hidden" onClick={toggleMenu}>
             <Menu className="w-5 h-5" />
-          </Button>
+          </Button> */}
         </div>
       </div>
 
