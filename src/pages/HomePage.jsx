@@ -97,7 +97,7 @@ const HomePage = () => {
         </div>
         
         <div className="container relative h-full px-4 md:px-6">
-          <div className="flex flex-col justify-center h-full max-w-2xl">
+          <div className="flex flex-col justify-center h-full max-w-1xl">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
