@@ -98,161 +98,196 @@ const HomePage = () => {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-[40vh] min-h-[400px] bg-[#F0E68C] overflow-hidden">
+      <section className="relative h-[35vh] min-h-[350px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
         <div className="absolute inset-0">
           <img 
             src="/banner_bg.jpg" 
             alt="Fresh groceries" 
-            className="w-full h-full object-cover opacity-70"
+            className="w-full h-full object-cover opacity-30"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#99C54F]/80 to-[#FFD580]/50" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#2E8B57]/90 via-[#3CB371]/80 to-[#98FB98]/70" />
         </div>
         
         <div className="container relative h-full px-4 md:px-6">
-          <div className="flex flex-col justify-center h-full max-w-2xl">
+          <div className="flex flex-col justify-center h-full max-w-3xl mx-auto text-center">
             <motion.div 
-              className="space-y-6"
-              initial={{ opacity: 0, y: 20 }}
+              className="space-y-8"
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.6 }}
             >
               {/* Location Pill */}
-              <div className="inline-flex items-center bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg">
+              <motion.div 
+                className="inline-flex items-center bg-white/95 backdrop-blur-sm rounded-full px-6 py-3 shadow-lg mx-auto"
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.2, duration: 0.4 }}
+              >
                 <MapPinCheckInside className="w-5 h-5 text-[#2E8B57] mr-2" />
-                <span className="text-[#2E8B57] font-semibold">Adelaide</span>
-              </div>
+                <span className="text-[#2E8B57] font-semibold text-lg">Adelaide</span>
+              </motion.div>
 
               {/* Search Bar */}
-              <form onSubmit={handleSearch} className="flex gap-2 max-w-md">
+              <motion.form 
+                onSubmit={handleSearch} 
+                className="flex gap-3 max-w-lg mx-auto"
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.4, duration: 0.5 }}
+              >
                 <div className="flex-1 relative">
                   <Input
                     type="text"
                     placeholder="Search for groceries..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="h-12 pl-4 pr-4 bg-white/95 backdrop-blur-sm border-0 shadow-lg text-gray-800 placeholder:text-gray-500"
+                    className="h-14 pl-6 pr-6 bg-white/95 backdrop-blur-sm border-0 shadow-lg text-gray-800 placeholder:text-gray-500 rounded-full text-lg"
                   />
                 </div>
                 <Button 
                   type="submit"
                   size="lg" 
-                  className="h-12 px-6 bg-[#fd7507] hover:bg-[#fd7507]/90 shadow-lg"
+                  className="h-14 px-8 bg-[#fd7507] hover:bg-[#fd7507]/90 shadow-lg rounded-full font-semibold"
                 >
-                  <Search className="w-5 h-5" />
+                  <Search className="w-5 h-5 mr-2" />
+                  Search
                 </Button>
-              </form>
+              </motion.form>
+
+              {/* Categories Scroller */}
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.6, duration: 0.5 }}
+                className="relative"
+              >
+                <div className="flex overflow-x-auto pb-4 space-x-6 scrollbar-hide justify-center">
+                  {categories.slice(0, 6).map((category) => (
+                    <Link
+                      key={category.id}
+                      to={`/category/${category.id}`}
+                      className="flex-none group text-center"
+                    >
+                      <div className="w-16 h-16 mx-auto mb-2 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:bg-white/30 transition-all duration-300 shadow-lg">
+                        <img 
+                          src={category.icon_url} 
+                          alt={category.name}
+                          className="w-10 h-10 object-cover rounded-full"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'flex';
+                          }}
+                        />
+                        <div className="w-10 h-10 hidden items-center justify-center">
+                          {getCatIcon(category.name)}
+                        </div>
+                      </div>
+                      <span className="text-sm font-medium text-white/90 group-hover:text-white transition-colors block truncate max-w-[80px]">
+                        {category.name}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </motion.div>
 
               {/* Grocery Run Button */}
-              <div className="pt-2">
+              <motion.div 
+                className="pt-2"
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.8, duration: 0.5 }}
+              >
                 <Link to="/store-pickup" className="block">
                   <Button 
                     size="lg" 
                     variant="outline" 
-                    className="w-full max-w-md h-14 bg-white/90 hover:bg-white border-2 border-white/50 shadow-lg text-[#2E8B57] hover:text-[#2E8B57] font-semibold text-lg"
+                    className="w-full max-w-md h-16 bg-white/95 hover:bg-white border-2 border-white/50 shadow-lg text-[#2E8B57] hover:text-[#2E8B57] font-bold text-xl rounded-full mx-auto backdrop-blur-sm transition-all duration-300 hover:scale-105"
                   >
                     <Store className="w-6 h-6 mr-3" />
                     Schedule a Grocery Run
                   </Button>
                 </Link>
-              </div>
+              </motion.div>
             </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Categories Section */}
-      <section className="py-8 bg-background">
-        <div className="container px-4 md:px-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold">Categories</h2>
-            <Link to="/categories" className="text-primary hover:underline text-sm flex items-center">
-              View All <ArrowRight className="ml-1 h-4 w-4" />
-            </Link>
-          </div>
-          
-          <div className="relative">
-            <div className="flex overflow-x-auto pb-4 space-x-4 scrollbar-hide">
-              {categories.map((category) => (
-                <Link
-                  key={category.id}
-                  to={`/category/${category.id}`}
-                  className="flex-none w-24 group text-center"
-                >
-                  <div className="w-16 h-16 mx-auto mb-2 bg-muted/50 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                    {/* {getCatIcon(category.name)} */}
-                     <img src={category.icon_url || getCatIcon(category.name)} alt="Fresh groceries" className="w-full h-full object-cover "/>
-                  </div>
-                  <span className="text-xs font-medium block truncate">{category.name}</span>
-                </Link>
-              ))}
-            </div>
           </div>
         </div>
       </section>
 
       {/* Featured Products Section */}
-      <section className="py-8">
+      <section className="py-12 bg-white">
         <div className="container px-4 md:px-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold">Featured Products</h2>
-            <Link to="/shop" className="text-primary hover:underline text-sm flex items-center">
+          <div className="flex items-center justify-between mb-8">
+            <motion.h2 
+              className="text-2xl font-bold"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              Featured Products
+            </motion.h2>
+            <Link to="/shop" className="text-primary hover:underline text-sm flex items-center font-medium">
               View All <ArrowRight className="ml-1 h-4 w-4" />
             </Link>
           </div>
           
-          <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
+          <motion.div 
+            className="grid gap-6 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+          >
             {featuredProducts.map(product => (
               <ProductCard key={product.id} product={product} />
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-8 bg-muted/30">
+      <section className="py-12 bg-gradient-to-r from-gray-50 to-gray-100">
         <div className="container px-4 md:px-6">
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-8 md:grid-cols-3">
             <motion.div 
-              className="flex flex-col items-center text-center space-y-2 p-4 bg-background rounded-lg shadow-sm"
+              className="flex flex-col items-center text-center space-y-4 p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.5 }}
             >
-              <div className="p-2 rounded-full bg-[#2E8B57]/10">
-                <Clock className="h-5 w-5 text-[#2E8B57]" />
+              <div className="p-4 rounded-full bg-[#2E8B57]/10">
+                <Clock className="h-8 w-8 text-[#2E8B57]" />
               </div>
-              <h3 className="text-base font-medium">Convenience</h3>
-              <p className="text-sm text-muted-foreground">
+              <h3 className="text-xl font-semibold">Convenience</h3>
+              <p className="text-muted-foreground">
                 Get your groceries delivered right to your doorstep
               </p>
             </motion.div>
             
             <motion.div 
-              className="flex flex-col items-center text-center space-y-2 p-4 bg-background rounded-lg shadow-sm"
+              className="flex flex-col items-center text-center space-y-4 p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.1 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
             >
-              <div className="p-2 rounded-full bg-[#2E8B57]/10">
-                <ShieldCheck className="h-5 w-5 text-[#2E8B57]" />
+              <div className="p-4 rounded-full bg-[#2E8B57]/10">
+                <ShieldCheck className="h-8 w-8 text-[#2E8B57]" />
               </div>
-              <h3 className="text-base font-medium">Quality</h3>
-              <p className="text-sm text-muted-foreground">
+              <h3 className="text-xl font-semibold">Quality</h3>
+              <p className="text-muted-foreground">
                 Strict quality assurance and control
               </p>
             </motion.div>
             
             <motion.div 
-              className="flex flex-col items-center text-center space-y-2 p-4 bg-background rounded-lg shadow-sm"
+              className="flex flex-col items-center text-center space-y-4 p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.2 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <div className="p-2 rounded-full bg-[#2E8B57]/10">
-                <Handshake className="h-5 w-5 text-[#2E8B57]" />
+              <div className="p-4 rounded-full bg-[#2E8B57]/10">
+                <Handshake className="h-8 w-8 text-[#2E8B57]" />
               </div>
-              <h3 className="text-base font-medium">Support</h3>
-              <p className="text-sm text-muted-foreground">
+              <h3 className="text-xl font-semibold">Support</h3>
+              <p className="text-muted-foreground">
                 Super-fast customer support on WhatsApp
               </p>
             </motion.div>
@@ -263,7 +298,7 @@ const HomePage = () => {
       {/* WhatsApp Button */}
       <Button
         onClick={openWhatsApp}
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg bg-[#25D366] hover:bg-[#25D366]/90"
+        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg bg-[#25D366] hover:bg-[#25D366]/90 z-50"
         size="icon"
       >
         <MessageCircle className="h-6 w-6 text-white" />
