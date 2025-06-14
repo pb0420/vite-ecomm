@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Menu, X, User, LogOut, Package } from 'lucide-react';
+import { ShoppingCart, Menu, X, User, LogOut, Package,UserRound } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
@@ -60,7 +60,7 @@ const Header = () => {
               <div className="hidden md:flex md:items-center md:space-x-2">
                 <Link to="/account">
                   <Button variant="ghost" size="sm" className="flex items-center space-x-1">
-                    <User className="w-4 h-4" />
+                    <UserRound className="w-4 h-4" />
                     <span>{user.name?.split(' ')[0] || 'My Account'}</span>
                   </Button>
                 </Link>
