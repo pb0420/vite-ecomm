@@ -123,7 +123,7 @@ const HomePage = () => {
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.4 }}
               >
-                <MapPinCheckInside className="w-5 h-3 text-[#2E8B57] mr-2" />
+                <MapPinCheckInside className="w-5 h-6 text-[#2E8B57] mr-2" />
                 <span className="text-[#2E8B57] font-semibold text-lg">Adelaide</span>
               </motion.div>
 
