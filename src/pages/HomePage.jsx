@@ -112,7 +112,7 @@ const HomePage = () => {
           <div className="flex flex-col justify-center h-full max-w-3xl mx-auto text-center">
             <motion.div 
               className="space-y-8"
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
