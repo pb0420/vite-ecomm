@@ -99,7 +99,6 @@ const HomePage = () => {
         <div className="container relative h-full px-4 md:px-6">
           <div className="flex flex-col justify-center h-full max-w-2xl">
             <motion.div 
-              className="space-y-2"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
