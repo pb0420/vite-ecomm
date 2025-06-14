@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, Clock, ShieldCheck, MessageCircle, Handshake,ShoppingCart,CupSoda,EggFried,Cookie, Hamburger, Croissant, Apple, Banana, Beef, Candy, Fish, Utensils, Car, MapPinCheckInside, Truck, Store, Search  } from 'lucide-react';
+import { ArrowRight, Clock, ShieldCheck, MessageCircle, Handshake, ShoppingCart, CupSoda, EggFried, Cookie, Hamburger, Croissant, Apple, Banana, Beef, Candy, Fish, Utensils, Car, MapPinCheckInside, Truck, Store, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import ProductCard from '@/components/products/ProductCard';
@@ -34,10 +34,10 @@ const HomePage = () => {
         const { data: categoriesData, error: categoriesError } = await supabase
           .from('categories')
           .select('*')
-          .order('name');
+          .order('name')
+          .limit(7);
 
         if (categoriesError) throw categoriesError;
-
         setFeaturedProducts(productsData || []);
         setCategories(categoriesData || []);
       } catch (error) {
@@ -65,7 +65,7 @@ const HomePage = () => {
 
   const iconClass = "w-6 h-6 text-primary";
   const getCatIcon = (cName) => {
-     switch(cName.toLowerCase()){
+    switch (cName.toLowerCase()) {
       case "beverages":
       case "soda":
       case "drinks":
@@ -92,47 +92,47 @@ const HomePage = () => {
         return <Utensils className={iconClass} />;
       default:
         return <Clock className={iconClass} />;
-     }
+    }
   }
-  
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-[35vh] min-h-[280px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
+      <section className="relative h-[45vh] min-h-[280px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
         <div className="absolute inset-0">
-          <img 
-            src="/banner_bg.jpg" 
-            alt="Fresh groceries" 
+          <img
+            src="/banner_bg.jpg"
+            alt="Fresh groceries"
             className="w-full h-full object-cover opacity-30"
           />
           <div className="absolute inset-0 bg-gradient-to-br from-[#2E8B57]/90 via-[#3CB371]/80 to-[#98FB98]/70" />
         </div>
-        
+
         <div className="container relative h-full px-4 md:px-6">
           <div className="flex flex-col justify-center h-full max-w-4xl mx-auto py-2">
-            <motion.div 
+            <motion.div
               className="space-y-4"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
               {/* Location Pill - moved to left */}
-              <motion.div 
+              <motion.div
                 className="flex justify-start"
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.4 }}
               >
                 <div className="inline-flex items-center bg-white/95 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg">
-                  <MapPinCheckInside className="w-3 h-3 text-[#2E8B57] mr-1.5" />
+                  <MapPinCheckInside className="w-3 h-3 text-[#fd7507] mr-1.5" />
                   <span className="text-[#2E8B57] font-semibold text-xs">Adelaide</span>
                 </div>
               </motion.div>
 
               {/* Search Bar */}
-              <motion.form 
-                onSubmit={handleSearch} 
-                className="flex gap-2 max-w-lg mx-auto"
+              <motion.form
+                onSubmit={handleSearch}
+                className="flex gap-2 mx-auto"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4, duration: 0.5 }}
@@ -140,18 +140,18 @@ const HomePage = () => {
                 <div className="flex-1 relative">
                   <Input
                     type="text"
-                    placeholder="Search for groceries..."
+                    placeholder="Search for groceries and more..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="h-9 pl-3 pr-3 bg-white/95 backdrop-blur-sm border-0 shadow-lg text-gray-800 placeholder:text-gray-500 rounded-full text-sm"
+                    className="h-14 pl-3 pr-3 bg-white/95 backdrop-blur-sm border-0 shadow-lg text-gray-800 placeholder:text-gray-500 text-sm my-4"
                   />
                 </div>
-                <Button 
+                <Button
                   type="submit"
-                  size="sm" 
-                  className="h-9 px-4 bg-[#fd7507] hover:bg-[#fd7507]/90 shadow-lg rounded-full font-semibold text-sm"
+                  size="sm"
+                  className="h-14 mt-4 px-4 bg-[#fd7507] hover:bg-[#fd7507]/90 shadow-lg text-sm"
                 >
-                  <Search className="w-3 h-3 mr-1" />
+                  <Search className="w-3 h-3 mr-2" />
                   Search
                 </Button>
               </motion.form>
@@ -170,17 +170,17 @@ const HomePage = () => {
                       to={`/category/${category.id}`}
                       className="flex-none group text-center"
                     >
-                      <div className="w-10 h-10 mx-auto mb-1 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:bg-white/30 transition-all duration-300 shadow-lg">
-                        <img 
-                          src={category.icon_url} 
+                      <div className="w-16 h-16 mx-auto mb-1 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:bg-white/30 transition-all duration-300 shadow-lg">
+                        <img
+                          src={category.icon_url}
                           alt={category.name}
-                          className="w-6 h-6 object-cover rounded-full"
+                          className="w-12 h-12 object-cover rounded-full"
                           onError={(e) => {
                             e.target.style.display = 'none';
                             e.target.nextSibling.style.display = 'flex';
                           }}
                         />
-                        <div className="w-6 h-6 hidden items-center justify-center">
+                        <div className="w-12 h-12 hidden items-center justify-center">
                           {getCatIcon(category.name)}
                         </div>
                       </div>
@@ -189,23 +189,31 @@ const HomePage = () => {
                       </span>
                     </Link>
                   ))}
+                  <Link to="/categories" className="flex-none group text-center">
+                    <div className="w-16 h-16 mx-auto mb-1 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:bg-white/30 transition-all duration-300 shadow-lg">
+                      <div className="flex flex-col items-center">
+                        <ArrowRight className="h-6 w-6 text-white" />
+                        <span className="text-xs font-medium text-white/90 group-hover:text-white transition-colors block truncate">View All</span>
+                      </div>
+                    </div>
+                  </Link>
                 </div>
               </motion.div>
 
               {/* Grocery Run Button */}
-              <motion.div 
+              <motion.div
                 className="pt-1 flex justify-center"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.8, duration: 0.5 }}
               >
                 <Link to="/store-pickup" className="block">
-                  <Button 
-                    size="lg" 
-                    variant="outline" 
-                    className="w-full max-w-md h-10 bg-white/95 hover:bg-white border-2 border-white/50 shadow-lg text-[#2E8B57] hover:text-[#2E8B57] font-bold text-base rounded-full mx-auto backdrop-blur-sm transition-all duration-300 hover:scale-105"
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="w-full max-w-md h-14 bg-white/95 hover:bg-white border-2 border-white/50 shadow-lg text-[#2E8B57] hover:text-[#2E8B57] font-bold text-base mx-auto backdrop-blur-sm transition-all duration-300 hover:scale-105"
                   >
-                    <Store className="w-4 h-4 mr-2" />
+                    ...<Truck className="w-4 h-4 mr-2" />
                     Schedule a Grocery Run
                   </Button>
                 </Link>
@@ -219,7 +227,7 @@ const HomePage = () => {
       <section className="py-12 bg-white">
         <div className="container px-4 md:px-6">
           <div className="flex items-center justify-between mb-8">
-            <motion.h2 
+            <motion.h2
               className="text-2xl font-bold"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -227,12 +235,16 @@ const HomePage = () => {
             >
               Featured Products
             </motion.h2>
-            <Link to="/shop" className="text-primary hover:underline text-sm flex items-center font-medium">
-              View All <ArrowRight className="ml-1 h-4 w-4" />
+            <Link to="/shop" className="flex-none group text-center">
+              <div className="flex flex-col items-center">
+                <div className="w-16 h-16 mx-auto mb-1 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:bg-white/30 transition-all duration-300 shadow-lg">
+                  <ArrowRight className="h-6 w-6 text-primary" />
+                </div>
+                <span className="text-xs font-medium text-primary transition-colors block truncate">View All</span>
+              </div>
             </Link>
           </div>
-          
-          <motion.div 
+          <motion.div
             className="grid gap-6 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -249,7 +261,7 @@ const HomePage = () => {
       <section className="py-12 bg-gradient-to-r from-gray-50 to-gray-100">
         <div className="container px-4 md:px-6">
           <div className="grid gap-8 md:grid-cols-3">
-            <motion.div 
+            <motion.div
               className="flex flex-col items-center text-center space-y-4 p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -263,8 +275,8 @@ const HomePage = () => {
                 Get your groceries delivered right to your doorstep
               </p>
             </motion.div>
-            
-            <motion.div 
+
+            <motion.div
               className="flex flex-col items-center text-center space-y-4 p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -278,8 +290,8 @@ const HomePage = () => {
                 Strict quality assurance and control
               </p>
             </motion.div>
-            
-            <motion.div 
+
+            <motion.div
               className="flex flex-col items-center text-center space-y-4 p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

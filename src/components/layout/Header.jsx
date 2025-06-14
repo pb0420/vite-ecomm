@@ -32,10 +32,10 @@ const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-gradient-to-r from-[#2E8B57] via-[#3CB371] to-[#98FB98] border-b shadow-sm">
+    <header className="sticky top-0 z-40 w-full bg-gradient-to-r from-[#2E8B57] via-[#3CB371] to-[#98D598] border-b shadow-sm">
       <div className="container flex items-center justify-between h-16 px-4 mx-auto md:px-6">
         <Link to="/" className="flex items-center space-x-2">
-          <img src="/logo.png" alt="Groceroo Logo" style={{height: '42px',width:'172px'}} />
+          <img src="/logo.png" alt="Groceroo Logo" style={{width:'202px'}} />
         </Link>
 
         <nav className="hidden md:flex md:items-center md:space-x-6">

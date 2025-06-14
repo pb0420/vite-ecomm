@@ -68,7 +68,7 @@ const CategoriesPage = () => {
       </section>
 
       <div className="container px-4 py-8 mx-auto md:px-6">
-        <div className="grid gap-6 mt-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {categories.map((category, index) => (
             <motion.div
               key={category.id}

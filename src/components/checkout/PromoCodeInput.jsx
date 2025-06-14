@@ -129,7 +129,7 @@ const PromoCodeInput = ({ subtotal, onPromoApplied, appliedPromo, onPromoRemoved
 
   return (
     <div className="space-y-2">
-      <Label htmlFor="promo-code">Promo Code</Label>
+      {/* <Label htmlFor="promo-code">Promo Code</Label> */}
       <div className="flex space-x-2">
         <Input
           id="promo-code"
