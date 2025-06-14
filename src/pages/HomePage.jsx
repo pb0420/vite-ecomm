@@ -108,7 +108,7 @@ const HomePage = () => {
           <div className="absolute inset-0 bg-gradient-to-br from-[#2E8B57]/90 via-[#3CB371]/80 to-[#98FB98]/70" />
         </div>
         
-        <div className="container relative h-full px-4 md:px-6">
+        <div className="container relative h-full px-2 md:px-6">
           <div className="flex flex-col justify-center h-full max-w-3xl mx-auto text-center">
             <motion.div 
               className="space-y-8"
@@ -118,7 +118,7 @@ const HomePage = () => {
             >
               {/* Location Pill */}
               <motion.div 
-                className="inline-flex items-left bg-white/95 backdrop-blur-sm rounded-full px-6 py-3 shadow-lg mx-auto"
+                className="inline-flex items-center bg-white/95 backdrop-blur-sm rounded-full px-6 py-3 shadow-lg mx-auto"
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.4 }}
