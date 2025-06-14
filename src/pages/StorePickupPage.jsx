@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Store, Clock, Calendar, MessageCircle, Bot, MapPin, Phone } from 'lucide-react';
+import { Store, Clock, Calendar, MessageCircle, Bot, MapPin, Phone, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -40,6 +40,8 @@ const generateTimeSlots = () => {
 const StorePickupPage = () => {
   const { user } = useAuth();
   const [stores, setStores] = useState([]);
+  const [filteredStores, setFilteredStores] = useState([]);
+  const [storeSearchQuery, setStoreSearchQuery] = useState('');
   const [upcomingOrders, setUpcomingOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedStores, setSelectedStores] = useState([]);
@@ -83,6 +85,18 @@ const StorePickupPage = () => {
     }
   }, [postcodeSearch, postcodes]);
 
+  useEffect(() => {
+    if (storeSearchQuery.length === 0) {
+      setFilteredStores(stores);
+    } else {
+      const filtered = stores.filter(store => 
+        store.name.toLowerCase().includes(storeSearchQuery.toLowerCase()) ||
+        store.address.toLowerCase().includes(storeSearchQuery.toLowerCase())
+      );
+      setFilteredStores(filtered);
+    }
+  }, [storeSearchQuery, stores]);
+
   const fetchStores = async () => {
     try {
       const { data, error } = await supabase
@@ -92,6 +106,7 @@ const StorePickupPage = () => {
 
       if (error) throw error;
       setStores(data || []);
+      setFilteredStores(data || []);
     } catch (error) {
       console.error('Error fetching stores:', error);
       toast({ variant: "destructive", title: "Error", description: "Could not load stores." });
@@ -261,21 +276,26 @@ const StorePickupPage = () => {
         await supabase.rpc('increment_promo_usage', { promo_code: appliedPromo.code });
       }
 
-      toast({ title: "Order Created", description: "Your pickup order has been scheduled. We'll contact you shortly." });
-      
-      // Reset form
-      setSelectedStores([]);
-      setSelectedTimeSlot('');
-      setWhatsappNumber('');
-      setPhoneNumber('');
-      setPhotos([]);
-      setTermsAccepted(false);
-      setAppliedPromo(null);
-      setPostcodeSearch('');
-      
-      // Refresh upcoming orders and switch to that tab
-      fetchUpcomingOrders();
-      setActiveTab('upcoming-orders');
+      // Navigate to payment page
+      navigate('/pickup-payment', {
+        state: {
+          orderId: pickupOrder.id,
+          orderData: {
+            pickup_date: selectedDate.toISOString().split('T')[0],
+            time_slot: selectedTimeSlot,
+            contact_preference: contactPreference,
+            whatsapp_number: contactPreference === 'whatsapp' ? whatsappNumber : null,
+            phone_number: contactPreference === 'phone' ? phoneNumber : null,
+            delivery_address: address,
+            postcode: postcode,
+            estimated_total: finalTotal,
+            promo_code: appliedPromo?.code || null,
+            discount_amount: discountAmount,
+            stores: selectedStores
+          },
+          finalTotal
+        }
+      });
       
     } catch (error) {
       console.error('Error creating pickup order:', error);
@@ -346,8 +366,8 @@ const StorePickupPage = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Banner Section */}
-      <section className="relative h-[30vh] min-h-[200px] bg-[#F0E68C] overflow-hidden">
+      {/* Banner Section with How it Works */}
+      <section className="relative h-[50vh] min-h-[400px] bg-[#F0E68C] overflow-hidden">
         <div className="absolute inset-0">
           <img 
             src="/banner_bg.jpg" 
@@ -358,15 +378,49 @@ const StorePickupPage = () => {
         </div>
         
         <div className="container relative h-full px-4 md:px-6">
-          <div className="flex flex-col justify-center h-full max-w-2xl">
+          <div className="flex flex-col justify-center h-full">
             <motion.div 
-              className="space-y-2"
+              className="space-y-6"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <h1 className="text-3xl md:text-4xl font-bold text-white">Grocery Run</h1>
-              <p className="text-white/90">Let us do the shopping for you at multiple stores!</p>
+              <div className="text-center mb-8">
+                <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Grocery Run</h1>
+                <p className="text-white/90 text-lg">Let us do the shopping for you at multiple stores!</p>
+              </div>
+
+              {/* How it works steps */}
+              <div className="grid gap-4 md:grid-cols-4 max-w-4xl mx-auto">
+                <div className="flex flex-col items-center text-center space-y-2 bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                  <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                    <Store className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="font-medium text-white">1. Choose Stores</h3>
+                  <p className="text-sm text-white/80">Select stores and set your budget</p>
+                </div>
+                <div className="flex flex-col items-center text-center space-y-2 bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                  <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                    <MessageCircle className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="font-medium text-white">2. Share Lists</h3>
+                  <p className="text-sm text-white/80">Add shopping lists and photos</p>
+                </div>
+                <div className="flex flex-col items-center text-center space-y-2 bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                  <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                    <Clock className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="font-medium text-white">3. We Shop</h3>
+                  <p className="text-sm text-white/80">We shop at all selected stores</p>
+                </div>
+                <div className="flex flex-col items-center text-center space-y-2 bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                  <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                    <MapPin className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="font-medium text-white">4. Delivery</h3>
+                  <p className="text-sm text-white/80">All items delivered in one trip</p>
+                </div>
+              </div>
             </motion.div>
           </div>
         </div>
@@ -379,46 +433,6 @@ const StorePickupPage = () => {
           transition={{ duration: 0.3 }}
           className="max-w-6xl mx-auto"
         >
-          {/* How it works section */}
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>How it works</CardTitle>
-              <CardDescription>Simple steps to get your groceries from multiple stores</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-6 md:grid-cols-4">
-                <div className="flex flex-col items-center text-center space-y-2">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Store className="w-6 h-6 text-primary" />
-                  </div>
-                  <h3 className="font-medium">1. Choose Stores</h3>
-                  <p className="text-sm text-muted-foreground">Select one or more stores and set your budget for each</p>
-                </div>
-                <div className="flex flex-col items-center text-center space-y-2">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <MessageCircle className="w-6 h-6 text-primary" />
-                  </div>
-                  <h3 className="font-medium">2. Share Lists</h3>
-                  <p className="text-sm text-muted-foreground">Add shopping lists and photos for each store</p>
-                </div>
-                <div className="flex flex-col items-center text-center space-y-2">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Clock className="w-6 h-6 text-primary" />
-                  </div>
-                  <h3 className="font-medium">3. We Shop</h3>
-                  <p className="text-sm text-muted-foreground">We'll shop at all selected stores during your time slot</p>
-                </div>
-                <div className="flex flex-col items-center text-center space-y-2">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <MapPin className="w-6 h-6 text-primary" />
-                  </div>
-                  <h3 className="font-medium">4. Delivery</h3>
-                  <p className="text-sm text-muted-foreground">All items delivered to your address in one trip</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
           {!user ? (
             <Card>
               <CardHeader>
@@ -448,13 +462,30 @@ const StorePickupPage = () => {
                   </CardHeader>
                   <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-6">
-                      <StoreSelector
-                        stores={stores}
-                        selectedStores={selectedStores}
-                        onStoreToggle={setSelectedStores}
-                        onNotesChange={() => {}}
-                        onEstimatedTotalChange={() => {}}
-                      />
+                      {/* Store Search */}
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-lg font-semibold">Select Stores</h3>
+                          <div className="relative w-64">
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              type="search"
+                              placeholder="Search stores..."
+                              className="pl-8"
+                              value={storeSearchQuery}
+                              onChange={(e) => setStoreSearchQuery(e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        
+                        <StoreSelector
+                          stores={filteredStores}
+                          selectedStores={selectedStores}
+                          onStoreToggle={setSelectedStores}
+                          onNotesChange={() => {}}
+                          onEstimatedTotalChange={() => {}}
+                        />
+                      </div>
                       {formErrors.stores && <p className="text-xs text-destructive">{formErrors.stores}</p>}
 
                       <div className="grid gap-6 md:grid-cols-2">
@@ -677,7 +708,7 @@ const StorePickupPage = () => {
                       {formErrors.terms && <p className="text-xs text-destructive">{formErrors.terms}</p>}
 
                       <Button type="submit" className="w-full" disabled={selectedStores.length === 0}>
-                        Schedule Multi-Store Run
+                        Proceed to Payment
                       </Button>
                     </form>
                   </CardContent>

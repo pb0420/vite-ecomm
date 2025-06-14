@@ -28,6 +28,7 @@ import RegisterPage from '@/pages/RegisterPage';
 import AccountPage from '@/pages/AccountPage';
 import AdminPage from '@/pages/AdminPage';
 import StorePickupPage from '@/pages/StorePickupPage';
+import PickupPaymentPage from '@/pages/PickupPaymentPage';
 import PrivacyPage from '@/pages/PrivacyPage';
 import TermsPage from '@/pages/TermsPage';
 import StripePaymentPage from '@/pages/StripePaymentPage';
@@ -52,6 +53,7 @@ const App = () => {
                     <Route path="/product/:id" element={<ProductPage />} />
                     <Route path="/checkout" element={<CheckoutPage />} />
                     <Route path="/store-pickup" element={<StorePickupPage />} />
+                    <Route path="/pickup-payment" element={<PickupPaymentPage />} />
                     <Route path="/order-confirmation/:id" element={<OrderConfirmationPage />} />
                     {/* <Route path="/login" element={<LoginPage />} /> */}
                     <Route path="/admin-login" element={<AdminLoginPage />} />

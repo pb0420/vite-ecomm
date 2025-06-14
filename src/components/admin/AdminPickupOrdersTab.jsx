@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Filter, Phone, MessageCircle, Eye, Store, Calendar } from 'lucide-react';
+import { Filter, Phone, MessageCircle, Eye, Store, Calendar, CreditCard, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -22,6 +22,8 @@ const AdminPickupOrdersTab = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
   const [adminMessage, setAdminMessage] = useState('');
+  const [actualAmount, setActualAmount] = useState('');
+  const [confirmingPayment, setConfirmingPayment] = useState(false);
 
   const fetchOrders = async () => {
     try {
@@ -96,6 +98,69 @@ const AdminPickupOrdersTab = () => {
     }
   };
 
+  const confirmPaymentWithActualAmount = async () => {
+    if (!actualAmount || !selectedOrder) return;
+
+    setConfirmingPayment(true);
+    try {
+      // Call edge function to confirm payment intent with actual amount
+      const response = await fetch('https://bcbxcnxutotjzmdjeyde.supabase.co/functions/v1/confirm-pickup-payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjYnhjbnh1dG90anptZGpleWRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY0NjIwODksImV4cCI6MjA2MjAzODA4OX0.sMIn31DXRvBpQsxYZV2nn1lKqdEkEk2S0jvdve2yACY'
+        },
+        body: JSON.stringify({
+          orderId: selectedOrder.id,
+          actualAmount: parseFloat(actualAmount)
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.error) {
+        throw new Error(result.error);
+      }
+
+      // Update order with actual total
+      const { error: updateError } = await supabase
+        .from('pickup_orders')
+        .update({ 
+          actual_total: parseFloat(actualAmount),
+          payment_status: 'confirmed',
+          status: 'completed'
+        })
+        .eq('id', selectedOrder.id);
+
+      if (updateError) throw updateError;
+
+      toast({ 
+        title: "Payment Confirmed", 
+        description: `Payment confirmed with actual amount ${formatCurrency(parseFloat(actualAmount))}` 
+      });
+
+      setActualAmount('');
+      fetchOrders();
+      
+      // Update selected order
+      setSelectedOrder({
+        ...selectedOrder,
+        actual_total: parseFloat(actualAmount),
+        payment_status: 'confirmed',
+        status: 'completed'
+      });
+    } catch (error) {
+      console.error('Error confirming payment:', error);
+      toast({ 
+        variant: "destructive", 
+        title: "Error", 
+        description: "Could not confirm payment: " + error.message 
+      });
+    } finally {
+      setConfirmingPayment(false);
+    }
+  };
+
   const sendAdminMessage = async () => {
     if (!adminMessage.trim() || !selectedOrder) return;
 
@@ -160,6 +225,16 @@ const AdminPickupOrdersTab = () => {
     }
   };
 
+  const getPaymentStatusColor = (status) => {
+    switch (status) {
+      case 'pending': return 'bg-yellow-100 text-yellow-800';
+      case 'paid': return 'bg-blue-100 text-blue-800';
+      case 'confirmed': return 'bg-green-100 text-green-800';
+      case 'cancelled': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -212,6 +287,7 @@ const AdminPickupOrdersTab = () => {
                 <TableHead>Date & Time</TableHead>
                 <TableHead>Contact</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Payment</TableHead>
                 <TableHead>Total</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -219,7 +295,7 @@ const AdminPickupOrdersTab = () => {
             <TableBody>
               {filteredOrders.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="h-24 text-center">No orders found.</TableCell>
+                  <TableCell colSpan={9} className="h-24 text-center">No orders found.</TableCell>
                 </TableRow>
               ) : (
                 filteredOrders.map((order) => (
@@ -289,7 +365,12 @@ const AdminPickupOrdersTab = () => {
                       </Select>
                     </TableCell>
                     <TableCell>
-                      {formatCurrency(order.estimated_total || 0)}
+                      <Badge className={getPaymentStatusColor(order.payment_status)}>
+                        {order.payment_status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {order.actual_total ? formatCurrency(order.actual_total) : formatCurrency(order.estimated_total || 0)}
                     </TableCell>
                     <TableCell className="text-right">
                       <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
@@ -331,10 +412,53 @@ const AdminPickupOrdersTab = () => {
                                         {selectedOrder.status}
                                       </Badge>
                                     </p>
-                                    <p><strong>Total:</strong> {formatCurrency(selectedOrder.estimated_total || 0)}</p>
+                                    <p><strong>Payment:</strong> 
+                                      <Badge className={`ml-2 ${getPaymentStatusColor(selectedOrder.payment_status)}`}>
+                                        {selectedOrder.payment_status}
+                                      </Badge>
+                                    </p>
+                                    <p><strong>Estimated Total:</strong> {formatCurrency(selectedOrder.estimated_total || 0)}</p>
+                                    {selectedOrder.actual_total && (
+                                      <p><strong>Actual Total:</strong> {formatCurrency(selectedOrder.actual_total)}</p>
+                                    )}
                                   </div>
                                 </div>
                               </div>
+
+                              {/* Payment Confirmation Section */}
+                              {selectedOrder.payment_status === 'paid' && !selectedOrder.actual_total && (
+                                <div className="p-4 border rounded-lg bg-blue-50">
+                                  <h4 className="font-semibold mb-2 flex items-center">
+                                    <CreditCard className="w-4 h-4 mr-2" />
+                                    Confirm Payment with Actual Amount
+                                  </h4>
+                                  <div className="flex space-x-2 items-end">
+                                    <div className="flex-1">
+                                      <Label htmlFor="actual-amount">Actual Total Amount ($)</Label>
+                                      <Input
+                                        id="actual-amount"
+                                        type="number"
+                                        step="0.01"
+                                        value={actualAmount}
+                                        onChange={(e) => setActualAmount(e.target.value)}
+                                        placeholder="Enter actual total amount"
+                                      />
+                                    </div>
+                                    <Button
+                                      onClick={confirmPaymentWithActualAmount}
+                                      disabled={!actualAmount || confirmingPayment}
+                                      className="bg-green-600 hover:bg-green-700"
+                                    >
+                                      {confirmingPayment ? (
+                                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                                      ) : (
+                                        <CheckCircle className="w-4 h-4 mr-2" />
+                                      )}
+                                      {confirmingPayment ? 'Confirming...' : 'Confirm Payment'}
+                                    </Button>
+                                  </div>
+                                </div>
+                              )}
 
                               {/* Store Orders */}
                               <div>
