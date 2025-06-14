@@ -203,7 +203,7 @@ const HomePage = () => {
                     variant="outline" 
                     className="w-full max-w-md h-16 bg-white/95 hover:bg-white border-2 border-white/50 shadow-lg text-[#2E8B57] hover:text-[#2E8B57] font-bold text-xl rounded-full mx-auto backdrop-blur-sm transition-all duration-300 hover:scale-105"
                   >
-                    <Store className="w-6 h-4 mr-3" />
+                    <Store className="w-4 h-4 mr-3" />
                     Schedule a Grocery Run
                   </Button>
                 </Link>
