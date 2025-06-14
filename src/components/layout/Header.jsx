@@ -60,7 +60,7 @@ const Header = () => {
               <div className="hidden md:flex md:items-center md:space-x-2">
                 <Link to="/account">
                   <Button variant="ghost" size="sm" className="flex items-center space-x-1">
-                    <UserRound style={{backgroundColor:"transparent"}} className="w-4 h-4" />
+                    <UserRound style={{backgroundColor:"red"}} className="w-4 h-4" />
                     <span>{user.name?.split(' ')[0] || 'My Account'}</span>
                   </Button>
                 </Link>
