@@ -112,13 +112,13 @@ const HomePage = () => {
           <div className="flex flex-col justify-center h-full max-w-3xl mx-auto text-center">
             <motion.div 
               className="space-y-8"
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
               {/* Location Pill */}
               <motion.div 
-                className="inline-flex items-center bg-white/95 backdrop-blur-sm rounded-full px-6 py-6 shadow-lg mx-auto"
+                className="inline-flex items-center bg-white/95 backdrop-blur-sm rounded-full px-6 py-3 shadow-lg mx-auto"
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.4 }}
