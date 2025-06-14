@@ -104,8 +104,6 @@ const HomePage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <h1 className="text-2xl md:text-5xl font-bold text-white">
-                Delivering now ...<button><Truck /></button> &nbsp; </h1>
                 <h2 className="text-1xl md:text-3xl font-bold text-white"><button><MapPinCheckInside /></button> &nbsp;Adelaide </h2>
               
               <p className="text-xl text-white/90">
