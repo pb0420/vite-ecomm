@@ -67,7 +67,7 @@ const Header = () => {
               </div>
             ) : (
               <Button variant="outline" size="sm" onClick={() => setIsLoginOpen(true)}>
-                Sign In
+                <User /> 
               </Button>
             )
           )}
