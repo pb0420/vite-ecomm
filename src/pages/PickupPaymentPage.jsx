@@ -66,7 +66,7 @@ const PickupPaymentPage = () => {
         .from('pickup_orders')
         .update({ 
           payment_status: 'paid',
-          status: 'confirmed'
+          status: 'processing'
         })
         .eq('id', orderId);
 
