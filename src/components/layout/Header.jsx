@@ -32,26 +32,26 @@ const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-white border-b shadow-sm">
+    <header className="sticky top-0 z-40 w-full bg-gradient-to-r from-[#2E8B57] via-[#3CB371] to-[#98FB98] border-b shadow-sm">
       <div className="container flex items-center justify-between h-16 px-4 mx-auto md:px-6">
         <Link to="/" className="flex items-center space-x-2">
           <img src="/logo.png" alt="Groceroo Logo" style={{height: '42px',width:'172px'}} />
         </Link>
 
         <nav className="hidden md:flex md:items-center md:space-x-6">
-            <Link to="/store-pickup" className="text-sm font-medium transition-colors hover:text-primary">Grocery Run</Link>
-          <Link to="/shop" className="text-sm font-medium transition-colors hover:text-primary">Shop</Link>
-          <Link to="/categories" className="text-sm font-medium transition-colors hover:text-primary">Categories</Link>
+            <Link to="/store-pickup" className="text-sm font-medium transition-colors hover:text-white text-white/90">Grocery Run</Link>
+          <Link to="/shop" className="text-sm font-medium transition-colors hover:text-white text-white/90">Shop</Link>
+          <Link to="/categories" className="text-sm font-medium transition-colors hover:text-white text-white/90">Categories</Link>
           {isAdmin && (
-            <Link to="/admin" className="text-sm font-medium transition-colors hover:text-primary">Admin Dashboard</Link>
+            <Link to="/admin" className="text-sm font-medium transition-colors hover:text-white text-white/90">Admin Dashboard</Link>
           )}
         </nav>
 
         <div className="flex items-center space-x-4">
-          <Button variant="ghost" size="icon" className="relative" onClick={toggleCart}>
-            <ShoppingCart className="w-5 h-5" />
+          <Button variant="ghost" size="icon" className="relative hover:bg-white/20" onClick={toggleCart}>
+            <ShoppingCart className="w-5 h-5 text-white" />
             {cartCount > 0 && (
-              <Badge variant="default" className="absolute -top-2 -right-2 px-1.5 py-0.5 min-w-[1.25rem] text-xs">{cartCount}</Badge>
+              <Badge variant="default" className="absolute -top-2 -right-2 px-1.5 py-0.5 min-w-[1.25rem] text-xs bg-[#fd7507] hover:bg-[#fd7507]/90 text-white border-0">{cartCount}</Badge>
             )}
           </Button>
 
@@ -59,14 +59,14 @@ const Header = () => {
             user ? (
               <div className="md:flex md:items-center md:space-x-2">
                 <Link to="/account">
-                  <Button variant="ghost" size="sm" className="flex items-center space-x-1">
+                  <Button variant="ghost" size="sm" className="flex items-center space-x-1 hover:bg-white/20 text-white">
                     <UserRound className="w-4 h-4" />
                     <span>{user.name?.split(' ')[0] || 'My Account'}</span>
                   </Button>
                 </Link>
               </div>
             ) : (
-              <Button className="bg-transparent" variant="outline" size="sm" onClick={() => setIsLoginOpen(true)}>
+              <Button className="bg-white/20 hover:bg-white/30 text-white border-white/30" variant="outline" size="sm" onClick={() => setIsLoginOpen(true)}>
                 <UserRound /> 
               </Button>
             )

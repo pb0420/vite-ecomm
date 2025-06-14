@@ -109,22 +109,24 @@ const HomePage = () => {
         </div>
         
         <div className="container relative h-full px-4 md:px-6">
-          <div className="flex flex-col justify-center h-full max-w-4xl mx-auto text-center py-2">
+          <div className="flex flex-col justify-center h-full max-w-4xl mx-auto py-2">
             <motion.div 
               className="space-y-4"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              {/* Location Pill */}
+              {/* Location Pill - moved to left */}
               <motion.div 
-                className="inline-flex items-center bg-white/95 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg mx-auto"
+                className="flex justify-start"
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.4 }}
               >
-                <MapPinCheckInside className="w-3 h-3 text-[#2E8B57] mr-1.5" />
-                <span className="text-[#2E8B57] font-semibold text-xs">Adelaide</span>
+                <div className="inline-flex items-center bg-white/95 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg">
+                  <MapPinCheckInside className="w-3 h-3 text-[#2E8B57] mr-1.5" />
+                  <span className="text-[#2E8B57] font-semibold text-xs">Adelaide</span>
+                </div>
               </motion.div>
 
               {/* Search Bar */}
@@ -161,7 +163,7 @@ const HomePage = () => {
                 transition={{ delay: 0.6, duration: 0.5 }}
                 className="relative"
               >
-                <div className="flex overflow-x-auto pb-1 space-x-3 scrollbar-hide justify-center">
+                <div className="flex overflow-x-auto pb-1 space-x-3 scrollbar-hide px-4 md:px-0 md:justify-center">
                   {categories.map((category) => (
                     <Link
                       key={category.id}
@@ -192,7 +194,7 @@ const HomePage = () => {
 
               {/* Grocery Run Button */}
               <motion.div 
-                className="pt-1"
+                className="pt-1 flex justify-center"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.8, duration: 0.5 }}
