@@ -98,7 +98,7 @@ const HomePage = () => {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-[35vh] min-h-[350px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
+      <section className="relative h-[45vh] min-h-[350px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
         <div className="absolute inset-0">
           <img 
             src="/banner_bg.jpg" 
