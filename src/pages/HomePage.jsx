@@ -118,7 +118,7 @@ const HomePage = () => {
             >
               {/* Location Pill */}
               <motion.div 
-                className="inline-flex items-center bg-white/95 backdrop-blur-sm rounded-full px-6 py-3 shadow-lg mx-auto"
+                className="inline-flex items-center bg-white/95 backdrop-blur-sm rounded-full px-6 py-4 shadow-lg mx-auto"
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.4 }}
