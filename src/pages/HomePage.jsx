@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { ArrowRight, Clock, ShieldCheck, MessageCircle, Handshake,ShoppingCart,CupSoda,EggFried,Cookie, Hamburger, Croissant, Apple, Banana, Beef, Candy, Fish, Utensils, Car, MapPinCheckInside, Truck, Store  } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { ArrowRight, Clock, ShieldCheck, MessageCircle, Handshake,ShoppingCart,CupSoda,EggFried,Cookie, Hamburger, Croissant, Apple, Banana, Beef, Candy, Fish, Utensils, Car, MapPinCheckInside, Truck, Store, Search  } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import ProductCard from '@/components/products/ProductCard';
 import { supabase } from '@/lib/supabaseClient';
 
@@ -10,6 +11,8 @@ const HomePage = () => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,6 +49,15 @@ const HomePage = () => {
 
     fetchData();
   }, []);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
+    } else {
+      navigate('/shop');
+    }
+  };
 
   const openWhatsApp = () => {
     window.open('https://wa.me/1234567890', '_blank');
@@ -86,7 +98,7 @@ const HomePage = () => {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-[30vh] min-h-[300px] bg-[#F0E68C] overflow-hidden">
+      <section className="relative h-[40vh] min-h-[400px] bg-[#F0E68C] overflow-hidden">
         <div className="absolute inset-0">
           <img 
             src="/banner_bg.jpg" 
@@ -99,21 +111,47 @@ const HomePage = () => {
         <div className="container relative h-full px-4 md:px-6">
           <div className="flex flex-col justify-center h-full max-w-2xl">
             <motion.div 
-              className="space-y-2"
+              className="space-y-6"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-                <h1 className="text-2xl md:text-3xl font-bold text-white"><button><MapPinCheckInside /></button> &nbsp;Adelaide </h1>
-              <div className="flex flex-col gap-2 min-[400px]:flex-row pt-4">
-                <Link to="/shop">
-                  <Button size="lg" className="w-full min-[400px]:w-auto bg-[#fd7507] hover:bg-[#fd7507]/90">
-                   <ShoppingCart />&nbsp;  Quick Shop
-                  </Button>
-                </Link>
-                <Link to="/store-pickup">
-                  <Button size="lg" variant="outline" className="w-full min-[400px]:w-auto bg-white/90 hover:bg-white">
-                   <Store />&nbsp; Schedule a Grocery Run
+              {/* Location Pill */}
+              <div className="inline-flex items-center bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg">
+                <MapPinCheckInside className="w-5 h-5 text-[#2E8B57] mr-2" />
+                <span className="text-[#2E8B57] font-semibold">Adelaide</span>
+              </div>
+
+              {/* Search Bar */}
+              <form onSubmit={handleSearch} className="flex gap-2 max-w-md">
+                <div className="flex-1 relative">
+                  <Input
+                    type="text"
+                    placeholder="Search for groceries..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="h-12 pl-4 pr-4 bg-white/95 backdrop-blur-sm border-0 shadow-lg text-gray-800 placeholder:text-gray-500"
+                  />
+                </div>
+                <Button 
+                  type="submit"
+                  size="lg" 
+                  className="h-12 px-6 bg-[#fd7507] hover:bg-[#fd7507]/90 shadow-lg"
+                >
+                  <Search className="w-5 h-5" />
+                </Button>
+              </form>
+
+              {/* Grocery Run Button */}
+              <div className="pt-2">
+                <Link to="/store-pickup" className="block">
+                  <Button 
+                    size="lg" 
+                    variant="outline" 
+                    className="w-full max-w-md h-14 bg-white/90 hover:bg-white border-2 border-white/50 shadow-lg text-[#2E8B57] hover:text-[#2E8B57] font-semibold text-lg"
+                  >
+                    <Store className="w-6 h-6 mr-3" />
+                    Schedule a Grocery Run
                   </Button>
                 </Link>
               </div>

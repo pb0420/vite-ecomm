@@ -14,9 +14,10 @@ const ShopPage = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const featuredParam = queryParams.get('featured');
+  const searchParam = queryParams.get('search');
   
-  const [searchInput, setSearchInput] = useState(''); // Input state for UI
-  const [searchTerm, setSearchTerm] = useState(''); // Actual search term for API
+  const [searchInput, setSearchInput] = useState(searchParam || ''); // Input state for UI
+  const [searchTerm, setSearchTerm] = useState(searchParam || ''); // Actual search term for API
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('name-asc');
   const [products, setProducts] = useState([]);
@@ -197,6 +198,11 @@ const ShopPage = () => {
               <p className="text-white/90">
                 Browse our selection of fresh groceries and household essentials.
               </p>
+              {searchParam && (
+                <p className="text-white/80 text-sm">
+                  Showing results for: "{searchParam}"
+                </p>
+              )}
             </motion.div>
           </div>
         </div>
