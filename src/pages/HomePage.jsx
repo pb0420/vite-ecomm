@@ -104,11 +104,7 @@ const HomePage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-                <h2 className="text-1xl md:text-3xl font-bold text-white"><button><MapPinCheckInside /></button> &nbsp;Adelaide </h2>
-              
-              <p className="text-xl text-white/90">
-               Get groceries and more delivered to your doorstep!
-              </p>
+                <h1 className="text-2xl md:text-3xl font-bold text-white"><button><MapPinCheckInside /></button> &nbsp;Adelaide </h1>
               <div className="flex flex-col gap-2 min-[400px]:flex-row pt-4">
                 <Link to="/shop">
                   <Button size="lg" className="w-full min-[400px]:w-auto bg-[#fd7507] hover:bg-[#fd7507]/90">

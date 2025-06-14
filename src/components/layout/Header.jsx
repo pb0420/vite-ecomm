@@ -32,7 +32,7 @@ const Header = () => {
   };
 
   return (
-    <header style={{backgroundImage:"url('/banner_bg.jpg')"}} className="sticky top-0 z-40 w-full bg-white border-b shadow-sm">
+    <header style={{backgroundImage:"url('/header_bg.jpg')"}} className="sticky top-0 z-40 w-full bg-white border-b shadow-sm">
       <div className="container flex items-center justify-between h-16 px-4 mx-auto md:px-6">
         <Link to="/" className="flex items-center space-x-2">
           <img src="/logo.png" alt="Groceroo Logo" style={{height: '42px',width:'172px'}} />
@@ -57,7 +57,7 @@ const Header = () => {
 
           {!loading && (
             user ? (
-              <div className="hidden md:flex md:items-center md:space-x-2">
+              <div className="md:flex md:items-center md:space-x-2">
                 <Link to="/account">
                   <Button variant="ghost" size="sm" className="flex items-center space-x-1">
                     <UserRound className="w-4 h-4" />
@@ -66,8 +66,8 @@ const Header = () => {
                 </Link>
               </div>
             ) : (
-              <Button variant="outline" size="sm" onClick={() => setIsLoginOpen(true)}>
-                <User /> 
+              <Button className="bg-transparent" variant="outline" size="sm" onClick={() => setIsLoginOpen(true)}>
+                <UserRound /> 
               </Button>
             )
           )}

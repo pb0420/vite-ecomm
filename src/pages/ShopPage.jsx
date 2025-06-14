@@ -192,7 +192,7 @@ const ShopPage = () => {
               transition={{ duration: 0.5 }}
             >
               <h1 className="text-3xl md:text-4xl font-bold text-white">
-                {featuredParam === 'true' ? 'Featured Products' : 'All Products'}
+                {featuredParam === 'true' ? 'Featured' : 'Shop'}
               </h1>
               <p className="text-white/90">
                 Browse our selection of fresh groceries and household essentials.
