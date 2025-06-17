@@ -116,7 +116,7 @@ const HomePage = () => {
       <section className="relative min-h-[400px] h-[50vh] max-h-[600px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
         <div className="absolute inset-0">
           <img
-            src="/banner_bg.jpg"
+            src="/banner_bg.jpeg"
             alt="Fresh groceries"
             className="w-full h-full object-cover opacity-30"
           />
@@ -141,16 +141,20 @@ const HomePage = () => {
                 {/* Location Pill - Left */}
                 <div className="inline-flex items-center bg-white/95 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg w-fit">
                   <MapPinCheckInside className="w-3 h-3 text-[#fd7507] mr-1.5" />
-                  <span className="text-[#2E8B57] font-semibold text-xs">Adelaide</span>
+                  <span className="text-[#2E8B57] font-semibold text-xs">Adelaide</span>&nbsp;
+                  <Clock className="w-3 h-3 text-[#2E8B57] mr-1.5" />
+                  <span className="text-[#2E8B57] font-medium text-xs">
+                    {deliveryTime}m (approx.)
+                  </span>
                 </div>
 
                 {/* Delivery Time Pill - Right */}
-                <div className="inline-flex items-center bg-white/95 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg w-fit sm:ml-auto">
+                {/* <div className="inline-flex items-center bg-white/95 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg w-fit sm:ml-auto">
                   <Clock className="w-3 h-3 text-[#2E8B57] mr-1.5" />
                   <span className="text-[#2E8B57] font-medium text-xs">
                     Delivering in: {deliveryTime}m (approx.)
                   </span>
-                </div>
+                </div> */}
               </motion.div>
 
               {/* Search Bar */}

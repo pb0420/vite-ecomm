@@ -98,9 +98,9 @@ const DeliveryOptions = ({ onDeliveryChange }) => {
         .from('time_slots')
         .select('*')
         .eq('date', dateString)
-        .eq('slot_type', 'delivery')
+        // .eq('slot_type', 'delivery')
         .eq('is_active', true)
-        .lt('current_orders', supabase.raw('max_orders'))
+        // .lt('current_orders', supabase.raw('max_orders'))
         .order('start_time');
 
       if (error) throw error;
@@ -202,9 +202,9 @@ const DeliveryOptions = ({ onDeliveryChange }) => {
                         {availableTimeSlots.map(slot => (
                           <SelectItem key={slot.id} value={slot.id}>
                             {formatTimeToAMPM(slot.start_time)} - {formatTimeToAMPM(slot.end_time)}
-                            <span className="ml-2 text-xs text-muted-foreground">
+                            {/* <span className="ml-2 text-xs text-muted-foreground">
                               ({slot.current_orders}/{slot.max_orders} booked)
-                            </span>
+                            </span> */}
                           </SelectItem>
                         ))}
                       </SelectContent>
