@@ -63,7 +63,7 @@ const UpcomingOrders = ({ orders, onSendMessage }) => {
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base">
-                  Order #{order.id.slice(0, 6)}
+                  Order #{order.id.slice(0, 6).toUpperCase()}
                 </CardTitle>
                 <div className="flex items-center space-x-2">
                   <Badge className={getStatusColor(order.status)}>

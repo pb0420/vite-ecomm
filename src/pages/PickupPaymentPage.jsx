@@ -28,17 +28,19 @@ const PickupPaymentPage = () => {
 
     const createPaymentIntent = async () => {
       try {
-        const response = await fetch('https://bcbxcnxutotjzmdjeyde.supabase.co/functions/v1/create-pickup-payment-intent', {
+        const response = await fetch('https://bcbxcnxutotjzmdjeyde.supabase.co/functions/v1/create-stripe-payment-intent', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjYnhjbnh1dG90anptZGpleWRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY0NjIwODksImV4cCI6MjA2MjAzODA4OX0.sMIn31DXRvBpQsxYZV2nn1lKqdEkEk2S0jvdve2yACY'
           },
           body: JSON.stringify({
+            order_type: 'pickup',
             orderId,
             orderData,
             amount: Math.round(finalTotal * 100), // Convert to cents
-            user_id: user.id
+            user_id: user.id,
+            productList: null
           })
         });
 
@@ -59,13 +61,14 @@ const PickupPaymentPage = () => {
     createPaymentIntent();
   }, [orderId, orderData, finalTotal, navigate, user.id]);
 
-  const handlePaymentSuccess = async (paymentData) => {
+  const handlePaymentSuccess = async (data) => {
     try {
       // Update pickup order payment status
       const { error: updateError } = await supabase
         .from('pickup_orders')
         .update({ 
           payment_status: 'paid',
+          payment_data: data.payment_data,
           status: 'processing'
         })
         .eq('id', orderId);

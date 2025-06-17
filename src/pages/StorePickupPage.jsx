@@ -29,10 +29,40 @@ import { Calendar as CalendarPicker } from '@/components/ui/calendar';
 
 const generateTimeSlots = () => {
   const slots = [];
+  const now = new Date();
+  const cutoffTime = new Date(now.getTime() + 2 * 60 * 60 * 1000); // Add 2 hours
+
+  // Helper function to format time to 12-hour AM/PM
+  const formatTimeToAMPM = (hour, minute) => {
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const formattedHour = hour % 12 || 12; // the hour '0' should be '12'
+    const formattedMinute = minute.toString().padStart(2, '0');
+    return `${formattedHour}:${formattedMinute} ${ampm}`;
+  };
+
   for (let hour = 9; hour < 21; hour += 2) {
-    const startTime = `${hour.toString().padStart(2, '0')}:00`;
-    const endTime = `${(hour + 2).toString().padStart(2, '0')}:00`;
-    slots.push({ id: `${startTime}-${endTime}`, label: `${startTime} - ${endTime}` });
+    const startHour = hour;
+    const endHour = hour + 2;
+
+    // Create a Date object for the start time of the slot on the selected date
+    // Assuming selectedDate is available in the scope where this function is called or passed as an argument
+    // For simplicity here, we'll assume it's the current date if selectedDate is not available.
+    // In the actual component, you might need to pass selectedDate.
+    const slotDate = new Date(now); // Use selectedDate if available, otherwise current date
+    slotDate.setHours(startHour, 0, 0, 0); // Use 24-hour format for date comparison
+    // Only add the slot if its start time is at least 2 hours from now
+    if (slotDate > cutoffTime) {
+      const startTime24 = `${startHour.toString().padStart(2, '0')}:00`;
+      const endTime24 = `${endHour.toString().padStart(2, '0')}:00`;
+
+      const startTimeAMPM = formatTimeToAMPM(startHour, 0);
+      const endTimeAMPM = formatTimeToAMPM(endHour, 0);
+
+      slots.push({
+        id: `${startTime24}-${endTime24}`, // Keep ID in 24-hour format for consistency/parsing
+        label: `${startTimeAMPM} - ${endTimeAMPM}` // Display label in AM/PM format
+      });
+    }
   }
   return slots;
 };
@@ -207,7 +237,8 @@ const StorePickupPage = () => {
     
     // Validate minimum order amounts
     selectedStores.forEach((store, index) => {
-      const minimumOrder = 50 + index * 25;
+      //const minimumOrder = 50 + index * 25;
+      const minimumOrder = 30;
       if (!store.estimatedTotal || store.estimatedTotal < minimumOrder) {
         errors[`store_${store.id}`] = `Minimum order for this store is ${formatCurrency(minimumOrder)}`;
       }
@@ -217,6 +248,7 @@ const StorePickupPage = () => {
       errors.terms = 'You must accept the terms and conditions';
     }
     setFormErrors(errors);
+    console.log('Form Errors:', errors);
     return Object.keys(errors).length === 0;
   };
 
@@ -231,7 +263,7 @@ const StorePickupPage = () => {
     try {
       const subtotal = selectedStores.reduce((total, store) => total + store.estimatedTotal, 0);
       const discountAmount = appliedPromo ? appliedPromo.discountAmount : 0;
-      const finalTotal = subtotal - discountAmount;
+      const finalTotal = orderSummary.total;
 
       // Create the main pickup order
       const { data: pickupOrder, error: orderError } = await supabase

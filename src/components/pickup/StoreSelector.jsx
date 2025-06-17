@@ -11,8 +11,9 @@ import { formatCurrency } from '@/lib/utils';
 
 const StoreSelector = ({ stores, selectedStores, onStoreToggle, onNotesChange, onEstimatedTotalChange }) => {
   const getMinimumOrder = (storeCount) => {
-    const baseAmount = 50;
-    return baseAmount + (storeCount - 1) * 25; // $50 for first store, +$25 for each additional
+    const baseAmount = 30;
+    return baseAmount;
+    //return baseAmount + (storeCount - 1) * 25; // $30 for first store, +$25 for each additional
   };
 
   const handleStoreSelect = (store) => {
@@ -66,7 +67,7 @@ const StoreSelector = ({ stores, selectedStores, onStoreToggle, onNotesChange, o
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold mb-4">Select Stores</h3>
+        {/* <h3 className="text-lg font-semibold mb-4">Select Stores</h3> */}
         <div className="grid gap-4 md:grid-cols-2">
           {stores.map((store) => {
             const isSelected = selectedStores.some(s => s.id === store.id);

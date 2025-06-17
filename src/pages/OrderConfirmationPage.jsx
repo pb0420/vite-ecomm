@@ -190,7 +190,7 @@ const OrderConfirmationPage = () => {
         
         <div className="mt-8 p-6 border rounded-lg text-left">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold">Order #{order.id}</h2>
+            <h2 className="text-xl font-semibold">Order #{order.id.slice(0, 6).toUpperCase()}</h2>
             <span className={`px-3 py-1 text-xs font-medium rounded-full ${statusInfo.bgColor} ${statusInfo.color}`}>
               {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
             </span>
