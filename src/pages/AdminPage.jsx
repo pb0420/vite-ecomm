@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Package, List, Tag, Settings as SettingsIcon, Store, ShoppingBag } from 'lucide-react';
+import { Package, List, Tag, Settings as SettingsIcon, Store, ShoppingBag, Clock } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AdminSummaryCards from '@/components/admin/AdminSummaryCards';
 import AdminOrdersTab from '@/components/admin/AdminOrdersTab';
@@ -10,6 +10,7 @@ import AdminCategoriesTab from '@/components/admin/AdminCategoriesTab';
 import AdminSettingsTab from '@/components/admin/AdminSettingsTab';
 import AdminStoresTab from '@/components/admin/AdminStoresTab';
 import AdminPickupOrdersTab from '@/components/admin/AdminPickupOrdersTab';
+import AdminTimeSlotsTab from '@/components/admin/AdminTimeSlotsTab';
 import DeleteConfirmationDialog from '@/components/admin/DeleteConfirmationDialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { useOrders } from '@/contexts/OrderContext';
@@ -63,6 +64,22 @@ const useAdminDataDeletion = (activeTabSetter) => {
         if (checkError) throw checkError;
         if (productsInCategory && productsInCategory.length > 0) {
           throw new Error("Cannot delete category as it is assigned to products.");
+        }
+      } else if (itemToDelete.type === 'time_slot') {
+        tableName = 'time_slots';
+        // Check if time slot has any orders
+        const { data: ordersWithSlot, error: checkError } = await supabase
+          .from('orders').select('id').eq('timeslot_id', itemToDelete.id).limit(1);
+        if (checkError) throw checkError;
+        if (ordersWithSlot && ordersWithSlot.length > 0) {
+          throw new Error("Cannot delete time slot as it has associated orders.");
+        }
+        
+        const { data: pickupOrdersWithSlot, error: checkError2 } = await supabase
+          .from('pickup_orders').select('id').eq('timeslot_id', itemToDelete.id).limit(1);
+        if (checkError2) throw checkError2;
+        if (pickupOrdersWithSlot && pickupOrdersWithSlot.length > 0) {
+          throw new Error("Cannot delete time slot as it has associated pickup orders.");
         }
       } else throw new Error("Invalid item type for deletion");
 
@@ -121,6 +138,7 @@ const AdminPage = () => {
     { value: "products", label: "Products", icon: List, component: <AdminProductsTab key="products" openDeleteDialog={openDeleteDialog} /> },
     { value: "categories", label: "Categories", icon: Tag, component: <AdminCategoriesTab key="categories" openDeleteDialog={openDeleteDialog} /> },
     { value: "stores", label: "Stores", icon: Store, component: <AdminStoresTab /> },
+    { value: "time-slots", label: "Time Slots", icon: Clock, component: <AdminTimeSlotsTab key="time-slots" openDeleteDialog={openDeleteDialog} /> },
     { value: "settings", label: "Settings", icon: SettingsIcon, component: <AdminSettingsTab /> },
   ];
 
@@ -134,7 +152,7 @@ const AdminPage = () => {
       />
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-8 space-y-6">
-        <TabsList className="grid w-full grid-cols-6 md:w-auto md:inline-flex">
+        <TabsList className="grid w-full grid-cols-7 md:w-auto md:inline-flex">
           {tabItems.map(tab => (
             <TabsTrigger key={tab.value} value={tab.value} className="flex items-center">
               <tab.icon className="w-4 h-4 mr-2" />{tab.label}

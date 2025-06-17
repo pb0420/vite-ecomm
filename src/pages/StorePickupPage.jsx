@@ -27,46 +27,6 @@ import AddressSelector from '@/components/checkout/AddressSelector';
 import { formatCurrency } from '@/lib/utils';
 import { Calendar as CalendarPicker } from '@/components/ui/calendar';
 
-const generateTimeSlots = () => {
-  const slots = [];
-  const now = new Date();
-  const cutoffTime = new Date(now.getTime() + 2 * 60 * 60 * 1000); // Add 2 hours
-
-  // Helper function to format time to 12-hour AM/PM
-  const formatTimeToAMPM = (hour, minute) => {
-    const ampm = hour >= 12 ? 'PM' : 'AM';
-    const formattedHour = hour % 12 || 12; // the hour '0' should be '12'
-    const formattedMinute = minute.toString().padStart(2, '0');
-    return `${formattedHour}:${formattedMinute} ${ampm}`;
-  };
-
-  for (let hour = 9; hour < 21; hour += 2) {
-    const startHour = hour;
-    const endHour = hour + 2;
-
-    // Create a Date object for the start time of the slot on the selected date
-    // Assuming selectedDate is available in the scope where this function is called or passed as an argument
-    // For simplicity here, we'll assume it's the current date if selectedDate is not available.
-    // In the actual component, you might need to pass selectedDate.
-    const slotDate = new Date(now); // Use selectedDate if available, otherwise current date
-    slotDate.setHours(startHour, 0, 0, 0); // Use 24-hour format for date comparison
-    // Only add the slot if its start time is at least 2 hours from now
-    if (slotDate > cutoffTime) {
-      const startTime24 = `${startHour.toString().padStart(2, '0')}:00`;
-      const endTime24 = `${endHour.toString().padStart(2, '0')}:00`;
-
-      const startTimeAMPM = formatTimeToAMPM(startHour, 0);
-      const endTimeAMPM = formatTimeToAMPM(endHour, 0);
-
-      slots.push({
-        id: `${startTime24}-${endTime24}`, // Keep ID in 24-hour format for consistency/parsing
-        label: `${startTimeAMPM} - ${endTimeAMPM}` // Display label in AM/PM format
-      });
-    }
-  }
-  return slots;
-};
-
 const StorePickupPage = () => {
   const { user } = useAuth();
   const [stores, setStores] = useState([]);
@@ -77,6 +37,8 @@ const StorePickupPage = () => {
   const [selectedStores, setSelectedStores] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTimeSlot, setSelectedTimeSlot] = useState('');
+  const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
   const [whatsappNumber, setWhatsappNumber] = useState('');
   const [address, setAddress] = useState('');
   const [postcode, setPostcode] = useState('');
@@ -93,7 +55,6 @@ const StorePickupPage = () => {
   const [activeTab, setActiveTab] = useState('new-order');
   const [appliedPromo, setAppliedPromo] = useState(null);
   
-  const timeSlots = generateTimeSlots();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -126,6 +87,12 @@ const StorePickupPage = () => {
       setFilteredStores(filtered);
     }
   }, [storeSearchQuery, stores]);
+
+  useEffect(() => {
+    if (selectedDate) {
+      fetchAvailableTimeSlots(selectedDate);
+    }
+  }, [selectedDate]);
 
   const fetchStores = async () => {
     try {
@@ -161,6 +128,30 @@ const StorePickupPage = () => {
     }
   };
 
+  const fetchAvailableTimeSlots = async (date) => {
+    setLoadingSlots(true);
+    try {
+      const dateString = date.toISOString().split('T')[0];
+      const { data, error } = await supabase
+        .from('time_slots')
+        .select('*')
+        .eq('date', dateString)
+        .eq('slot_type', 'pickup')
+        .eq('is_active', true)
+        .lt('current_orders', supabase.raw('max_orders'))
+        .order('start_time');
+
+      if (error) throw error;
+      setAvailableTimeSlots(data || []);
+      setSelectedTimeSlot(''); // Reset selection when date changes
+    } catch (error) {
+      console.error('Error fetching time slots:', error);
+      setAvailableTimeSlots([]);
+    } finally {
+      setLoadingSlots(false);
+    }
+  };
+
   const fetchUpcomingOrders = async () => {
     try {
       const { data, error } = await supabase
@@ -186,6 +177,14 @@ const StorePickupPage = () => {
       console.error('Error fetching upcoming orders:', error);
       toast({ variant: "destructive", title: "Error", description: "Could not load upcoming orders." });
     }
+  };
+
+  const formatTime = (timeString) => {
+    const [hours, minutes] = timeString.split(':');
+    const hour = parseInt(hours, 10);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour % 12 || 12;
+    return `${displayHour}:${minutes} ${ampm}`;
   };
 
   const handleAddressSelect = (selectedAddress) => {
@@ -237,7 +236,6 @@ const StorePickupPage = () => {
     
     // Validate minimum order amounts
     selectedStores.forEach((store, index) => {
-      //const minimumOrder = 50 + index * 25;
       const minimumOrder = 30;
       if (!store.estimatedTotal || store.estimatedTotal < minimumOrder) {
         errors[`store_${store.id}`] = `Minimum order for this store is ${formatCurrency(minimumOrder)}`;
@@ -265,13 +263,18 @@ const StorePickupPage = () => {
       const discountAmount = appliedPromo ? appliedPromo.discountAmount : 0;
       const finalTotal = orderSummary.total;
 
+      // Get the selected time slot for timeslot_id
+      const timeSlot = availableTimeSlots.find(slot => slot.id === selectedTimeSlot);
+      const timeSlotDisplay = timeSlot ? `${formatTime(timeSlot.start_time)} - ${formatTime(timeSlot.end_time)}` : '';
+
       // Create the main pickup order
       const { data: pickupOrder, error: orderError } = await supabase
         .from('pickup_orders')
         .insert({
           user_id: user.id,
           pickup_date: selectedDate.toISOString().split('T')[0],
-          time_slot: selectedTimeSlot,
+          time_slot: timeSlotDisplay,
+          timeslot_id: selectedTimeSlot,
           whatsapp_number: contactPreference === 'whatsapp' ? whatsappNumber : null,
           phone_number: contactPreference === 'phone' ? phoneNumber : null,
           delivery_address: address,
@@ -314,7 +317,7 @@ const StorePickupPage = () => {
           orderId: pickupOrder.id,
           orderData: {
             pickup_date: selectedDate.toISOString().split('T')[0],
-            time_slot: selectedTimeSlot,
+            time_slot: timeSlotDisplay,
             contact_preference: contactPreference,
             whatsapp_number: contactPreference === 'whatsapp' ? whatsappNumber : null,
             phone_number: contactPreference === 'phone' ? phoneNumber : null,
@@ -551,18 +554,31 @@ const StorePickupPage = () => {
 
                         <div className="space-y-2">
                           <Label>Time Slot</Label>
-                          <Select value={selectedTimeSlot} onValueChange={setSelectedTimeSlot}>
-                            <SelectTrigger className={formErrors.timeSlot ? 'border-destructive' : ''}>
-                              <SelectValue placeholder="Choose a time slot" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {timeSlots.map(slot => (
-                                <SelectItem key={slot.id} value={slot.id}>
-                                  {slot.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          {loadingSlots ? (
+                            <div className="flex items-center justify-center py-4">
+                              <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                            </div>
+                          ) : availableTimeSlots.length === 0 ? (
+                            <p className="text-sm text-muted-foreground py-2">
+                              No available time slots for this date.
+                            </p>
+                          ) : (
+                            <Select value={selectedTimeSlot} onValueChange={setSelectedTimeSlot}>
+                              <SelectTrigger className={formErrors.timeSlot ? 'border-destructive' : ''}>
+                                <SelectValue placeholder="Choose a time slot" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {availableTimeSlots.map(slot => (
+                                  <SelectItem key={slot.id} value={slot.id}>
+                                    {formatTime(slot.start_time)} - {formatTime(slot.end_time)}
+                                    <span className="ml-2 text-xs text-muted-foreground">
+                                      ({slot.current_orders}/{slot.max_orders} booked)
+                                    </span>
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          )}
                           {formErrors.timeSlot && <p className="text-xs text-destructive">{formErrors.timeSlot}</p>}
                         </div>
                       </div>
