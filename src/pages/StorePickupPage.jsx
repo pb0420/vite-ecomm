@@ -17,7 +17,6 @@ import StoreSelector from '@/components/pickup/StoreSelector';
 import PhotoUpload from '@/components/pickup/PhotoUpload';
 import UpcomingOrders from '@/components/pickup/UpcomingOrders';
 import PromoCodeInput from '@/components/checkout/PromoCodeInput';
-import { format } from 'date-fns';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from '@/components/ui/use-toast';
@@ -26,6 +25,12 @@ import { Link } from 'react-router-dom';
 import AddressSelector from '@/components/checkout/AddressSelector';
 import { formatCurrency } from '@/lib/utils';
 import { Calendar as CalendarPicker } from '@/components/ui/calendar';
+import { 
+  formatDateForTimezone, 
+  formatTimeToAMPM, 
+  getCurrentDateInTimezone,
+  DEFAULT_TIMEZONE
+} from '@/lib/timezone';
 
 const StorePickupPage = () => {
   const { user } = useAuth();
@@ -35,7 +40,7 @@ const StorePickupPage = () => {
   const [upcomingOrders, setUpcomingOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedStores, setSelectedStores] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(getCurrentDateInTimezone());
   const [selectedTimeSlot, setSelectedTimeSlot] = useState('');
   const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
@@ -54,11 +59,12 @@ const StorePickupPage = () => {
   const [showPostcodeDropdown, setShowPostcodeDropdown] = useState(false);
   const [activeTab, setActiveTab] = useState('new-order');
   const [appliedPromo, setAppliedPromo] = useState(null);
+  const [timezone, setTimezone] = useState(DEFAULT_TIMEZONE);
   
   const navigate = useNavigate();
 
   useEffect(() => {
-    Promise.all([fetchStores(), fetchPostcodes()]);
+    Promise.all([fetchStores(), fetchPostcodes(), fetchTimezone()]);
     if (user) {
       fetchUpcomingOrders();
     }
@@ -92,7 +98,23 @@ const StorePickupPage = () => {
     if (selectedDate) {
       fetchAvailableTimeSlots(selectedDate);
     }
-  }, [selectedDate]);
+  }, [selectedDate, timezone]);
+
+  const fetchTimezone = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('delivery_settings')
+        .select('timezone')
+        .eq('id', 1)
+        .single();
+
+      if (!error && data?.timezone) {
+        setTimezone(data.timezone);
+      }
+    } catch (error) {
+      console.error('Error fetching timezone:', error);
+    }
+  };
 
   const fetchStores = async () => {
     try {
@@ -131,14 +153,14 @@ const StorePickupPage = () => {
   const fetchAvailableTimeSlots = async (date) => {
     setLoadingSlots(true);
     try {
-      const dateString = date.toISOString().split('T')[0];
-      console.log('Fetching time slots for date:', dateString);
+      const dateString = formatDateForTimezone(date, timezone);
       const { data, error } = await supabase
         .from('time_slots')
         .select('*')
         .eq('date', dateString)
         .eq('slot_type', 'pickup')
         .eq('is_active', true)
+        .lt('current_orders', supabase.raw('max_orders'))
         .order('start_time');
 
       if (error) throw error;
@@ -168,7 +190,7 @@ const StorePickupPage = () => {
           )
         `)
         .eq('user_id', user.id)
-        .gte('pickup_date', new Date().toISOString().split('T')[0])
+        .gte('pickup_date', formatDateForTimezone(getCurrentDateInTimezone(timezone), timezone))
         .order('pickup_date', { ascending: true });
 
       if (error) throw error;
@@ -177,14 +199,6 @@ const StorePickupPage = () => {
       console.error('Error fetching upcoming orders:', error);
       toast({ variant: "destructive", title: "Error", description: "Could not load upcoming orders." });
     }
-  };
-
-  const formatTime = (timeString) => {
-    const [hours, minutes] = timeString.split(':');
-    const hour = parseInt(hours, 10);
-    const ampm = hour >= 12 ? 'PM' : 'AM';
-    const displayHour = hour % 12 || 12;
-    return `${displayHour}:${minutes} ${ampm}`;
   };
 
   const handleAddressSelect = (selectedAddress) => {
@@ -246,7 +260,6 @@ const StorePickupPage = () => {
       errors.terms = 'You must accept the terms and conditions';
     }
     setFormErrors(errors);
-    console.log('Form Errors:', errors);
     return Object.keys(errors).length === 0;
   };
 
@@ -265,14 +278,14 @@ const StorePickupPage = () => {
 
       // Get the selected time slot for timeslot_id
       const timeSlot = availableTimeSlots.find(slot => slot.id === selectedTimeSlot);
-      const timeSlotDisplay = timeSlot ? `${formatTime(timeSlot.start_time)} - ${formatTime(timeSlot.end_time)}` : '';
+      const timeSlotDisplay = timeSlot ? `${formatTimeToAMPM(slot.start_time)} - ${formatTimeToAMPM(slot.end_time)}` : '';
 
       // Create the main pickup order
       const { data: pickupOrder, error: orderError } = await supabase
         .from('pickup_orders')
         .insert({
           user_id: user.id,
-          pickup_date: selectedDate.toISOString().split('T')[0],
+          pickup_date: formatDateForTimezone(selectedDate, timezone),
           time_slot: timeSlotDisplay,
           timeslot_id: selectedTimeSlot,
           whatsapp_number: contactPreference === 'whatsapp' ? whatsappNumber : null,
@@ -316,7 +329,7 @@ const StorePickupPage = () => {
         state: {
           orderId: pickupOrder.id,
           orderData: {
-            pickup_date: selectedDate.toISOString().split('T')[0],
+            pickup_date: formatDateForTimezone(selectedDate, timezone),
             time_slot: timeSlotDisplay,
             contact_preference: contactPreference,
             whatsapp_number: contactPreference === 'whatsapp' ? whatsappNumber : null,
@@ -398,6 +411,13 @@ const StorePickupPage = () => {
   };
 
   const orderSummary = getOrderSummary();
+
+  const isDateDisabled = (date) => {
+    const today = getCurrentDateInTimezone(timezone);
+    const todayStr = formatDateForTimezone(today, timezone);
+    const dateStr = formatDateForTimezone(date, timezone);
+    return dateStr < todayStr;
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -537,7 +557,7 @@ const StorePickupPage = () => {
                                 )}
                               >
                                 <Calendar className="mr-2 h-4 w-4" />
-                                {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
+                                {selectedDate ? formatDateForTimezone(selectedDate, timezone) : <span>Pick a date</span>}
                               </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0" align="start">
@@ -545,7 +565,7 @@ const StorePickupPage = () => {
                                 mode="single"
                                 selected={selectedDate}
                                 onSelect={setSelectedDate}
-                                disabled={(date) => date < new Date()}
+                                disabled={isDateDisabled}
                                 initialFocus
                               />
                             </PopoverContent>
@@ -570,7 +590,7 @@ const StorePickupPage = () => {
                               <SelectContent>
                                 {availableTimeSlots.map(slot => (
                                   <SelectItem key={slot.id} value={slot.id}>
-                                    {formatTime(slot.start_time)} - {formatTime(slot.end_time)}
+                                    {formatTimeToAMPM(slot.start_time)} - {formatTimeToAMPM(slot.end_time)}
                                     <span className="ml-2 text-xs text-muted-foreground">
                                       ({slot.current_orders}/{slot.max_orders} booked)
                                     </span>

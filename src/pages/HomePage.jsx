@@ -12,11 +12,13 @@ const HomePage = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [deliveryTime, setDeliveryTime] = useState(45); // Default fallback
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Fetch featured products
         const { data: productsData, error: productsError } = await supabase
           .from('products')
           .select(`
@@ -31,6 +33,7 @@ const HomePage = () => {
 
         if (productsError) throw productsError;
 
+        // Fetch categories
         const { data: categoriesData, error: categoriesError } = await supabase
           .from('categories')
           .select('*')
@@ -38,6 +41,18 @@ const HomePage = () => {
           .limit(7);
 
         if (categoriesError) throw categoriesError;
+
+        // Fetch delivery settings for estimated delivery time
+        const { data: deliverySettings, error: deliveryError } = await supabase
+          .from('delivery_settings')
+          .select('estimated_delivery_minutes')
+          .eq('id', 1)
+          .single();
+
+        if (!deliveryError && deliverySettings) {
+          setDeliveryTime(deliverySettings.estimated_delivery_minutes);
+        }
+
         setFeaturedProducts(productsData || []);
         setCategories(categoriesData || []);
       } catch (error) {
@@ -97,8 +112,8 @@ const HomePage = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Hero Section - Fixed height and responsive adjustments */}
-      <section className="relative min-h-[400px] h-[40vh] max-h-[600px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
+      {/* Hero Section - Improved responsive height */}
+      <section className="relative min-h-[400px] h-[50vh] max-h-[600px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
         <div className="absolute inset-0">
           <img
             src="/banner_bg.jpg"
@@ -109,23 +124,32 @@ const HomePage = () => {
         </div>
 
         <div className="container relative h-full px-4 md:px-6">
-          <div className="flex flex-col justify-center h-full max-w-4xl mx-auto py-4 md:py-8">
+          <div className="flex flex-col justify-center h-full max-w-4xl mx-auto py-6 md:py-8">
             <motion.div
-              className="space-y-3 md:space-y-4"
+              className="space-y-4 md:space-y-5"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              {/* Location Pill - moved to left */}
+              {/* Location and Delivery Time Pills */}
               <motion.div
-                className="flex justify-start"
+                className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2"
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.4 }}
               >
-                <div className="inline-flex items-center bg-white/95 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg">
+                {/* Location Pill - Left */}
+                <div className="inline-flex items-center bg-white/95 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg w-fit">
                   <MapPinCheckInside className="w-3 h-3 text-[#fd7507] mr-1.5" />
                   <span className="text-[#2E8B57] font-semibold text-xs">Adelaide</span>
+                </div>
+
+                {/* Delivery Time Pill - Right */}
+                <div className="inline-flex items-center bg-white/95 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg w-fit sm:ml-auto">
+                  <Clock className="w-3 h-3 text-[#2E8B57] mr-1.5" />
+                  <span className="text-[#2E8B57] font-medium text-xs">
+                    Delivering in: {deliveryTime}m (approx.)
+                  </span>
                 </div>
               </motion.div>
 

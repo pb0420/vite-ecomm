@@ -11,6 +11,12 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from '@/lib/supabaseClient';
 import { formatCurrency } from '@/lib/utils';
+import { 
+  formatDateForTimezone, 
+  formatTimeToAMPM, 
+  getCurrentDateInTimezone,
+  DEFAULT_TIMEZONE
+} from '@/lib/timezone';
 
 const DeliveryOptions = ({ onDeliveryChange }) => {
   const [deliveryType, setDeliveryType] = useState('express');
@@ -20,36 +26,43 @@ const DeliveryOptions = ({ onDeliveryChange }) => {
   const [deliveryFees, setDeliveryFees] = useState({ express: 0, scheduled: 0 });
   const [loadingFees, setLoadingFees] = useState(true);
   const [loadingSlots, setLoadingSlots] = useState(false);
+  const [timezone, setTimezone] = useState(DEFAULT_TIMEZONE);
 
   useEffect(() => {
-    const fetchFees = async () => {
+    const fetchSettings = async () => {
       setLoadingFees(true);
       try {
         const { data, error } = await supabase
           .from('delivery_settings')
-          .select('express_fee, scheduled_fee')
+          .select('express_fee, scheduled_fee, timezone')
           .eq('id', 1)
           .single();
+        
         if (error && error.code !== 'PGRST116') throw error;
+        
         setDeliveryFees({
           express: data?.express_fee || 9.99,
           scheduled: data?.scheduled_fee || 5.99,
         });
+        
+        if (data?.timezone) {
+          setTimezone(data.timezone);
+        }
       } catch (error) {
-        console.error("Error fetching delivery fees:", error);
+        console.error("Error fetching delivery settings:", error);
         setDeliveryFees({ express: 9.99, scheduled: 5.99 });
       } finally {
         setLoadingFees(false);
       }
     };
-    fetchFees();
+    fetchSettings();
   }, []);
 
   useEffect(() => {
     if (scheduledDate && deliveryType === 'scheduled') {
       fetchAvailableTimeSlots(scheduledDate);
     }
-  }, [scheduledDate, deliveryType]);
+  }, [scheduledDate, deliveryType, timezone]);
 
   useEffect(() => {
     let fee = 0;
@@ -62,9 +75,8 @@ const DeliveryOptions = ({ onDeliveryChange }) => {
       fee = deliveryFees.scheduled;
       const timeSlot = availableTimeSlots.find(slot => slot.id === selectedTimeSlot);
       if (timeSlot) {
-        const slotDate = new Date(timeSlot.date);
-        const [hours, minutes] = timeSlot.start_time.split(':');
-        slotDate.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
+        // Create proper date with timezone consideration
+        const slotDate = new Date(timeSlot.date + 'T' + timeSlot.start_time);
         deliveryTimestamp = slotDate.toISOString();
         timeslotId = timeSlot.id;
       }
@@ -81,14 +93,14 @@ const DeliveryOptions = ({ onDeliveryChange }) => {
   const fetchAvailableTimeSlots = async (date) => {
     setLoadingSlots(true);
     try {
-      const dateString = date.toISOString().split('T')[0];
+      const dateString = formatDateForTimezone(date, timezone);
       const { data, error } = await supabase
         .from('time_slots')
         .select('*')
         .eq('date', dateString)
         .eq('slot_type', 'delivery')
         .eq('is_active', true)
-        // .lt('current_orders', supabase.raw('max_orders'))
+        .lt('current_orders', supabase.raw('max_orders'))
         .order('start_time');
 
       if (error) throw error;
@@ -102,17 +114,16 @@ const DeliveryOptions = ({ onDeliveryChange }) => {
     }
   };
 
-  const formatTime = (timeString) => {
-    const [hours, minutes] = timeString.split(':');
-    const hour = parseInt(hours, 10);
-    const ampm = hour >= 12 ? 'PM' : 'AM';
-    const displayHour = hour % 12 || 12;
-    return `${displayHour}:${minutes} ${ampm}`;
-  };
-
   const handleDateSelect = (date) => {
     setScheduledDate(date);
     setSelectedTimeSlot(''); // Reset time slot when date changes
+  };
+
+  const isDateDisabled = (date) => {
+    const today = getCurrentDateInTimezone(timezone);
+    const todayStr = formatDateForTimezone(today, timezone);
+    const dateStr = formatDateForTimezone(date, timezone);
+    return dateStr < todayStr;
   };
 
   return (
@@ -165,7 +176,7 @@ const DeliveryOptions = ({ onDeliveryChange }) => {
                     selected={scheduledDate}
                     onSelect={handleDateSelect}
                     initialFocus
-                    disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1))}
+                    disabled={isDateDisabled}
                   />
                 </PopoverContent>
               </Popover>
@@ -190,7 +201,7 @@ const DeliveryOptions = ({ onDeliveryChange }) => {
                       <SelectContent>
                         {availableTimeSlots.map(slot => (
                           <SelectItem key={slot.id} value={slot.id}>
-                            {formatTime(slot.start_time)} - {formatTime(slot.end_time)}
+                            {formatTimeToAMPM(slot.start_time)} - {formatTimeToAMPM(slot.end_time)}
                             <span className="ml-2 text-xs text-muted-foreground">
                               ({slot.current_orders}/{slot.max_orders} booked)
                             </span>

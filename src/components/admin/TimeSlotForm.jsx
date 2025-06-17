@@ -8,13 +8,22 @@ import { DialogFooter } from '@/components/ui/dialog';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CalendarIcon, Plus, Minus } from 'lucide-react';
-import { format, addDays } from 'date-fns';
+import { addDays } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
+import { supabase } from '@/lib/supabaseClient';
+import { 
+  formatDateForTimezone, 
+  formatTimeToAMPM, 
+  generateTimeOptions, 
+  isEndTimeAfterStartTime,
+  getCurrentDateInTimezone,
+  DEFAULT_TIMEZONE
+} from '@/lib/timezone';
 
 const TimeSlotForm = ({ timeSlot, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
-    dates: [new Date()],
+    dates: [getCurrentDateInTimezone()],
     start_time: '09:00',
     end_time: '11:00',
     max_orders: 10,
@@ -24,11 +33,36 @@ const TimeSlotForm = ({ timeSlot, onSubmit, onCancel }) => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bulkMode, setBulkMode] = useState(false);
+  const [timezone, setTimezone] = useState(DEFAULT_TIMEZONE);
+
+  // Fetch timezone from settings
+  useEffect(() => {
+    const fetchTimezone = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('delivery_settings')
+          .select('timezone')
+          .eq('id', 1)
+          .single();
+
+        if (!error && data?.timezone) {
+          setTimezone(data.timezone);
+        }
+      } catch (error) {
+        console.error('Error fetching timezone:', error);
+      }
+    };
+
+    fetchTimezone();
+  }, []);
 
   useEffect(() => {
     if (timeSlot) {
+      // Parse the existing time slot date properly
+      const slotDate = new Date(timeSlot.date + 'T12:00:00'); // Use noon to avoid timezone issues
+      
       setFormData({
-        dates: [new Date(timeSlot.date + 'T00:00:00')], // Fix timezone issue
+        dates: [slotDate],
         start_time: timeSlot.start_time.slice(0, 5),
         end_time: timeSlot.end_time.slice(0, 5),
         max_orders: timeSlot.max_orders,
@@ -38,7 +72,7 @@ const TimeSlotForm = ({ timeSlot, onSubmit, onCancel }) => {
       setBulkMode(false);
     } else {
       setFormData({
-        dates: [new Date()],
+        dates: [getCurrentDateInTimezone(timezone)],
         start_time: '09:00',
         end_time: '11:00',
         max_orders: 10,
@@ -47,7 +81,7 @@ const TimeSlotForm = ({ timeSlot, onSubmit, onCancel }) => {
       });
       setBulkMode(false);
     }
-  }, [timeSlot]);
+  }, [timeSlot, timezone]);
 
   const handleChange = (name, value) => {
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -79,7 +113,7 @@ const TimeSlotForm = ({ timeSlot, onSubmit, onCancel }) => {
   };
 
   const addDateRange = () => {
-    const startDate = new Date();
+    const startDate = getCurrentDateInTimezone(timezone);
     const dates = [];
     for (let i = 0; i < 7; i++) {
       dates.push(addDays(startDate, i));
@@ -93,11 +127,12 @@ const TimeSlotForm = ({ timeSlot, onSubmit, onCancel }) => {
     if (!formData.dates || formData.dates.length === 0) {
       newErrors.dates = 'At least one date is required';
     } else {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+      const today = getCurrentDateInTimezone(timezone);
+      const todayStr = formatDateForTimezone(today, timezone);
       
       for (const date of formData.dates) {
-        if (date < today) {
+        const dateStr = formatDateForTimezone(date, timezone);
+        if (dateStr < todayStr) {
           newErrors.dates = 'Dates cannot be in the past';
           break;
         }
@@ -113,10 +148,7 @@ const TimeSlotForm = ({ timeSlot, onSubmit, onCancel }) => {
     }
     
     if (formData.start_time && formData.end_time) {
-      const startTime = new Date(`2000-01-01T${formData.start_time}:00`);
-      const endTime = new Date(`2000-01-01T${formData.end_time}:00`);
-      
-      if (endTime <= startTime) {
+      if (!isEndTimeAfterStartTime(formData.start_time, formData.end_time)) {
         newErrors.end_time = 'End time must be after start time';
       }
     }
@@ -143,7 +175,7 @@ const TimeSlotForm = ({ timeSlot, onSubmit, onCancel }) => {
       if (timeSlot) {
         // Single slot update
         const submissionData = {
-          date: formData.dates[0].toISOString().split('T')[0],
+          date: formatDateForTimezone(formData.dates[0], timezone),
           start_time: formData.start_time,
           end_time: formData.end_time,
           max_orders: parseInt(formData.max_orders),
@@ -155,7 +187,7 @@ const TimeSlotForm = ({ timeSlot, onSubmit, onCancel }) => {
         // Multiple slots creation
         for (const date of formData.dates) {
           const submissionData = {
-            date: date.toISOString().split('T')[0],
+            date: formatDateForTimezone(date, timezone),
             start_time: formData.start_time,
             end_time: formData.end_time,
             max_orders: parseInt(formData.max_orders),
@@ -170,24 +202,6 @@ const TimeSlotForm = ({ timeSlot, onSubmit, onCancel }) => {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const generateTimeOptions = () => {
-    const options = [];
-    for (let hour = 0; hour < 24; hour++) {
-      for (let minute = 0; minute < 60; minute += 30) {
-        const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-        const displayTime = formatTimeToAMPM(hour, minute);
-        options.push({ value: timeString, label: displayTime });
-      }
-    }
-    return options;
-  };
-
-  const formatTimeToAMPM = (hour, minute) => {
-    const ampm = hour >= 12 ? 'PM' : 'AM';
-    const displayHour = hour % 12 || 12;
-    return `${displayHour}:${minute.toString().padStart(2, '0')} ${ampm}`;
   };
 
   const timeOptions = generateTimeOptions();
@@ -214,6 +228,7 @@ const TimeSlotForm = ({ timeSlot, onSubmit, onCancel }) => {
             <Popover>
               <PopoverTrigger asChild>
                 <Button
+                  type="button"
                   variant="outline"
                   className={cn(
                     "flex-1 justify-start text-left font-normal",
@@ -223,7 +238,7 @@ const TimeSlotForm = ({ timeSlot, onSubmit, onCancel }) => {
                   disabled={isSubmitting}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "PPP") : <span>Pick a date</span>}
+                  {date ? formatDateForTimezone(date, timezone) : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
@@ -232,9 +247,10 @@ const TimeSlotForm = ({ timeSlot, onSubmit, onCancel }) => {
                   selected={date}
                   onSelect={(selectedDate) => handleDateChange(selectedDate, index)}
                   disabled={(date) => {
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0);
-                    return date < today;
+                    const today = getCurrentDateInTimezone(timezone);
+                    const todayStr = formatDateForTimezone(today, timezone);
+                    const dateStr = formatDateForTimezone(date, timezone);
+                    return dateStr < todayStr;
                   }}
                   initialFocus
                 />
@@ -285,7 +301,7 @@ const TimeSlotForm = ({ timeSlot, onSubmit, onCancel }) => {
           <div className="flex flex-wrap gap-1 mt-2">
             {formData.dates.map((date, index) => (
               <Badge key={index} variant="secondary" className="text-xs">
-                {format(date, "MMM d")}
+                {formatDateForTimezone(date, timezone)}
               </Badge>
             ))}
           </div>
