@@ -74,7 +74,7 @@ const DeliveryOptions = ({ onDeliveryChange }) => {
       type: deliveryType,
       fee: fee,
       scheduledTime: deliveryTimestamp,
-      timeslotId: timeslotId,
+      timeslot_id: timeslotId,
     });
   }, [deliveryType, selectedTimeSlot, deliveryFees, availableTimeSlots, onDeliveryChange]);
 
