@@ -35,7 +35,18 @@ const Header = () => {
     <header className="sticky top-0 z-40 w-full bg-gradient-to-r from-[#2E8B57] via-[#3CB371] to-[#98D598] border-b shadow-sm">
       <div className="container flex items-center justify-between h-16 px-4 mx-auto md:px-6">
         <Link to="/" className="flex items-center space-x-2">
-          <img src="/logo.png" alt="Groceroo Logo" style={{width:'202px'}} />
+          {/* <img src="/logo.png" alt="Groceroo Logo" style={{width:'180px',height:'60px'}} /> */}
+           <div
+            style={{
+              backgroundImage: 'url(/logo.png)',
+              backgroundSize: 'contain',
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'center',
+              width: '180px',
+              height: '60px',
+            }}
+            aria-label="Groceroo Logo" // Add aria-label for accessibility
+          ></div>
         </Link>
 
         <nav className="hidden md:flex md:items-center md:space-x-6">

@@ -1,3 +1,4 @@
+// File: groceroo/src/pages/HomePage.jsx
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
@@ -160,7 +161,7 @@ const HomePage = () => {
               {/* Search Bar */}
               <motion.form
                 onSubmit={handleSearch}
-                className="flex gap-2 mx-auto max-w-2xl"
+                className="flex gap-2 w-full" // Modified className here
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4, duration: 0.5 }}
@@ -241,7 +242,7 @@ const HomePage = () => {
                     variant="outline"
                     className="w-full h-12 md:h-14 bg-white/95 hover:bg-white border-2 border-white/50 shadow-lg text-[#2E8B57] hover:text-[#2E8B57] font-bold text-sm md:text-base mx-auto backdrop-blur-sm transition-all duration-300 hover:scale-105"
                   >
-                    <Truck className="w-4 h-4 mr-2" />
+                    ...<Truck className="w-4 h-4 mr-2" />
                     Schedule a Grocery Run
                   </Button>
                 </Link>
