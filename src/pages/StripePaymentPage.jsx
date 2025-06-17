@@ -5,6 +5,7 @@ import { useOrders } from '@/contexts/OrderContext';
 import StripeCheckoutForm from '@/components/checkout/StripeCheckoutForm';
 import { formatCurrency } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
+import { da } from 'date-fns/locale';
 
 const StripePaymentPage = () => {
   const { user } = useAuth();
@@ -13,6 +14,7 @@ const StripePaymentPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [clientSecret, setClientSecret] = useState(null);
+  const [orderData, setOrderData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -53,6 +55,7 @@ const StripePaymentPage = () => {
         }
 
         setClientSecret(data.clientSecret);
+        setOrderData(data.orderData);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -65,9 +68,14 @@ const StripePaymentPage = () => {
 
   const handlePaymentSuccess = async (data) => {
     try {
-      const orderData = data.orderData;
-      console.log('Order Data:', JSON.parse(orderData));
-      const order = await addOrder(JSON.parse(orderData));
+      // const orderData = data.orderData;
+      // console.log('Order Data:', JSON.parse(orderData));
+      const payment_data = data.payment_data;
+      const orderDataComplete = {
+        ...orderData,
+        payment_data
+      }
+      const order = await addOrder(orderDataComplete);
       clearCart();
       navigate(`/order-confirmation/${order.id}`);
     } catch (error) {

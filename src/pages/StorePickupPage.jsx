@@ -132,13 +132,13 @@ const StorePickupPage = () => {
     setLoadingSlots(true);
     try {
       const dateString = date.toISOString().split('T')[0];
+      console.log('Fetching time slots for date:', dateString);
       const { data, error } = await supabase
         .from('time_slots')
         .select('*')
         .eq('date', dateString)
         .eq('slot_type', 'pickup')
         .eq('is_active', true)
-        .lt('current_orders', supabase.raw('max_orders'))
         .order('start_time');
 
       if (error) throw error;

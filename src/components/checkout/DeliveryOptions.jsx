@@ -88,7 +88,7 @@ const DeliveryOptions = ({ onDeliveryChange }) => {
         .eq('date', dateString)
         .eq('slot_type', 'delivery')
         .eq('is_active', true)
-        .lt('current_orders', supabase.raw('max_orders'))
+        // .lt('current_orders', supabase.raw('max_orders'))
         .order('start_time');
 
       if (error) throw error;
