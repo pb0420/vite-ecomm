@@ -28,7 +28,12 @@ const CheckoutPage = () => {
   const navigate = useNavigate();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [deliveryDetails, setDeliveryDetails] = useState({ type: 'express', fee: 0, scheduledTime: null });
+  const [deliveryDetails, setDeliveryDetails] = useState({ 
+    type: 'express', 
+    fee: 0, 
+    scheduledTime: null,
+    timeslot_id: null 
+  });
   const [customerDetails, setCustomerDetails] = useState({ name: '', email: '', phone: '', address: '', deliveryNotes: '' });
   const [formErrors, setFormErrors] = useState({});
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -192,6 +197,7 @@ const CheckoutPage = () => {
     delivery_notes: customerDetails.deliveryNotes,
     delivery_type: deliveryDetails.type,
     scheduled_delivery_time: deliveryDetails.scheduledTime,
+    timeslot_id: deliveryDetails.timeslot_id,
     promo_code: appliedPromo?.code || null,
     discount_amount: getDiscountAmount(),
   };

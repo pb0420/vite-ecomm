@@ -97,8 +97,8 @@ const HomePage = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Hero Section */}
-      <section className="relative h-[45vh] min-h-[280px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
+      {/* Hero Section - Fixed height and responsive adjustments */}
+      <section className="relative min-h-[400px] h-[50vh] max-h-[600px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
         <div className="absolute inset-0">
           <img
             src="/banner_bg.jpg"
@@ -109,9 +109,9 @@ const HomePage = () => {
         </div>
 
         <div className="container relative h-full px-4 md:px-6">
-          <div className="flex flex-col justify-center h-full max-w-4xl mx-auto py-2">
+          <div className="flex flex-col justify-center h-full max-w-4xl mx-auto py-4 md:py-8">
             <motion.div
-              className="space-y-4"
+              className="space-y-3 md:space-y-4"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
@@ -132,7 +132,7 @@ const HomePage = () => {
               {/* Search Bar */}
               <motion.form
                 onSubmit={handleSearch}
-                className="flex gap-2 mx-auto"
+                className="flex gap-2 mx-auto max-w-2xl"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4, duration: 0.5 }}
@@ -143,13 +143,13 @@ const HomePage = () => {
                     placeholder="Search for groceries and more..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="h-14 pl-3 pr-3 bg-white/95 backdrop-blur-sm border-0 shadow-lg text-gray-800 placeholder:text-gray-500 text-sm my-4"
+                    className="h-12 md:h-14 pl-3 pr-3 bg-white/95 backdrop-blur-sm border-0 shadow-lg text-gray-800 placeholder:text-gray-500 text-sm"
                   />
                 </div>
                 <Button
                   type="submit"
                   size="sm"
-                  className="h-14 mt-4 px-4 bg-[#fd7507] hover:bg-[#fd7507]/90 shadow-lg text-sm"
+                  className="h-12 md:h-14 px-4 bg-[#fd7507] hover:bg-[#fd7507]/90 shadow-lg text-sm"
                 >
                   <Search className="w-3 h-3 mr-2" />
                   Search
@@ -163,57 +163,57 @@ const HomePage = () => {
                 transition={{ delay: 0.6, duration: 0.5 }}
                 className="relative"
               >
-                <div className="flex overflow-x-auto pb-1 space-x-3 scrollbar-hide px-4 md:px-0 md:justify-center">
+                <div className="flex overflow-x-auto pb-2 space-x-3 scrollbar-hide px-4 md:px-0 md:justify-center">
                   {categories.map((category) => (
                     <Link
                       key={category.id}
                       to={`/category/${category.id}`}
                       className="flex-none group text-center"
                     >
-                      <div className="w-16 h-16 mx-auto mb-1 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:bg-white/30 transition-all duration-300 shadow-lg">
+                      <div className="w-14 h-14 md:w-16 md:h-16 mx-auto mb-1 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:bg-white/30 transition-all duration-300 shadow-lg">
                         <img
                           src={category.icon_url}
                           alt={category.name}
-                          className="w-12 h-12 object-cover rounded-full"
+                          className="w-10 h-10 md:w-12 md:h-12 object-cover rounded-full"
                           onError={(e) => {
                             e.target.style.display = 'none';
                             e.target.nextSibling.style.display = 'flex';
                           }}
                         />
-                        <div className="w-12 h-12 hidden items-center justify-center">
+                        <div className="w-10 h-10 md:w-12 md:h-12 hidden items-center justify-center">
                           {getCatIcon(category.name)}
                         </div>
                       </div>
-                      <span className="text-xs font-medium text-white/90 group-hover:text-white transition-colors block truncate max-w-[50px]">
+                      <span className="text-xs font-medium text-white/90 group-hover:text-white transition-colors block truncate max-w-[50px] md:max-w-[60px]">
                         {category.name}
                       </span>
                     </Link>
                   ))}
                   <Link to="/categories" className="flex-none group text-center">
-                    <div className="w-16 h-16 mx-auto mb-1 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:bg-white/30 transition-all duration-300 shadow-lg">
+                    <div className="w-14 h-14 md:w-16 md:h-16 mx-auto mb-1 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:bg-white/30 transition-all duration-300 shadow-lg">
                       <div className="flex flex-col items-center">
-                        <ArrowRight className="h-6 w-6 text-white" />
-                        <span className="text-xs font-medium text-white/90 group-hover:text-white transition-colors block truncate">View All</span>
+                        <ArrowRight className="h-5 w-5 md:h-6 md:w-6 text-white" />
                       </div>
                     </div>
+                    <span className="text-xs font-medium text-white/90 group-hover:text-white transition-colors block truncate max-w-[50px] md:max-w-[60px]">View All</span>
                   </Link>
                 </div>
               </motion.div>
 
               {/* Grocery Run Button */}
               <motion.div
-                className="pt-1 flex justify-center"
+                className="pt-2 flex justify-center"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.8, duration: 0.5 }}
               >
-                <Link to="/store-pickup" className="block">
+                <Link to="/store-pickup" className="block w-full max-w-md">
                   <Button
                     size="lg"
                     variant="outline"
-                    className="w-full max-w-md h-14 bg-white/95 hover:bg-white border-2 border-white/50 shadow-lg text-[#2E8B57] hover:text-[#2E8B57] font-bold text-base mx-auto backdrop-blur-sm transition-all duration-300 hover:scale-105"
+                    className="w-full h-12 md:h-14 bg-white/95 hover:bg-white border-2 border-white/50 shadow-lg text-[#2E8B57] hover:text-[#2E8B57] font-bold text-sm md:text-base mx-auto backdrop-blur-sm transition-all duration-300 hover:scale-105"
                   >
-                    ...<Truck className="w-4 h-4 mr-2" />
+                    <Truck className="w-4 h-4 mr-2" />
                     Schedule a Grocery Run
                   </Button>
                 </Link>

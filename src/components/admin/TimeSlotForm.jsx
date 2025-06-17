@@ -7,13 +7,14 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { DialogFooter } from '@/components/ui/dialog';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon } from 'lucide-react';
-import { format } from 'date-fns';
+import { CalendarIcon, Plus, Minus } from 'lucide-react';
+import { format, addDays } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 
 const TimeSlotForm = ({ timeSlot, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
-    date: new Date(),
+    dates: [new Date()],
     start_time: '09:00',
     end_time: '11:00',
     max_orders: 10,
@@ -22,26 +23,29 @@ const TimeSlotForm = ({ timeSlot, onSubmit, onCancel }) => {
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [bulkMode, setBulkMode] = useState(false);
 
   useEffect(() => {
     if (timeSlot) {
       setFormData({
-        date: new Date(timeSlot.date),
-        start_time: timeSlot.start_time.slice(0, 5), // Remove seconds
-        end_time: timeSlot.end_time.slice(0, 5), // Remove seconds
+        dates: [new Date(timeSlot.date + 'T00:00:00')], // Fix timezone issue
+        start_time: timeSlot.start_time.slice(0, 5),
+        end_time: timeSlot.end_time.slice(0, 5),
         max_orders: timeSlot.max_orders,
         slot_type: timeSlot.slot_type,
         is_active: timeSlot.is_active
       });
+      setBulkMode(false);
     } else {
       setFormData({
-        date: new Date(),
+        dates: [new Date()],
         start_time: '09:00',
         end_time: '11:00',
         max_orders: 10,
         slot_type: 'delivery',
         is_active: true
       });
+      setBulkMode(false);
     }
   }, [timeSlot]);
 
@@ -52,13 +56,52 @@ const TimeSlotForm = ({ timeSlot, onSubmit, onCancel }) => {
     }
   };
 
+  const handleDateChange = (date, index) => {
+    const newDates = [...formData.dates];
+    newDates[index] = date;
+    setFormData(prev => ({ ...prev, dates: newDates }));
+    if (errors.dates) {
+      setErrors(prev => ({ ...prev, dates: '' }));
+    }
+  };
+
+  const addDate = () => {
+    const lastDate = formData.dates[formData.dates.length - 1];
+    const nextDate = addDays(lastDate, 1);
+    setFormData(prev => ({ ...prev, dates: [...prev.dates, nextDate] }));
+  };
+
+  const removeDate = (index) => {
+    if (formData.dates.length > 1) {
+      const newDates = formData.dates.filter((_, i) => i !== index);
+      setFormData(prev => ({ ...prev, dates: newDates }));
+    }
+  };
+
+  const addDateRange = () => {
+    const startDate = new Date();
+    const dates = [];
+    for (let i = 0; i < 7; i++) {
+      dates.push(addDays(startDate, i));
+    }
+    setFormData(prev => ({ ...prev, dates }));
+  };
+
   const validateForm = () => {
     const newErrors = {};
     
-    if (!formData.date) {
-      newErrors.date = 'Date is required';
-    } else if (formData.date < new Date().setHours(0, 0, 0, 0)) {
-      newErrors.date = 'Date cannot be in the past';
+    if (!formData.dates || formData.dates.length === 0) {
+      newErrors.dates = 'At least one date is required';
+    } else {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      for (const date of formData.dates) {
+        if (date < today) {
+          newErrors.dates = 'Dates cannot be in the past';
+          break;
+        }
+      }
     }
     
     if (!formData.start_time) {
@@ -96,17 +139,37 @@ const TimeSlotForm = ({ timeSlot, onSubmit, onCancel }) => {
 
     setIsSubmitting(true);
     
-    const submissionData = {
-      date: formData.date.toISOString().split('T')[0],
-      start_time: formData.start_time,
-      end_time: formData.end_time,
-      max_orders: parseInt(formData.max_orders),
-      slot_type: formData.slot_type,
-      is_active: formData.is_active
-    };
-
-    await onSubmit(submissionData);
-    setIsSubmitting(false);
+    try {
+      if (timeSlot) {
+        // Single slot update
+        const submissionData = {
+          date: formData.dates[0].toISOString().split('T')[0],
+          start_time: formData.start_time,
+          end_time: formData.end_time,
+          max_orders: parseInt(formData.max_orders),
+          slot_type: formData.slot_type,
+          is_active: formData.is_active
+        };
+        await onSubmit(submissionData);
+      } else {
+        // Multiple slots creation
+        for (const date of formData.dates) {
+          const submissionData = {
+            date: date.toISOString().split('T')[0],
+            start_time: formData.start_time,
+            end_time: formData.end_time,
+            max_orders: parseInt(formData.max_orders),
+            slot_type: formData.slot_type,
+            is_active: formData.is_active
+          };
+          await onSubmit(submissionData);
+        }
+      }
+    } catch (error) {
+      console.error('Error submitting time slots:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const generateTimeOptions = () => {
@@ -131,54 +194,102 @@ const TimeSlotForm = ({ timeSlot, onSubmit, onCancel }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label>Date</Label>
-          <Popover>
-            <PopoverTrigger asChild>
+      {!timeSlot && (
+        <div className="flex items-center space-x-2 p-3 bg-muted/30 rounded-lg">
+          <Checkbox
+            id="bulk_mode"
+            checked={bulkMode}
+            onCheckedChange={setBulkMode}
+          />
+          <Label htmlFor="bulk_mode" className="text-sm">
+            Create slots for multiple dates
+          </Label>
+        </div>
+      )}
+
+      <div className="space-y-2">
+        <Label>Date{formData.dates.length > 1 ? 's' : ''}</Label>
+        {formData.dates.map((date, index) => (
+          <div key={index} className="flex items-center space-x-2">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "flex-1 justify-start text-left font-normal",
+                    !date && "text-muted-foreground",
+                    errors.dates && "border-destructive"
+                  )}
+                  disabled={isSubmitting}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {date ? format(date, "PPP") : <span>Pick a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={(selectedDate) => handleDateChange(selectedDate, index)}
+                  disabled={(date) => {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    return date < today;
+                  }}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+            
+            {!timeSlot && formData.dates.length > 1 && (
               <Button
+                type="button"
                 variant="outline"
-                className={cn(
-                  "w-full justify-start text-left font-normal",
-                  !formData.date && "text-muted-foreground",
-                  errors.date && "border-destructive"
-                )}
+                size="icon"
+                onClick={() => removeDate(index)}
                 disabled={isSubmitting}
               >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {formData.date ? format(formData.date, "PPP") : <span>Pick a date</span>}
+                <Minus className="h-4 w-4" />
               </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={formData.date}
-                onSelect={(date) => handleChange('date', date)}
-                disabled={(date) => date < new Date().setHours(0, 0, 0, 0)}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
-          {errors.date && <p className="text-xs text-destructive">{errors.date}</p>}
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="slot_type">Slot Type</Label>
-          <Select 
-            value={formData.slot_type} 
-            onValueChange={(value) => handleChange('slot_type', value)}
-            disabled={isSubmitting}
-          >
-            <SelectTrigger className={errors.slot_type ? 'border-destructive' : ''}>
-              <SelectValue placeholder="Select slot type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="delivery">Delivery</SelectItem>
-              <SelectItem value="pickup">Pickup</SelectItem>
-            </SelectContent>
-          </Select>
-          {errors.slot_type && <p className="text-xs text-destructive">{errors.slot_type}</p>}
-        </div>
+            )}
+          </div>
+        ))}
+        
+        {!timeSlot && (
+          <div className="flex space-x-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={addDate}
+              disabled={isSubmitting}
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              Add Date
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={addDateRange}
+              disabled={isSubmitting}
+            >
+              Add Next 7 Days
+            </Button>
+          </div>
+        )}
+        
+        {errors.dates && <p className="text-xs text-destructive">{errors.dates}</p>}
+        
+        {formData.dates.length > 1 && (
+          <div className="flex flex-wrap gap-1 mt-2">
+            {formData.dates.map((date, index) => (
+              <Badge key={index} variant="secondary" className="text-xs">
+                {format(date, "MMM d")}
+              </Badge>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -225,18 +336,38 @@ const TimeSlotForm = ({ timeSlot, onSubmit, onCancel }) => {
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="max_orders">Maximum Orders</Label>
-        <Input
-          id="max_orders"
-          type="number"
-          min="1"
-          value={formData.max_orders}
-          onChange={(e) => handleChange('max_orders', e.target.value)}
-          className={errors.max_orders ? 'border-destructive' : ''}
-          disabled={isSubmitting}
-        />
-        {errors.max_orders && <p className="text-xs text-destructive">{errors.max_orders}</p>}
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="slot_type">Slot Type</Label>
+          <Select 
+            value={formData.slot_type} 
+            onValueChange={(value) => handleChange('slot_type', value)}
+            disabled={isSubmitting}
+          >
+            <SelectTrigger className={errors.slot_type ? 'border-destructive' : ''}>
+              <SelectValue placeholder="Select slot type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="delivery">Delivery</SelectItem>
+              <SelectItem value="pickup">Pickup</SelectItem>
+            </SelectContent>
+          </Select>
+          {errors.slot_type && <p className="text-xs text-destructive">{errors.slot_type}</p>}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="max_orders">Maximum Orders</Label>
+          <Input
+            id="max_orders"
+            type="number"
+            min="1"
+            value={formData.max_orders}
+            onChange={(e) => handleChange('max_orders', e.target.value)}
+            className={errors.max_orders ? 'border-destructive' : ''}
+            disabled={isSubmitting}
+          />
+          {errors.max_orders && <p className="text-xs text-destructive">{errors.max_orders}</p>}
+        </div>
       </div>
 
       <div className="flex items-center space-x-2">
@@ -254,7 +385,7 @@ const TimeSlotForm = ({ timeSlot, onSubmit, onCancel }) => {
           Cancel
         </Button>
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Saving...' : (timeSlot ? 'Update Time Slot' : 'Create Time Slot')}
+          {isSubmitting ? 'Creating...' : (timeSlot ? 'Update Time Slot' : `Create ${formData.dates.length} Time Slot${formData.dates.length > 1 ? 's' : ''}`)}
         </Button>
       </DialogFooter>
     </form>
