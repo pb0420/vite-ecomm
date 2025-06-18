@@ -385,7 +385,7 @@ const AdminPickupOrdersTab = () => {
                         </DialogTrigger>
                         <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
                           <DialogHeader>
-                            <DialogTitle>Order Details - {selectedOrder?.id.slice(0, 8)}...</DialogTitle>
+                            <DialogTitle>Order Details - {selectedOrder?.id.slice(0, 6)}...</DialogTitle>
                           </DialogHeader>
                           
                           {selectedOrder && (
