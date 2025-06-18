@@ -76,7 +76,7 @@ const HomePage = () => {
   };
 
   const openWhatsApp = () => {
-    window.open('https://wa.me/1234567890', '_blank');
+    window.open('https://wa.me/61478477036', '_blank');
   };
 
   const iconClass = "w-6 h-6 text-primary";
