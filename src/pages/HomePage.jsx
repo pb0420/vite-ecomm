@@ -178,7 +178,7 @@ const HomePage = () => {
                 <Button
                   type="submit"
                   size="sm"
-                  className="h-12 md:h-14 px-4 bg-[#fd7507] hover:bg-[#fd7507]/90 shadow-lg text-sm"
+                  className="h-12 md:h-14 px-6 bg-[#fd7507] hover:bg-[#fd7507]/90 shadow-lg text-sm"
                 >
                   GO &nbsp;<ArrowRight className="w-3 h-3" />
                 </Button>
