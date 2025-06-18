@@ -318,7 +318,7 @@ const ShopPage = () => {
       {/* Products Section */}
       <div className="container px-4 py-8 mx-auto md:px-6">
         {initialLoading ? (
-          <div className="flex items-center justify-center h-64">
+          <div className="flex items-center justify-center h-32">
             <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : products.length === 0 ? (
