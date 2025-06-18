@@ -708,12 +708,12 @@ const StorePickupPage = () => {
                         {formErrors.postcode && <p className="text-xs text-destructive">{formErrors.postcode}</p>}
                       </div>
 
-                      <PhotoUpload
+                      {/* <PhotoUpload
                         photos={photos}
                         onPhotosChange={setPhotos}
                         maxPhotos={10}
-                      />
-
+                      /> */}
+ 
                       {/* Promo Code Section */}
                       {selectedStores.length > 0 && (
                         <div className="p-4 border rounded-lg">
