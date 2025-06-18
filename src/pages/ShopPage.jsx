@@ -294,7 +294,7 @@ const ShopPage = () => {
                   transition={{ delay: 0.6, duration: 0.5 }}
                 >
                   {searchInput && (
-                    <div className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 text-white text-sm">
+                    <div className="bg-white/20 backdrop-blur-sm rounded-full px-1 py-1 text-white text-sm">
                       Search: "{searchInput}"
                     </div>
                   )}
