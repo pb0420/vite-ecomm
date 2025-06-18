@@ -197,7 +197,7 @@ const ShopPage = () => {
               {/* Title and Description */}
               <div className="text-center">
                 <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-                  {featuredParam === 'true' ? 'Featured Products' : 'Quick Shop'}
+                  {featuredParam === 'true' ? 'Featured Products' : ' Shop'}
                 </h1>
                 <p className="text-white/90 text-lg">
                   Browse from our selection of groceries, household essentials and more.
