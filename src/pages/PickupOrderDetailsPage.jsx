@@ -211,7 +211,7 @@ const PickupOrderDetailsPage = () => {
           </Link>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold">Grocery Run #{order.id.slice(0, 8).toUpperCase()}</h1>
+              <h1 className="text-2xl font-bold">Grocery Run #{order.id.slice(0, 6).toUpperCase()}</h1>
               <p className="text-muted-foreground">
                 {order.pickup_date ? format(new Date(order.pickup_date), 'PPP') : 'N/A'} • {order.time_slot}
               </p>
