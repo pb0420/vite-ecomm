@@ -30,7 +30,7 @@ const HomePage = () => {
             )
           `)
           .eq('featured', true)
-          .limit(4);
+          .limit(20);
 
         if (productsError) throw productsError;
 
