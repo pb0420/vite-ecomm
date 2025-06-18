@@ -180,7 +180,7 @@ const HomePage = () => {
                   size="sm"
                   className="h-12 md:h-14 px-4 bg-[#fd7507] hover:bg-[#fd7507]/90 shadow-lg text-sm"
                 >
-                  <ArrowRight className="w-3 h-3" />
+                  Go <ArrowRight className="w-3 h-3" />
                 </Button>
               </motion.form>
 
