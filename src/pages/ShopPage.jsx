@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
-import { Search, Filter } from 'lucide-react';
+import { Search, Filter, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -171,10 +171,12 @@ const ShopPage = () => {
     setSortBy('name-asc');
   };
 
+  const hasActiveFilters = searchInput || selectedCategory !== 'all' || sortBy !== 'name-asc';
+
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Banner Section */}
-      <section className="relative h-[30vh] min-h-[200px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
+      {/* Enhanced Hero Section with Filters */}
+      <section className="relative min-h-[400px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
         <div className="absolute inset-0">
           <img 
             src="/banner_bg.jpeg" 
@@ -185,144 +187,195 @@ const ShopPage = () => {
         </div>
         
         <div className="container relative h-full px-4 md:px-6">
-          <div className="flex flex-col justify-center h-full max-w-2xl">
+          <div className="flex flex-col justify-center h-full py-8">
             <motion.div 
-              className="space-y-2"
+              className="space-y-6 max-w-4xl mx-auto w-full"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <h1 className="text-3xl md:text-4xl font-bold text-white">
-                {featuredParam === 'true' ? 'Featured' : 'Shop'}
-              </h1>
-              <p className="text-white/90">
-                Browse our selection of fresh groceries and household essentials.
-              </p>
-              {searchParam && (
-                <p className="text-white/80 text-sm">
-                  Showing results for: "{searchParam}"
+              {/* Title and Description */}
+              <div className="text-center">
+                <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+                  {featuredParam === 'true' ? 'Featured Products' : 'Shop Groceries'}
+                </h1>
+                <p className="text-white/90 text-lg">
+                  Browse our selection of fresh groceries and household essentials.
                 </p>
+                {searchParam && (
+                  <p className="text-white/80 text-sm mt-2">
+                    Showing results for: "{searchParam}"
+                  </p>
+                )}
+              </div>
+
+              {/* Search Bar */}
+              <motion.div
+                className="relative max-w-2xl mx-auto"
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.2, duration: 0.5 }}
+              >
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+                  <Input
+                    type="search"
+                    placeholder="Search for products..."
+                    className="h-12 pl-10 pr-4 bg-white/95 backdrop-blur-sm border-0 shadow-lg text-gray-800 placeholder:text-gray-500"
+                    value={searchInput}
+                    onChange={(e) => handleSearchInputChange(e.target.value)}
+                  />
+                  {searchInput.length > 0 && searchInput.length < 2 && (
+                    <p className="absolute -bottom-6 left-0 text-xs text-white/80">
+                      Enter at least 2 characters to search
+                    </p>
+                  )}
+                </div>
+              </motion.div>
+
+              {/* Filters Row */}
+              <motion.div
+                className="flex flex-col sm:flex-row gap-4 items-center justify-center max-w-4xl mx-auto"
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.4, duration: 0.5 }}
+              >
+                {/* Category Filter */}
+                <div className="w-full sm:w-auto min-w-[200px]">
+                  <Select value={selectedCategory} onValueChange={handleCategoryChange}>
+                    <SelectTrigger className="bg-white/95 backdrop-blur-sm border-0 shadow-lg">
+                      <SelectValue placeholder="All Categories" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Categories</SelectItem>
+                      {categories.map(category => (
+                        <SelectItem key={category.id} value={category.id.toString()}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Sort Filter */}
+                <div className="w-full sm:w-auto min-w-[180px]">
+                  <Select value={sortBy} onValueChange={handleSortChange}>
+                    <SelectTrigger className="bg-white/95 backdrop-blur-sm border-0 shadow-lg">
+                      <SelectValue placeholder="Sort by" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="name-asc">Name (A-Z)</SelectItem>
+                      <SelectItem value="name-desc">Name (Z-A)</SelectItem>
+                      <SelectItem value="price-asc">Price (Low to High)</SelectItem>
+                      <SelectItem value="price-desc">Price (High to Low)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Reset Filters Button */}
+                {hasActiveFilters && (
+                  <Button 
+                    variant="outline" 
+                    className="bg-white/95 backdrop-blur-sm border-0 shadow-lg hover:bg-white text-gray-800"
+                    onClick={handleResetFilters}
+                  >
+                    <X className="w-4 h-4 mr-2" />
+                    Reset
+                  </Button>
+                )}
+              </motion.div>
+
+              {/* Active Filters Display */}
+              {hasActiveFilters && (
+                <motion.div
+                  className="flex flex-wrap gap-2 justify-center"
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.6, duration: 0.5 }}
+                >
+                  {searchInput && (
+                    <div className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 text-white text-sm">
+                      Search: "{searchInput}"
+                    </div>
+                  )}
+                  {selectedCategory !== 'all' && (
+                    <div className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 text-white text-sm">
+                      Category: {categories.find(c => c.id.toString() === selectedCategory)?.name}
+                    </div>
+                  )}
+                  {sortBy !== 'name-asc' && (
+                    <div className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 text-white text-sm">
+                      Sort: {sortBy.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                    </div>
+                  )}
+                </motion.div>
               )}
             </motion.div>
           </div>
         </div>
       </section>
 
+      {/* Products Section */}
       <div className="container px-4 py-8 mx-auto md:px-6">
-        <div className="grid gap-6 md:grid-cols-[250px_1fr]">
-          {/* Filters Sidebar */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
-            className="space-y-6 pl-4"
-          >
-            <div>
-              <h3 className="mb-2 text-lg font-medium">Search</h3>
-              <div className="relative">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder="Search for products..."
-                  className="pl-8"
-                  value={searchInput}
-                  onChange={(e) => handleSearchInputChange(e.target.value)}
-                />
-              </div>
-              {searchInput.length > 0 && searchInput.length < 2 && (
-                <p className="text-xs text-muted-foreground mt-1">
-                  Enter at least 2 characters to search
-                </p>
-              )}
-            </div>
-            
-            <div>
-              <h3 className="mb-2 text-lg font-medium">Categories</h3>
-              <Select value={selectedCategory} onValueChange={handleCategoryChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  {categories.map(category => (
-                    <SelectItem key={category.id} value={category.id.toString()}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div>
-              <h3 className="mb-2 text-lg font-medium">Sort By</h3>
-              <Select value={sortBy} onValueChange={handleSortChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="name-asc">Name (A-Z)</SelectItem>
-                  <SelectItem value="name-desc">Name (Z-A)</SelectItem>
-                  <SelectItem value="price-asc">Price (Low to High)</SelectItem>
-                  <SelectItem value="price-desc">Price (High to Low)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <Button 
-              variant="outline" 
-              className="w-full"
-              onClick={handleResetFilters}
-            >
-              <Filter className="w-4 h-4 mr-2" />
-              Reset Filters
-            </Button>
-          </motion.div>
-          
-          {/* Products Grid */}
-          <div>
-            {initialLoading ? (
-              <div className="flex items-center justify-center h-64">
-                <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-              </div>
-            ) : products.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-64 p-8 text-center border rounded-lg">
-                <h3 className="text-lg font-medium">No products found</h3>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Try adjusting your search or filter criteria.
-                </p>
-              </div>
-            ) : (
-              <>
-                <div className="product-grid">
-                  {products.map(product => (
-                    <ProductCard key={product.id} product={product} />
-                  ))}
-                </div>
-                
-                {/* Load More Button */}
-                {hasMore && (
-                  <div className="flex justify-center mt-8">
-                    <Button 
-                      onClick={handleLoadMore}
-                      disabled={loadingMore}
-                      variant="outline"
-                      size="lg"
-                    >
-                      {loadingMore ? (
-                        <>
-                          <div className="mr-2 h-4 w-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-                          Loading...
-                        </>
-                      ) : (
-                        'Load More Products'
-                      )}
-                    </Button>
-                  </div>
-                )}
-              </>
+        {initialLoading ? (
+          <div className="flex items-center justify-center h-64">
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        ) : products.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-64 p-8 text-center border rounded-lg">
+            <h3 className="text-lg font-medium">No products found</h3>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Try adjusting your search or filter criteria.
+            </p>
+            {hasActiveFilters && (
+              <Button 
+                onClick={handleResetFilters}
+                className="mt-4"
+                variant="outline"
+              >
+                Clear all filters
+              </Button>
             )}
           </div>
-        </div>
+        ) : (
+          <>
+            {/* Results Count */}
+            <div className="mb-6">
+              <p className="text-sm text-muted-foreground">
+                Showing {products.length} product{products.length !== 1 ? 's' : ''}
+                {hasActiveFilters && ' matching your criteria'}
+              </p>
+            </div>
+
+            {/* Products Grid */}
+            <div className="product-grid">
+              {products.map(product => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+            
+            {/* Load More Button */}
+            {hasMore && (
+              <div className="flex justify-center mt-8">
+                <Button 
+                  onClick={handleLoadMore}
+                  disabled={loadingMore}
+                  variant="outline"
+                  size="lg"
+                >
+                  {loadingMore ? (
+                    <>
+                      <div className="mr-2 h-4 w-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                      Loading...
+                    </>
+                  ) : (
+                    'Load More Products'
+                  )}
+                </Button>
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
