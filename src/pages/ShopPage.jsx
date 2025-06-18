@@ -200,7 +200,7 @@ const ShopPage = () => {
                   {featuredParam === 'true' ? 'Featured Products' : 'Quick Shop'}
                 </h1>
                 <p className="text-white/90 text-lg">
-                  Browse our selection of groceries and household essentials.
+                  Browse from our selection of groceries, household essentials and more.
                 </p>
                 {searchParam && (
                   <p className="text-white/80 text-sm mt-2">
