@@ -300,7 +300,7 @@ const AdminPickupOrdersTab = () => {
               ) : (
                 filteredOrders.map((order) => (
                   <TableRow key={order.id}>
-                    <TableCell className="font-medium">{order.id.slice(0, 8)}...</TableCell>
+                    <TableCell className="font-medium">{order.id.slice(0, 6)}...</TableCell>
                     <TableCell>{order.profiles?.name || 'N/A'}</TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
