@@ -145,7 +145,7 @@ const HomePage = () => {
                   <span className="text-[#2E8B57] font-semibold text-xs">Adelaide</span>&nbsp;
                   <Clock className="w-3 h-3 text-[#2E8B57] mr-1.5" />
                   <span className="text-[#2E8B57] font-medium text-xs">
-                    {deliveryTime}m ~
+                    {deliveryTime}m **
                   </span>
                 </div>
 
