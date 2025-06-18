@@ -322,7 +322,7 @@ const ShopPage = () => {
             <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : products.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-64 p-8 text-center border rounded-lg">
+          <div className="flex flex-col items-center justify-center h-32 p-8 text-center border rounded-lg">
             <h3 className="text-lg font-medium">No products found</h3>
             <p className="mt-2 text-sm text-muted-foreground">
               Try adjusting your search or filter criteria.
