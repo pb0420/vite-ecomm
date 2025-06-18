@@ -197,10 +197,10 @@ const ShopPage = () => {
               {/* Title and Description */}
               <div className="text-center">
                 <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-                  {featuredParam === 'true' ? 'Featured Products' : 'Shop Groceries'}
+                  {featuredParam === 'true' ? 'Featured Products' : 'Quick Shop'}
                 </h1>
                 <p className="text-white/90 text-lg">
-                  Browse our selection of fresh groceries and household essentials.
+                  Browse our selection of groceries and household essentials.
                 </p>
                 {searchParam && (
                   <p className="text-white/80 text-sm mt-2">
