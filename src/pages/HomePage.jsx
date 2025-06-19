@@ -199,7 +199,7 @@ const HomePage = () => {
                   <MapPinCheckInside className="w-3 h-3 text-[#fd7507] mr-1.5" />
                   <span className="text-[#2E8B57] font-semibold text-xs">Adelaide</span> :  <Clock className="w-3 h-3 text-[#2E8B57] mr-1.5" />
                   <span className="text-[#2E8B57] font-small text-xs">
-                    Delivering in: {deliveryTime}m
+                     {deliveryTime}m
                   </span>
                 </div>
 
