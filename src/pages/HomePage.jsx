@@ -315,7 +315,7 @@ const HomePage = () => {
               </div>
               <h3 className="text-xl font-semibold">Quality</h3>
               <p className="text-muted-foreground">
-                Strict quality assurance and control
+                Strict product quality assurance and control with safe handling
               </p>
             </motion.div>
 
@@ -330,7 +330,7 @@ const HomePage = () => {
               </div>
               <h3 className="text-xl font-semibold">Support</h3>
               <p className="text-muted-foreground">
-                Instant customer support on online or via WhatsApp
+                Fast and reliable customer support online and on WhatsApp
               </p>
             </motion.div>
           </div>
