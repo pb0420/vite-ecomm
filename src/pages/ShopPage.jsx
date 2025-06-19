@@ -180,7 +180,7 @@ const ShopPage = () => {
         <div className="absolute inset-0">
           <img 
             src="/banner_bg.jpeg" 
-            alt="Fresh groceries" 
+            alt="Grocery Delivery" 
             className="w-full h-full object-cover opacity-20"
           />
           <div className="absolute inset-0 bg-gradient-to-br from-[#2E8B57]/90 via-[#3CB371]/80 to-[#98FB98]/70" />
