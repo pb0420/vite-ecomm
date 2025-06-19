@@ -330,7 +330,7 @@ const HomePage = () => {
               </div>
               <h3 className="text-xl font-semibold">Support</h3>
               <p className="text-muted-foreground">
-                Instant customer support on WhatsApp
+                Instant customer support on online or via WhatsApp
               </p>
             </motion.div>
           </div>
