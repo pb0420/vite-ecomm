@@ -60,6 +60,8 @@ const StorePickupPage = () => {
   const [activeTab, setActiveTab] = useState('new-order');
   const [appliedPromo, setAppliedPromo] = useState(null);
   const [timezone, setTimezone] = useState(DEFAULT_TIMEZONE);
+  const [showLoginForm, setShowLoginForm] = useState(false);
+  const [reorderPreviousItems, setReorderPreviousItems] = useState(false);
   
   const navigate = useNavigate();
 
@@ -67,6 +69,11 @@ const StorePickupPage = () => {
     Promise.all([fetchStores(), fetchPostcodes(), fetchTimezone()]);
     if (user) {
       fetchUpcomingOrders();
+      // Auto-populate contact preferences if user has phone
+      if (user.phone) {
+        setPhoneNumber(user.phone);
+        setWhatsappNumber(user.phone);
+      }
     }
   }, [user]);
 
@@ -99,6 +106,9 @@ const StorePickupPage = () => {
       fetchAvailableTimeSlots(selectedDate);
     }
   }, [selectedDate, timezone]);
+
+  // Check if user needs to sign in (after store/date/time selection)
+  const shouldShowLogin = !user && selectedStores.length > 0 && selectedDate && selectedTimeSlot;
 
   const fetchTimezone = async () => {
     try {
@@ -158,9 +168,7 @@ const StorePickupPage = () => {
         .from('time_slots')
         .select('*')
         .eq('date', dateString)
-        // .eq('slot_type', 'pickup')
         .eq('is_active', true)
-        // .lt('current_orders', supabase.raw('max_orders'))
         .order('start_time');
 
       if (error) throw error;
@@ -235,6 +243,11 @@ const StorePickupPage = () => {
     setAppliedPromo(null);
   };
 
+  const handleLoginSuccess = () => {
+    setShowLoginForm(false);
+    // The user state will be updated automatically by the AuthContext
+  };
+
   const validateForm = () => {
     const errors = {};
     if (selectedStores.length === 0) errors.stores = 'Please select at least one store';
@@ -278,7 +291,7 @@ const StorePickupPage = () => {
 
       // Get the selected time slot for timeslot_id
       const timeSlot = availableTimeSlots.find(slot => slot.id === selectedTimeSlot);
-      const timeSlotDisplay = timeSlot ? `${formatTimeToAMPM(slot.start_time)} - ${formatTimeToAMPM(slot.end_time)}` : '';
+      const timeSlotDisplay = timeSlot ? `${formatTimeToAMPM(timeSlot.start_time)} - ${formatTimeToAMPM(timeSlot.end_time)}` : '';
 
       // Create the main pickup order
       const { data: pickupOrder, error: orderError } = await supabase
@@ -297,7 +310,12 @@ const StorePickupPage = () => {
           payment_status: 'pending',
           estimated_total: finalTotal,
           promo_code: appliedPromo?.code || null,
-          discount_amount: discountAmount
+          discount_amount: discountAmount,
+          admin_messages: reorderPreviousItems ? [{
+            from: 'customer',
+            message: 'Please reorder my previous items along with this order.',
+            timestamp: new Date().toISOString()
+          }] : []
         })
         .select()
         .single();
@@ -421,8 +439,8 @@ const StorePickupPage = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Banner Section with How it Works */}
-      <section className="relative h-[45vh] min-h-[350px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
+      {/* Banner Section with How it Works - Made smaller */}
+      <section className="relative h-[35vh] min-h-[280px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
         <div className="absolute inset-0">
           <img 
             src="/banner_bg.jpeg" 
@@ -433,47 +451,47 @@ const StorePickupPage = () => {
         </div>
         
         <div className="container relative h-full px-4 md:px-6">
-          <div className="flex flex-col justify-center h-full py-4">
+          <div className="flex flex-col justify-center h-full py-3">
             <motion.div 
-              className="space-y-4"
+              className="space-y-3"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <div className="text-center mb-4">
-                <h1 className="text-2xl md:text-3xl font-bold text-white mb-1">Grocery Run</h1>
-                <p className="text-white/90 text-sm md:text-base">Let us do the shopping for you at multiple stores!</p>
+              <div className="text-center mb-3">
+                <h1 className="text-xl md:text-2xl font-bold text-white mb-1">Grocery Run</h1>
+                <p className="text-white/90 text-sm">Let us do the shopping for you at multiple stores!</p>
               </div>
 
-              {/* How it works steps */}
-              <div className="grid gap-3 grid-cols-2 md:grid-cols-4 max-w-4xl mx-auto">
-                <div className="flex flex-col items-center text-center space-y-1 bg-white/10 backdrop-blur-sm rounded-lg p-3">
-                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/20 flex items-center justify-center">
-                    <Store className="w-4 h-4 md:w-5 md:h-5 text-white" />
+              {/* How it works steps - Made smaller */}
+              <div className="grid gap-2 grid-cols-2 md:grid-cols-4 max-w-3xl mx-auto">
+                <div className="flex flex-col items-center text-center space-y-1 bg-white/10 backdrop-blur-sm rounded-lg p-2">
+                  <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-white/20 flex items-center justify-center">
+                    <Store className="w-3 h-3 md:w-4 md:h-4 text-white" />
                   </div>
-                  <h3 className="font-medium text-white text-xs md:text-sm">1. Choose Stores</h3>
-                  <p className="text-xs text-white/80 hidden md:block">Select stores and set your budget</p>
+                  <h3 className="font-medium text-white text-xs">1. Choose Stores</h3>
+                  <p className="text-xs text-white/80 hidden md:block">Select stores and set budget</p>
                 </div>
-                <div className="flex flex-col items-center text-center space-y-1 bg-white/10 backdrop-blur-sm rounded-lg p-3">
-                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/20 flex items-center justify-center">
-                    <MessageCircle className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                <div className="flex flex-col items-center text-center space-y-1 bg-white/10 backdrop-blur-sm rounded-lg p-2">
+                  <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-white/20 flex items-center justify-center">
+                    <MessageCircle className="w-3 h-3 md:w-4 md:h-4 text-white" />
                   </div>
-                  <h3 className="font-medium text-white text-xs md:text-sm">2. Share Lists</h3>
-                  <p className="text-xs text-white/80 hidden md:block">Add shopping lists and photos</p>
+                  <h3 className="font-medium text-white text-xs">2. Share Lists</h3>
+                  <p className="text-xs text-white/80 hidden md:block">Add shopping lists</p>
                 </div>
-                <div className="flex flex-col items-center text-center space-y-1 bg-white/10 backdrop-blur-sm rounded-lg p-3">
-                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/20 flex items-center justify-center">
-                    <Clock className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                <div className="flex flex-col items-center text-center space-y-1 bg-white/10 backdrop-blur-sm rounded-lg p-2">
+                  <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-white/20 flex items-center justify-center">
+                    <Clock className="w-3 h-3 md:w-4 md:h-4 text-white" />
                   </div>
-                  <h3 className="font-medium text-white text-xs md:text-sm">3. We Shop</h3>
-                  <p className="text-xs text-white/80 hidden md:block">We shop at all selected stores</p>
+                  <h3 className="font-medium text-white text-xs">3. We Shop</h3>
+                  <p className="text-xs text-white/80 hidden md:block">We shop at all stores</p>
                 </div>
-                <div className="flex flex-col items-center text-center space-y-1 bg-white/10 backdrop-blur-sm rounded-lg p-3">
-                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/20 flex items-center justify-center">
-                    <MapPin className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                <div className="flex flex-col items-center text-center space-y-1 bg-white/10 backdrop-blur-sm rounded-lg p-2">
+                  <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-white/20 flex items-center justify-center">
+                    <MapPin className="w-3 h-3 md:w-4 md:h-4 text-white" />
                   </div>
-                  <h3 className="font-medium text-white text-xs md:text-sm">4. Delivery</h3>
-                  <p className="text-xs text-white/80 hidden md:block">All items delivered in one trip</p>
+                  <h3 className="font-medium text-white text-xs">4. Delivery</h3>
+                  <p className="text-xs text-white/80 hidden md:block">All items in one trip</p>
                 </div>
               </div>
             </motion.div>
@@ -488,309 +506,318 @@ const StorePickupPage = () => {
           transition={{ duration: 0.3 }}
           className="max-w-6xl mx-auto"
         >
-          {!user ? (
-            <Card>
-              <CardHeader>
-                <CardTitle>Sign in to Continue</CardTitle>
-                <CardDescription>Please sign in to schedule a grocery run</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <PhoneLoginForm onSuccess={() => {}} />
-              </CardContent>
-            </Card>
-          ) : (
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="new-order">New Order</TabsTrigger>
-                <TabsTrigger value="upcoming-orders">
-                  Upcoming Orders ({upcomingOrders.length})
-                </TabsTrigger>
-              </TabsList>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="new-order">New Order</TabsTrigger>
+              <TabsTrigger value="upcoming-orders">
+                Upcoming Orders ({upcomingOrders.length})
+              </TabsTrigger>
+            </TabsList>
 
-              <TabsContent value="new-order" className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Schedule a Multi-Store Run</CardTitle>
-                    <CardDescription>
-                      Add one or more stores and we'll shop at all of them for you
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                      {/* Store Search */}
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <h3 className="text-lg font-semibold">Select Stores</h3>
-                          <div className="relative w-64">
-                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                            <Input
-                              type="search"
-                              placeholder="Search stores..."
-                              className="pl-8"
-                              value={storeSearchQuery}
-                              onChange={(e) => setStoreSearchQuery(e.target.value)}
-                            />
-                          </div>
-                        </div>
-                        
-                        <StoreSelector
-                          stores={filteredStores}
-                          selectedStores={selectedStores}
-                          onStoreToggle={setSelectedStores}
-                          onNotesChange={() => {}}
-                          onEstimatedTotalChange={() => {}}
-                        />
-                      </div>
-                      {formErrors.stores && <p className="text-xs text-destructive">{formErrors.stores}</p>}
-
-                      <div className="grid gap-6 md:grid-cols-2">
-                        <div className="space-y-2">
-                          <Label>Select Date</Label>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <Button
-                                type="button"
-                                variant="outline"
-                                className={cn(
-                                  "w-full justify-start text-left font-normal",
-                                  !selectedDate && "text-muted-foreground"
-                                )}
-                              >
-                                <Calendar className="mr-2 h-4 w-4" />
-                                {selectedDate ? formatDateForTimezone(selectedDate, timezone) : <span>Pick a date</span>}
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                              <CalendarPicker
-                                mode="single"
-                                selected={selectedDate}
-                                onSelect={setSelectedDate}
-                                disabled={isDateDisabled}
-                                initialFocus
-                              />
-                            </PopoverContent>
-                          </Popover>
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label>Time Slot</Label>
-                          {loadingSlots ? (
-                            <div className="flex items-center justify-center py-4">
-                              <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-                            </div>
-                          ) : availableTimeSlots.length === 0 ? (
-                            <p className="text-sm text-muted-foreground py-2">
-                              No available time slots for this date.
-                            </p>
-                          ) : (
-                            <Select value={selectedTimeSlot} onValueChange={setSelectedTimeSlot}>
-                              <SelectTrigger className={formErrors.timeSlot ? 'border-destructive' : ''}>
-                                <SelectValue placeholder="Choose a time slot" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {availableTimeSlots.map(slot => (
-                                  <SelectItem key={slot.id} value={slot.id}>
-                                    {formatTimeToAMPM(slot.start_time)} - {formatTimeToAMPM(slot.end_time)}
-                                    {/* <span className="ml-2 text-xs text-muted-foreground">
-                                      ({slot.current_orders}/{slot.max_orders} booked)
-                                    </span> */}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          )}
-                          {formErrors.timeSlot && <p className="text-xs text-destructive">{formErrors.timeSlot}</p>}
+            <TabsContent value="new-order" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Schedule a Multi-Store Run</CardTitle>
+                  <CardDescription>
+                    Add one or more stores and we'll shop at all of them for you
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* Store Search */}
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-semibold">Select Stores</h3>
+                        <div className="relative w-64">
+                          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            type="search"
+                            placeholder="Search stores..."
+                            className="pl-8"
+                            value={storeSearchQuery}
+                            onChange={(e) => setStoreSearchQuery(e.target.value)}
+                          />
                         </div>
                       </div>
+                      
+                      <StoreSelector
+                        stores={filteredStores}
+                        selectedStores={selectedStores}
+                        onStoreToggle={setSelectedStores}
+                        onNotesChange={() => {}}
+                        onEstimatedTotalChange={() => {}}
+                      />
+                    </div>
+                    {formErrors.stores && <p className="text-xs text-destructive">{formErrors.stores}</p>}
 
-                      <div className="space-y-4">
-                        <div className="space-y-2">
-                          <Label>Contact Preference</Label>
-                          <RadioGroup value={contactPreference} onValueChange={setContactPreference} className="grid gap-2">
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="whatsapp" id="whatsapp" />
-                              <Label htmlFor="whatsapp">WhatsApp</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="phone" id="phone" />
-                              <Label htmlFor="phone">SMS/Call</Label>
-                            </div>
-                          </RadioGroup>
-                        </div>
-
-                        {contactPreference === 'whatsapp' && (
-                          <div className="space-y-2">
-                            <Label htmlFor="whatsapp">WhatsApp Number</Label>
-                            <Input
-                              id="whatsapp"
-                              value={whatsappNumber}
-                              onChange={(e) => setWhatsappNumber(e.target.value)}
-                              placeholder="Enter your WhatsApp number"
-                              className={formErrors.whatsapp ? 'border-destructive' : ''}
-                            />
-                            {formErrors.whatsapp && <p className="text-xs text-destructive">{formErrors.whatsapp}</p>}
-                          </div>
-                        )}
-
-                        {contactPreference === 'phone' && (
-                          <div className="space-y-2">
-                            <Label htmlFor="phone">Phone Number</Label>
-                            <Input
-                              id="phone"
-                              value={phoneNumber}
-                              onChange={(e) => setPhoneNumber(e.target.value)}
-                              placeholder="Enter your phone number"
-                              className={formErrors.phone ? 'border-destructive' : ''}
-                            />
-                            {formErrors.phone && <p className="text-xs text-destructive">{formErrors.phone}</p>}
-                          </div>
-                        )}
-                      </div>
-
+                    <div className="grid gap-6 md:grid-cols-2">
                       <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <Label htmlFor="address">Delivery Address</Label>
-                          {user && user.addresses?.length > 0 && (
+                        <Label>Select Date</Label>
+                        <Popover>
+                          <PopoverTrigger asChild>
                             <Button
                               type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setShowAddressSelector(!showAddressSelector)}
-                              className="flex items-center text-primary"
+                              variant="outline"
+                              className={cn(
+                                "w-full justify-start text-left font-normal",
+                                !selectedDate && "text-muted-foreground"
+                              )}
                             >
-                              <MapPin className="w-4 h-4 mr-1" />
-                              {showAddressSelector ? 'Hide saved addresses' : 'Use saved address'}
+                              <Calendar className="mr-2 h-4 w-4" />
+                              {selectedDate ? formatDateForTimezone(selectedDate, timezone) : <span>Pick a date</span>}
                             </Button>
-                          )}
-                        </div>
-                        {showAddressSelector && (
-                          <AddressSelector onSelect={handleAddressSelect} />
-                        )}
-                        <AddressAutocomplete
-                          value={address}
-                          onChange={setAddress}
-                          onAddressSelect={handleAddressAutocomplete}
-                          placeholder="Start typing your address..."
-                          className={formErrors.address ? 'border-destructive' : ''}
-                        />
-                        {formErrors.address && <p className="text-xs text-destructive">{formErrors.address}</p>}
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <CalendarPicker
+                              mode="single"
+                              selected={selectedDate}
+                              onSelect={setSelectedDate}
+                              disabled={isDateDisabled}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="postcode">Suburb & Postcode</Label>
-                        <div className="relative">
-                          <Input
-                            id="postcode"
-                            placeholder="Search suburb or postcode..."
-                            value={postcodeSearch}
-                            onChange={(e) => {
-                              setPostcodeSearch(e.target.value);
-                              setShowPostcodeDropdown(true);
-                            }}
-                            onFocus={() => setShowPostcodeDropdown(true)}
-                            className={formErrors.postcode ? 'border-destructive' : ''}
-                          />
-                          {showPostcodeDropdown && filteredPostcodes.length > 0 && (
-                            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
-                              {filteredPostcodes.slice(0, 10).map((pc) => (
-                                <div
-                                  key={`${pc.suburb}-${pc.postcode}`}
-                                  className="px-4 py-2 cursor-pointer hover:bg-gray-100 border-b border-gray-100 last:border-b-0"
-                                  onClick={() => handlePostcodeSelect(pc)}
-                                >
-                                  <div className="text-sm font-medium">{pc.suburb}</div>
-                                  <div className="text-xs text-gray-500">{pc.postcode}</div>
-                                </div>
+                        <Label>Time Slot</Label>
+                        {loadingSlots ? (
+                          <div className="flex items-center justify-center py-4">
+                            <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                          </div>
+                        ) : availableTimeSlots.length === 0 ? (
+                          <p className="text-sm text-muted-foreground py-2">
+                            No available time slots for this date.
+                          </p>
+                        ) : (
+                          <Select value={selectedTimeSlot} onValueChange={setSelectedTimeSlot}>
+                            <SelectTrigger className={formErrors.timeSlot ? 'border-destructive' : ''}>
+                              <SelectValue placeholder="Choose a time slot" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {availableTimeSlots.map(slot => (
+                                <SelectItem key={slot.id} value={slot.id}>
+                                  {formatTimeToAMPM(slot.start_time)} - {formatTimeToAMPM(slot.end_time)}
+                                </SelectItem>
                               ))}
+                            </SelectContent>
+                          </Select>
+                        )}
+                        {formErrors.timeSlot && <p className="text-xs text-destructive">{formErrors.timeSlot}</p>}
+                      </div>
+                    </div>
+
+                    {/* Show login form if user needs to sign in */}
+                    {shouldShowLogin && (
+                      <Card className="border-primary/20 bg-primary/5">
+                        <CardHeader>
+                          <CardTitle>Sign in to Continue</CardTitle>
+                          <CardDescription>Please sign in to complete your grocery run order</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                          <PhoneLoginForm onSuccess={handleLoginSuccess} />
+                        </CardContent>
+                      </Card>
+                    )}
+
+                    {/* Contact preferences - only show if user is logged in */}
+                    {user && (
+                      <>
+                        <div className="space-y-4">
+                          <div className="space-y-2">
+                            <Label>Contact Preference</Label>
+                            <RadioGroup value={contactPreference} onValueChange={setContactPreference} className="grid gap-2">
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="whatsapp" id="whatsapp" />
+                                <Label htmlFor="whatsapp">WhatsApp</Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="phone" id="phone" />
+                                <Label htmlFor="phone">SMS/Call</Label>
+                              </div>
+                            </RadioGroup>
+                          </div>
+
+                          {contactPreference === 'whatsapp' && (
+                            <div className="space-y-2">
+                              <Label htmlFor="whatsapp">WhatsApp Number</Label>
+                              <Input
+                                id="whatsapp"
+                                value={whatsappNumber}
+                                onChange={(e) => setWhatsappNumber(e.target.value)}
+                                placeholder="Enter your WhatsApp number"
+                                className={formErrors.whatsapp ? 'border-destructive' : ''}
+                              />
+                              {formErrors.whatsapp && <p className="text-xs text-destructive">{formErrors.whatsapp}</p>}
+                            </div>
+                          )}
+
+                          {contactPreference === 'phone' && (
+                            <div className="space-y-2">
+                              <Label htmlFor="phone">Phone Number</Label>
+                              <Input
+                                id="phone"
+                                value={phoneNumber}
+                                onChange={(e) => setPhoneNumber(e.target.value)}
+                                placeholder="Enter your phone number"
+                                className={formErrors.phone ? 'border-destructive' : ''}
+                              />
+                              {formErrors.phone && <p className="text-xs text-destructive">{formErrors.phone}</p>}
                             </div>
                           )}
                         </div>
-                        {formErrors.postcode && <p className="text-xs text-destructive">{formErrors.postcode}</p>}
-                      </div>
 
-                      {/* <PhotoUpload
-                        photos={photos}
-                        onPhotosChange={setPhotos}
-                        maxPhotos={10}
-                      /> */}
- 
-                      {/* Promo Code Section */}
-                      {selectedStores.length > 0 && (
-                        <div className="p-4 border rounded-lg">
-                          <h4 className="font-semibold mb-4">Promo Code</h4>
-                          <PromoCodeInput
-                            subtotal={orderSummary.subtotal}
-                            onPromoApplied={handlePromoApplied}
-                            appliedPromo={appliedPromo}
-                            onPromoRemoved={handlePromoRemoved}
+                        {/* Reorder previous items checkbox */}
+                        <div className="flex items-center space-x-2">
+                          <Checkbox 
+                            id="reorder" 
+                            checked={reorderPreviousItems}
+                            onCheckedChange={setReorderPreviousItems}
                           />
+                          <Label htmlFor="reorder" className="text-sm">
+                            Reorder my previous items (we'll add them to this order)
+                          </Label>
                         </div>
-                      )}
 
-                      {/* Order Summary with Service Charge */}
-                      {selectedStores.length > 0 && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="p-4 border rounded-lg bg-muted/30"
-                        >
-                          <h4 className="font-semibold mb-2">Order Summary</h4>
-                          <div className="space-y-2 text-sm">
-                            <div className="flex justify-between">
-                              <span>Estimated Subtotal:</span>
-                              <span>{formatCurrency(orderSummary.subtotal)}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span>Service Charge (12%):</span>
-                              <span>{formatCurrency(orderSummary.serviceCharge)}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span>Delivery Fee (Highest):</span>
-                              <span>{formatCurrency(orderSummary.deliveryFee)}</span>
-                            </div>
-                            {appliedPromo && orderSummary.discountAmount > 0 && (
-                              <div className="flex justify-between text-green-600">
-                                <span>Discount ({appliedPromo.code}):</span>
-                                <span>-{formatCurrency(orderSummary.discountAmount)}</span>
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <Label htmlFor="address">Delivery Address</Label>
+                            {user && user.addresses?.length > 0 && (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setShowAddressSelector(!showAddressSelector)}
+                                className="flex items-center text-primary"
+                              >
+                                <MapPin className="w-4 h-4 mr-1" />
+                                {showAddressSelector ? 'Hide saved addresses' : 'Use saved address'}
+                              </Button>
+                            )}
+                          </div>
+                          {showAddressSelector && (
+                            <AddressSelector onSelect={handleAddressSelect} />
+                          )}
+                          <AddressAutocomplete
+                            value={address}
+                            onChange={setAddress}
+                            onAddressSelect={handleAddressAutocomplete}
+                            placeholder="Start typing your address..."
+                            className={formErrors.address ? 'border-destructive' : ''}
+                          />
+                          {formErrors.address && <p className="text-xs text-destructive">{formErrors.address}</p>}
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="postcode">Suburb & Postcode</Label>
+                          <div className="relative">
+                            <Input
+                              id="postcode"
+                              placeholder="Search suburb or postcode..."
+                              value={postcodeSearch}
+                              onChange={(e) => {
+                                setPostcodeSearch(e.target.value);
+                                setShowPostcodeDropdown(true);
+                              }}
+                              onFocus={() => setShowPostcodeDropdown(true)}
+                              className={formErrors.postcode ? 'border-destructive' : ''}
+                            />
+                            {showPostcodeDropdown && filteredPostcodes.length > 0 && (
+                              <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                                {filteredPostcodes.slice(0, 10).map((pc) => (
+                                  <div
+                                    key={`${pc.suburb}-${pc.postcode}`}
+                                    className="px-4 py-2 cursor-pointer hover:bg-gray-100 border-b border-gray-100 last:border-b-0"
+                                    onClick={() => handlePostcodeSelect(pc)}
+                                  >
+                                    <div className="text-sm font-medium">{pc.suburb}</div>
+                                    <div className="text-xs text-gray-500">{pc.postcode}</div>
+                                  </div>
+                                ))}
                               </div>
                             )}
-                            <div className="flex justify-between font-semibold pt-2 border-t">
-                              <span>Estimated Total:</span>
-                              <span>{formatCurrency(orderSummary.total)}</span>
-                            </div>
                           </div>
-                        </motion.div>
-                      )}
+                          {formErrors.postcode && <p className="text-xs text-destructive">{formErrors.postcode}</p>}
+                        </div>
 
-                      <div className="flex items-center space-x-2">
-                        <Checkbox 
-                          id="terms" 
-                          checked={termsAccepted}
-                          onCheckedChange={setTermsAccepted}
-                        />
-                        <Label htmlFor="terms" className="text-sm">
-                          I agree to the <Link to="/terms" className="text-primary hover:underline" target="_blank">Terms and Conditions</Link> and{' '}
-                          <Link to="/privacy" className="text-primary hover:underline" target="_blank">Privacy Policy</Link>
-                        </Label>
-                      </div>
-                      {formErrors.terms && <p className="text-xs text-destructive">{formErrors.terms}</p>}
+                        {/* Promo Code Section */}
+                        {selectedStores.length > 0 && (
+                          <div className="p-4 border rounded-lg">
+                            <h4 className="font-semibold mb-4">Promo Code</h4>
+                            <PromoCodeInput
+                              subtotal={orderSummary.subtotal}
+                              onPromoApplied={handlePromoApplied}
+                              appliedPromo={appliedPromo}
+                              onPromoRemoved={handlePromoRemoved}
+                            />
+                          </div>
+                        )}
 
-                      <Button type="submit" className="w-full" disabled={selectedStores.length === 0}>
-                        Proceed to Payment
-                      </Button>
-                    </form>
-                  </CardContent>
-                </Card>
-              </TabsContent>
+                        {/* Order Summary with Service Charge */}
+                        {selectedStores.length > 0 && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="p-4 border rounded-lg bg-muted/30"
+                          >
+                            <h4 className="font-semibold mb-2">Order Summary</h4>
+                            <div className="space-y-2 text-sm">
+                              <div className="flex justify-between">
+                                <span>Estimated Subtotal:</span>
+                                <span>{formatCurrency(orderSummary.subtotal)}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>Service Charge (12%):</span>
+                                <span>{formatCurrency(orderSummary.serviceCharge)}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>Delivery Fee (Highest):</span>
+                                <span>{formatCurrency(orderSummary.deliveryFee)}</span>
+                              </div>
+                              {appliedPromo && orderSummary.discountAmount > 0 && (
+                                <div className="flex justify-between text-green-600">
+                                  <span>Discount ({appliedPromo.code}):</span>
+                                  <span>-{formatCurrency(orderSummary.discountAmount)}</span>
+                                </div>
+                              )}
+                              <div className="flex justify-between font-semibold pt-2 border-t">
+                                <span>Estimated Total:</span>
+                                <span>{formatCurrency(orderSummary.total)}</span>
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
 
-              <TabsContent value="upcoming-orders">
-                <UpcomingOrders 
-                  orders={upcomingOrders} 
-                  onSendMessage={handleSendMessage}
-                />
-              </TabsContent>
-            </Tabs>
-          )}
+                        <div className="flex items-center space-x-2">
+                          <Checkbox 
+                            id="terms" 
+                            checked={termsAccepted}
+                            onCheckedChange={setTermsAccepted}
+                          />
+                          <Label htmlFor="terms" className="text-sm">
+                            I agree to the <Link to="/terms" className="text-primary hover:underline" target="_blank">Terms and Conditions</Link> and{' '}
+                            <Link to="/privacy" className="text-primary hover:underline" target="_blank">Privacy Policy</Link>
+                          </Label>
+                        </div>
+                        {formErrors.terms && <p className="text-xs text-destructive">{formErrors.terms}</p>}
+
+                        <Button type="submit" className="w-full" disabled={selectedStores.length === 0}>
+                          Proceed to Payment
+                        </Button>
+                      </>
+                    )}
+                  </form>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="upcoming-orders">
+              <UpcomingOrders 
+                orders={upcomingOrders} 
+                onSendMessage={handleSendMessage}
+              />
+            </TabsContent>
+          </Tabs>
         </motion.div>
       </div>
     </div>

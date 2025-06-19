@@ -175,8 +175,8 @@ const ShopPage = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Enhanced Hero Section with Filters */}
-      <section className="relative min-h-[400px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
+      {/* Enhanced Hero Section with Filters - Made smaller */}
+      <section className="relative min-h-[320px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
         <div className="absolute inset-0">
           <img 
             src="/banner_bg.jpeg" 
@@ -187,19 +187,19 @@ const ShopPage = () => {
         </div>
         
         <div className="container relative h-full px-4 md:px-6">
-          <div className="flex flex-col justify-center h-full py-8">
+          <div className="flex flex-col justify-center h-full py-6">
             <motion.div 
-              className="space-y-6 max-w-4xl mx-auto w-full"
+              className="space-y-4 max-w-4xl mx-auto w-full"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
               {/* Title and Description */}
               <div className="text-center">
-                <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-                  {featuredParam === 'true' ? 'Featured Products' : ' Shop'}
+                <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
+                  {featuredParam === 'true' ? 'Featured Products' : 'Shop'}
                 </h1>
-                <p className="text-white/90 text-lg">
+                <p className="text-white/90 text-base">
                   Browse from our selection of groceries, household essentials and more.
                 </p>
                 {searchParam && (
@@ -211,22 +211,22 @@ const ShopPage = () => {
 
               {/* Search Bar */}
               <motion.div
-                className="relative max-w-2xl mx-auto"
+                className="relative max-w-xl mx-auto"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.5 }}
               >
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
                   <Input
                     type="search"
                     placeholder="Search for products..."
-                    className="h-12 pl-10 pr-4 bg-white/95 backdrop-blur-sm border-0 shadow-lg text-gray-800 placeholder:text-gray-500"
+                    className="h-10 pl-10 pr-4 bg-white/95 backdrop-blur-sm border-0 shadow-lg text-gray-800 placeholder:text-gray-500"
                     value={searchInput}
                     onChange={(e) => handleSearchInputChange(e.target.value)}
                   />
                   {searchInput.length > 0 && searchInput.length < 2 && (
-                    <p className="absolute -bottom-6 left-0 text-xs text-white/80">
+                    <p className="absolute -bottom-5 left-0 text-xs text-white/80">
                       Enter at least 2 characters to search
                     </p>
                   )}
@@ -235,13 +235,13 @@ const ShopPage = () => {
 
               {/* Filters Row */}
               <motion.div
-                className="flex flex-col sm:flex-row gap-4 items-center justify-center max-w-4xl mx-auto"
+                className="flex flex-col sm:flex-row gap-3 items-center justify-center max-w-3xl mx-auto"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4, duration: 0.5 }}
               >
                 {/* Category Filter */}
-                <div className="w-full sm:w-auto min-w-[200px]">
+                <div className="w-full sm:w-auto min-w-[180px]">
                   <Select value={selectedCategory} onValueChange={handleCategoryChange}>
                     <SelectTrigger className="bg-white/95 backdrop-blur-sm border-0 shadow-lg">
                       <SelectValue placeholder="All Categories" />
@@ -258,7 +258,7 @@ const ShopPage = () => {
                 </div>
 
                 {/* Sort Filter */}
-                <div className="w-full sm:w-auto min-w-[180px]">
+                <div className="w-full sm:w-auto min-w-[160px]">
                   <Select value={sortBy} onValueChange={handleSortChange}>
                     <SelectTrigger className="bg-white/95 backdrop-blur-sm border-0 shadow-lg">
                       <SelectValue placeholder="Sort by" />
