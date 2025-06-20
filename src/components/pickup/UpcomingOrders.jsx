@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, Store, Package, ChevronDown, ChevronUp, Eye } from 'lucide-react';
+import { Calendar, Clock, Store, Package, Eye } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -9,7 +9,6 @@ import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 
 const UpcomingOrders = ({ orders }) => {
-  const [expandedOrder, setExpandedOrder] = useState(null);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -51,8 +50,8 @@ const UpcomingOrders = ({ orders }) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <Card>
-            <CardHeader className="pb-3">
+          <Card className="py-2">
+            <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base">
                   Order #{order.id.slice(0, 6).toUpperCase()}
@@ -66,22 +65,11 @@ const UpcomingOrders = ({ orders }) => {
                       <Eye className="w-4 h-4" />
                     </Button>
                   </Link>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setExpandedOrder(expandedOrder === order.id ? null : order.id)}
-                  >
-                    {expandedOrder === order.id ? 
-                      <ChevronUp className="w-4 h-4" /> : 
-                      <ChevronDown className="w-4 h-4" />
-                    }
-                  </Button>
                 </div>
               </div>
             </CardHeader>
-            
-            <CardContent className="space-y-3">
-              <div className="grid grid-cols-2 gap-4 text-sm">
+            <CardContent className="space-y-2">
+              <div className="grid grid-cols-2 gap-2 text-xs">
                 <div className="flex items-center">
                   <Calendar className="w-4 h-4 mr-2 text-muted-foreground" />
                   {formatDate(order.pickup_date)}
@@ -92,7 +80,7 @@ const UpcomingOrders = ({ orders }) => {
                 </div>
               </div>
 
-              <div className="flex items-center text-sm">
+              <div className="flex items-center text-xs">
                 <Store className="w-4 h-4 mr-2 text-muted-foreground" />
                 <div className="flex flex-wrap gap-1">
                   {order.pickup_order_stores?.map((storeOrder, index) => (
@@ -103,66 +91,59 @@ const UpcomingOrders = ({ orders }) => {
                 </div>
               </div>
 
-              <div className="flex justify-between items-center text-sm">
+              <div className="flex justify-between items-center text-xs">
                 <span>Estimated Total:</span>
                 <span className="font-medium">{formatCurrency(order.estimated_total)}</span>
               </div>
 
-              {expandedOrder === order.id && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="space-y-4 pt-4 border-t"
-                >
-                  <div>
-                    <h4 className="text-sm font-medium mb-2">Store Details:</h4>
-                    <div className="space-y-2">
-                      {order.pickup_order_stores?.map((storeOrder, index) => (
-                        <div key={index} className="flex justify-between items-center text-sm bg-muted/30 p-2 rounded">
-                          <span>{storeOrder.stores?.name}</span>
-                          <div className="text-right">
-                            <div className="font-medium">{formatCurrency(storeOrder.estimated_total || 0)}</div>
-                            <Badge variant="outline" className="text-xs">
-                              {storeOrder.status}
-                            </Badge>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {order.photos && order.photos.length > 0 && (
-                    <div>
-                      <h4 className="text-sm font-medium mb-2">Photos:</h4>
-                      <div className="grid grid-cols-4 gap-2">
-                        {order.photos.slice(0, 4).map((photo, index) => (
-                          <img
-                            key={index}
-                            src={photo.data}
-                            alt={`Photo ${index + 1}`}
-                            className="aspect-square rounded object-cover cursor-pointer"
-                            onClick={() => window.open(photo.data, '_blank')}
-                          />
-                        ))}
-                        {order.photos.length > 4 && (
-                          <div className="aspect-square rounded bg-muted flex items-center justify-center text-xs text-muted-foreground">
-                            +{order.photos.length - 4} more
-                          </div>
-                        )}
+              {/* Store Details */}
+              <div>
+                <h4 className="text-xs font-medium mb-1">Store Details:</h4>
+                <div className="space-y-1">
+                  {order.pickup_order_stores?.map((storeOrder, index) => (
+                    <div key={index} className="flex justify-between items-center text-xs bg-muted/30 p-1 rounded">
+                      <span>{storeOrder.stores?.name}</span>
+                      <div className="text-right">
+                        <div className="font-medium">{formatCurrency(storeOrder.estimated_total || 0)}</div>
+                        <Badge variant="outline" className="text-xs">
+                          {storeOrder.status}
+                        </Badge>
                       </div>
                     </div>
-                  )}
+                  ))}
+                </div>
+              </div>
 
-                  <div className="flex justify-center pt-2">
-                    <Link to={`/pickup-order/${order.id}`}>
-                      <Button size="sm">
-                        View Full Details
-                      </Button>
-                    </Link>
+              {/* Photos */}
+              {order.photos && order.photos.length > 0 && (
+                <div>
+                  <h4 className="text-xs font-medium mb-1">Photos:</h4>
+                  <div className="grid grid-cols-4 gap-1">
+                    {order.photos.slice(0, 4).map((photo, index) => (
+                      <img
+                        key={index}
+                        src={photo.data}
+                        alt={`Photo ${index + 1}`}
+                        className="aspect-square rounded object-cover cursor-pointer"
+                        onClick={() => window.open(photo.data, '_blank')}
+                      />
+                    ))}
+                    {order.photos.length > 4 && (
+                      <div className="aspect-square rounded bg-muted flex items-center justify-center text-xs text-muted-foreground">
+                        +{order.photos.length - 4} more
+                      </div>
+                    )}
                   </div>
-                </motion.div>
+                </div>
               )}
+
+              <div className="flex justify-center pt-1">
+                <Link to={`/pickup-order/${order.id}`}>
+                  <Button size="sm">
+                    View Full Details
+                  </Button>
+                </Link>
+              </div>
             </CardContent>
           </Card>
         </motion.div>

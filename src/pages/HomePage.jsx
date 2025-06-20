@@ -8,6 +8,9 @@ import { Input } from '@/components/ui/input';
 import ProductCard from '@/components/products/ProductCard';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/contexts/AuthContext';
+// Import the AiChatBot component
+import AiChatBot from '@/components/chat/AiChatBot'; // Assuming this path is correct
+import { setQueryCache, getQueryCache } from '@/lib/queryCache';
 
 const HomePage = () => {
   const { user } = useAuth();
@@ -22,43 +25,45 @@ const HomePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch featured products
-        const { data: productsData, error: productsError } = await supabase
-          .from('products')
-          .select(`
-            *,
-            categories (
-              id,
-              name
-            )
-          `)
-          .eq('featured', true)
-          .limit(20);
+        // Try cache first
+        let productsData = getQueryCache('featuredProducts');
+        let categoriesData = getQueryCache('categories_home');
+        let deliverySettings = getQueryCache('deliverySettings');
 
-        if (productsError) throw productsError;
-
-        // Fetch categories
-        const { data: categoriesData, error: categoriesError } = await supabase
-          .from('categories')
-          .select('*')
-          .order('name')
-          .limit(7);
-
-        if (categoriesError) throw categoriesError;
-
-        // Fetch delivery settings for estimated delivery time
-        const { data: deliverySettings, error: deliveryError } = await supabase
-          .from('delivery_settings')
-          .select('estimated_delivery_minutes')
-          .eq('id', 1)
-          .single();
-
-        if (!deliveryError && deliverySettings) {
-          setDeliveryTime(deliverySettings.estimated_delivery_minutes);
+        if (!productsData) {
+          const { data, error } = await supabase
+            .from('products')
+            .select(`*, categories ( id, name )`)
+            .eq('featured', true)
+            .limit(20);
+          if (error) throw error;
+          productsData = data || [];
+          setQueryCache('featuredProducts', productsData);
         }
-
-        setFeaturedProducts(productsData || []);
-        setCategories(categoriesData || []);
+        if (!categoriesData) {
+          const { data, error } = await supabase
+            .from('categories')
+            .select('*')
+            .order('name')
+            .limit(7);
+          if (error) throw error;
+          categoriesData = data || [];
+          setQueryCache('categorie_home', categoriesData);
+        }
+        if (!deliverySettings) {
+          const { data, error } = await supabase
+            .from('delivery_settings')
+            .select('estimated_delivery_minutes')
+            .eq('id', 1)
+            .single();
+          if (!error && data) {
+            deliverySettings = data;
+            setQueryCache('deliverySettings', deliverySettings);
+          }
+        }
+        setFeaturedProducts(productsData);
+        setCategories(categoriesData);
+        if (deliverySettings) setDeliveryTime(deliverySettings.estimated_delivery_minutes);
 
         // Fetch previously ordered products if user is logged in
         if (user) {
@@ -76,46 +81,41 @@ const HomePage = () => {
 
   const fetchPreviouslyOrderedProducts = async () => {
     try {
-      // Get user's orders
-      const { data: orders, error: ordersError } = await supabase
-        .from('orders')
-        .select('items')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(5); // Get last 5 orders
-
-      if (ordersError) throw ordersError;
-
-      if (orders && orders.length > 0) {
-        // Extract unique product IDs from order items
-        const productIds = new Set();
-        orders.forEach(order => {
-          if (order.items && Array.isArray(order.items)) {
-            order.items.forEach(item => {
-              if (item.id) productIds.add(item.id);
-            });
-          }
-        });
-
-        if (productIds.size > 0) {
-          // Fetch product details for these IDs
-          const { data: previousProducts, error: productsError } = await supabase
-            .from('products')
-            .select(`
-              *,
-              categories (
-                id,
-                name
-              )
-            `)
-            .in('id', Array.from(productIds))
-            .limit(12);
-
-          if (!productsError && previousProducts) {
-            setPreviouslyOrderedProducts(previousProducts);
+      let previousProducts = getQueryCache(`previouslyOrderedProducts_${user?.id}`);
+      if (!previousProducts) {
+        // Get user's orders
+        const { data: orders, error: ordersError } = await supabase
+          .from('orders')
+          .select('items')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(5);
+        if (ordersError) throw ordersError;
+        if (orders && orders.length > 0) {
+          // Extract unique product IDs from order items
+          const productIds = new Set();
+          orders.forEach(order => {
+            if (order.items && Array.isArray(order.items)) {
+              order.items.forEach(item => {
+                if (item.id) productIds.add(item.id);
+              });
+            }
+          });
+          if (productIds.size > 0) {
+            // Fetch product details for these IDs
+            const { data, error } = await supabase
+              .from('products')
+              .select(`*, categories ( id, name )`)
+              .in('id', Array.from(productIds))
+              .limit(12);
+            if (!error && data) {
+              previousProducts = data;
+              setQueryCache(`previouslyOrderedProducts_${user.id}`, previousProducts);
+            }
           }
         }
       }
+      if (previousProducts) setPreviouslyOrderedProducts(previousProducts);
     } catch (error) {
       console.error('Error fetching previously ordered products:', error);
     }
@@ -130,9 +130,10 @@ const HomePage = () => {
     }
   };
 
-  const openWhatsApp = () => {
-    window.open('https://wa.me/61478477036', '_blank');
-  };
+  // Remove the old openWhatsApp function
+  // const openWhatsApp = () => {
+  //   window.open('https://wa.me/61478477036', '_blank');
+  // };
 
   const iconClass = "w-5 h-5 text-primary";
   const getCatIcon = (cName) => {
@@ -156,6 +157,7 @@ const HomePage = () => {
       case "meat":
         return <Beef className={iconClass} />;
       case "confectionary":
+      case "candy": // Added candy case
         return <Candy className={iconClass} />;
       case "seafood":
         return <Fish className={iconClass} />;
@@ -197,7 +199,7 @@ const HomePage = () => {
                 {/* Location Pill - Left */}
                 <div className="inline-flex items-center bg-white/95 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg w-fit">
                   <MapPinCheckInside className="w-3 h-3 text-[#fd7507] mr-1.5" />
-                  <span className="text-[#2E8B57] font-semibold text-xs">Adelaide :&nbsp;</span>  <Clock className="w-3 h-3 text-[#2E8B57] mr-1.5" />
+                  <span className="text-[#2E8B57] font-semibold text-xs">Adelaide &nbsp; </span>  <Clock className="w-3 h-3 text-[#2E8B57] mr-1.5" />
                   <span className="text-[#2E8B57] font-small text-xs">
                      {deliveryTime}m
                   </span>
@@ -234,7 +236,7 @@ const HomePage = () => {
                   size="sm"
                   className="h-10 md:h-12 px-4 bg-[#fd7507] hover:bg-[#fd7507]/90 shadow-lg text-sm"
                 >
-                  GO &nbsp;<ArrowRight className="w-3 h-3" />
+                  <ArrowRight className="w-8 h-6" />
                 </Button>
               </motion.form>
 
@@ -245,7 +247,7 @@ const HomePage = () => {
                 transition={{ delay: 0.6, duration: 0.5 }}
                 className="relative"
               >
-                <div className="flex overflow-x-auto pb-2 space-x-3 scrollbar-hide px-4 md:px-0 md:justify-center">
+                <div className="flex overflow-x-auto pb-1 space-x-3 scrollbar-hide px-4 md:px-0 md:justify-center">
                   {categories.map((category) => (
                     <Link
                       key={category.id}
@@ -274,7 +276,7 @@ const HomePage = () => {
                   <Link to="/categories" className="flex-none group text-center">
                     <div className="w-12 h-12 md:w-14 md:h-14 mx-auto mb-1 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:bg-white/30 transition-all duration-300 shadow-lg">
                       <div className="flex flex-col items-center">
-                        <ArrowRight className="h-4 w-4 md:h-5 md:w-5 text-white" />
+                        <ArrowRight className="h-4 w-4 md:h-5 w-5 text-white" />
                       </div>
                     </div>
                     <span className="text-xs font-medium text-white/90 group-hover:text-white transition-colors block truncate max-w-[45px] md:max-w-[55px]">View All</span>
@@ -309,32 +311,24 @@ const HomePage = () => {
       {user && previouslyOrderedProducts.length > 0 && (
         <section className="py-8 bg-gray-50">
           <div className="container px-4 md:px-6">
-            <div className="flex items-center justify-between mb-6">
-              <motion.h2
-                className="text-xl font-bold"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                Your Previous Orders
-              </motion.h2>
-              <Link to="/account" className="flex-none group text-center">
-                <div className="flex flex-col items-center">
-                  <div className="w-12 h-12 mx-auto mb-1 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:bg-white/30 transition-all duration-300 shadow-lg">
-                    <ArrowRight className="h-5 w-5 text-primary" />
-                  </div>
-                  <span className="text-xs font-medium text-primary transition-colors block truncate">View All</span>
-                </div>
-              </Link>
-            </div>
+            <motion.h2
+              className="text-xl font-bold mb-4"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              Previously Ordered
+            </motion.h2>
             <motion.div
-              className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4"
+              className="flex gap-4 overflow-x-auto scrollbar-hide pb-2"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.6 }}
             >
-              {previouslyOrderedProducts.slice(0, 8).map(product => (
-                <ProductCard key={product.id} product={product} />
+              {previouslyOrderedProducts.slice(0, 12).map(product => (
+                <div key={product.id} className="flex-none w-48">
+                  <ProductCard product={product} />
+                </div>
               ))}
             </motion.div>
           </div>
@@ -420,21 +414,24 @@ const HomePage = () => {
               </div>
               <h3 className="text-lg font-semibold">Support</h3>
               <p className="text-muted-foreground text-sm">
-                Fast and reliable customer support online and on WhatsApp
+                Fast and reliable customer support services online and via WhatsApp
               </p>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* WhatsApp Button */}
-      <Button
+      {/* Integrate the AiChatBot component */}
+      <AiChatBot />
+
+      {/* Remove the old WhatsApp Button */}
+      {/* <Button
         onClick={openWhatsApp}
         className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg bg-[#25D366] hover:bg-[#25D366]/90 z-50"
         size="icon"
       >
         <MessageCircle className="h-6 w-6 text-white" />
-      </Button>
+      </Button> */}
     </div>
   );
 };

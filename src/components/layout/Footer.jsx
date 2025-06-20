@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Instagram, Twitter, ShieldAlert, Mail, Phone } from 'lucide-react';
+import { Facebook, Instagram, Twitter, ShieldAlert, Mail, Phone, MessageCircle } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -21,9 +21,21 @@ const Footer = () => {
       <div className="container px-4 py-12 mx-auto md:px-6">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           <div className="space-y-4">
-            <h3 className="text-lg font-bold text-primary">Groceroo</h3>
+            <div
+            style={{
+              backgroundImage: 'url(/logo.png)',
+              backgroundSize: 'contain',
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'center',
+              backgroundColor: 'seagreen',
+              width: '100px',
+              height: '40px',
+            }}
+            aria-label="Groceroo Logo"
+          ></div>
+            <div className="text-xs text-gray-500">ABN 257 558 402 06</div>
             <p className="text-sm text-gray-600">
-              Express grocery shopping and delivery service. Fresh products delivered to your door.
+              Express grocery shopping and delivery service in Adelaide. Groceries and more delivered to your door.
             </p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-500 hover:text-primary">
@@ -39,11 +51,21 @@ const Footer = () => {
             <div className="space-y-2">
               <div className="flex items-center text-gray-600">
                 <Mail className="w-4 h-4 mr-2" />
-                <span>contact@groceroo.com.au</span>
+                <a href="mailto:contact@groceroo.com.au" className="hover:text-primary underline">
+                  contact@groceroo.com.au
+                </a>
               </div>
               <div className="flex items-center text-gray-600">
                 <Phone className="w-4 h-4 mr-2" />
-                <span>+61 478 477 036</span>
+                <a href="tel:+61478477036" className="hover:text-primary underline">
+                  +61 478 477 036
+                </a>
+              </div>
+              <div className="flex items-center text-gray-600">
+                 <MessageCircle className="w-4 h-4 mr-2" />
+                <a href="https://wa.me/61478477036" target="_blank" rel="noopener noreferrer" className="hover:text-primary underline">
+                  Chat on WhatsApp
+                </a>
               </div>
             </div>
           </div>

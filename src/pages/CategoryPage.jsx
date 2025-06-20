@@ -40,7 +40,7 @@ const CategoryPage = () => {
               name
             )
           `)
-          .eq('category_id', id)
+          .or(`category_id.eq.${id},categories_ids.cs.[${id}]`)
           .order('name');
 
         if (productsError) throw productsError;

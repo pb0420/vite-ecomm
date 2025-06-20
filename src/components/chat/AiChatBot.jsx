@@ -1,9 +1,9 @@
+// File: groceroo/src/components/chat/AiChatBot.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, Send, X, ShoppingCart, Bot, MessageSquare as MessageSquareMore } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabaseClient';
@@ -14,7 +14,6 @@ const AiChatBot = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState("ai");
   const messagesEndRef = useRef(null);
   const chatBoxRef = useRef(null);
   const { addToCart } = useCart();
@@ -28,19 +27,6 @@ const AiChatBot = () => {
     scrollToBottom();
   }, [messages]);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (chatBoxRef.current && !chatBoxRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!input.trim() || isLoading || !user) return;
@@ -51,29 +37,59 @@ const AiChatBot = () => {
     setIsLoading(true);
 
     try {
-      const { data: settings } = await supabase
-        .from('openai_settings')
-        .select('*')
-        .single();
-
-      // Simulate AI response for now
-      setTimeout(() => {
-        setMessages(prev => [...prev, {
-          role: 'assistant',
-          content: "I can help you find products. What are you looking for?",
-          products: []
-        }]);
-        setIsLoading(false);
-      }, 1000);
-
+      // Send POST request to the AI API
+      const response = await fetch('https://bcbxcnxutotjzmdjeyde.supabase.co/functions/v1/googlegenai-api', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjYnhjbnh1dG90anptZGpleWRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY0NjIwODksImV4cCI6MjA2MjAzODA4OX0.sMIn31DXRvBpQsxYZV2nn1lKqdEkEk2S0jvdve2yACY'
+        },
+        body: JSON.stringify({
+          message: userMessage,
+          user_id: user.id,
+        }),
+      });
+      if (!response.ok) throw new Error('Failed to get AI response');
+      const data = await response.json();
+      // data.products is expected to be an array of product names or objects
+      let productNames = [];
+      if (Array.isArray(data.products)) {
+        if (typeof data.products[0] === 'string') {
+          productNames = data.products;
+        } else if (typeof data.products[0] === 'object' && data.products[0]?.name) {
+          productNames = data.products.map(p => p.name);
+        }
+      }
+      let foundProducts = [];
+      if (productNames.length > 0) {
+        // Search products in Supabase by name (case-insensitive, partial match)
+        const { data: products, error } = await supabase
+          .from('products')
+          .select('*')
+          .ilike('name', `%${productNames[0]}%`); // Only search for the first product for now
+        if (!error && products) {
+          foundProducts = products;
+        }
+      }
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: data.reply || 'Here are some products I found:',
+        products: foundProducts
+      }]);
+      setIsLoading(false);
     } catch (error) {
       console.error('Error:', error);
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: 'Sorry, something went wrong. Please try again later.',
+        products: []
+      }]);
       setIsLoading(false);
     }
   };
 
   const openWhatsApp = () => {
-    window.open('https://wa.me/1234567890', '_blank');
+    window.open('https://wa.me/1234567890', '_blank'); // Replace with actual WhatsApp number
   };
 
   const LoginPrompt = () => (
@@ -87,11 +103,38 @@ const AiChatBot = () => {
     </div>
   );
 
+  // Define drawer and overlay variants
+  const drawerVariants = {
+    closed: {
+      x: '100%',
+      transition: {
+        type: 'spring',
+        stiffness: 300,
+        damping: 30
+      }
+    },
+    open: {
+      x: 0,
+      transition: {
+        type: 'spring',
+        stiffness: 300,
+        damping: 30
+      }
+    }
+  };
+
+  const overlayVariants = {
+    closed: { opacity: 0 },
+    open: { opacity: 1 }
+  };
+
+
   return (
     <>
+      {/* Floating Chat Button */}
       <Button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg bg-[#2E8B57] hover:bg-[#2E8B57]/90"
+        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg bg-[#2E8B57] hover:bg-[#2E8B57]/90 z-50"
         size="icon"
       >
         <MessageSquareMore className="h-6 w-6" />
@@ -99,42 +142,65 @@ const AiChatBot = () => {
 
       <AnimatePresence>
         {isOpen && (
-          <motion.div
-            ref={chatBoxRef}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-24 right-6 w-96 max-h-[calc(100vh-120px)] bg-background border rounded-lg shadow-xl flex flex-col overflow-hidden"
-            style={{ maxHeight: '600px' }}
-          >
-            <Tabs defaultValue="ai" className="w-full h-full" value={activeTab} onValueChange={setActiveTab}>
-              <div className="flex items-center justify-between p-4 border-b">
-                <TabsList className="grid w-[200px] grid-cols-2">
-                  <TabsTrigger value="ai" className="flex items-center">
-                    <Bot className="w-4 h-4 mr-2" />AI Chat
-                  </TabsTrigger>
-                  <TabsTrigger value="human" className="flex items-center">
-                    <MessageCircle className="w-4 h-4 mr-2" />Human
-                  </TabsTrigger>
-                </TabsList>
+          <>
+            {/* Overlay */}
+            <motion.div
+              className="fixed inset-0 z-40 bg-black/50"
+              initial="closed"
+              animate="open"
+              exit="closed"
+              variants={overlayVariants}
+              onClick={() => setIsOpen(false)}
+            />
+
+            {/* Chat Drawer */}
+            <motion.div
+              ref={chatBoxRef}
+              initial="closed"
+              animate="open"
+              exit="closed"
+              variants={drawerVariants}
+              className="fixed top-0 right-0 z-50 w-full max-w-md h-full bg-background border-l rounded-l-lg shadow-xl flex flex-col overflow-hidden"
+              style={{ maxHeight: '100vh' }}
+            >
+              {/* WhatsApp Button at the top */}
+              <div className='flex items-center justify-between p-4 border-b bg-background'>
+                  <span className="text-sm text-muted-foreground">
+                  Chat with a human on WhatsApp!
+                </span>
+                <Button
+                  onClick={openWhatsApp}
+                  className="h-12 w-[30%] rounded-lg bg-[#25D366] hover:bg-[#128C7E] flex items-center justify-center"
+                  size="icon"
+                  aria-label="Open WhatsApp Chat"
+                >
+                  <MessageCircle className="h-6 w-6 text-white" />
+                </Button>
+              </div>
+              <div className="flex items-center justify-between p-4 border-b bg-background">
+                <span className="text-lg font-semibold text-muted-foreground">
+                  <Bot className="inline-block mr-2" />
+                  AI Chat (beta)
+                </span>
+                {/* WhatsApp Button */} 
+              
                 <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
                   <X className="h-4 w-4" />
                 </Button>
               </div>
 
-              <TabsContent value="ai" className="flex-1 flex flex-col overflow-hidden">
+              {/* Chat Area */}
+              <div className="flex-1 flex flex-col h-0">
                 {user ? (
                   <>
                     <div className="flex-1 overflow-y-auto p-4 space-y-4">
                       {messages.map((message, index) => (
                         <div
                           key={index}
-                          className={`flex ${
-                            message.role === 'user' ? 'justify-end' : 'justify-start'
-                          }`}
+                          className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                         >
                           <div
-                            className={`max-w-[80%] rounded-lg p-3 ${
+                            className={`max-w-full rounded-lg p-3 ${
                               message.role === 'user'
                                 ? 'bg-[#2E8B57] text-white'
                                 : 'bg-muted'
@@ -175,8 +241,7 @@ const AiChatBot = () => {
                       )}
                       <div ref={messagesEndRef} />
                     </div>
-
-                    <form onSubmit={handleSubmit} className="p-4 border-t">
+                    <form onSubmit={handleSubmit} className="p-4 border-t bg-background">
                       <div className="flex space-x-2">
                         <Input
                           value={input}
@@ -191,27 +256,13 @@ const AiChatBot = () => {
                     </form>
                   </>
                 ) : (
-                  <div className="flex-1 overflow-y-auto">
+                  <div className="flex-1 flex flex-col h-full overflow-y-auto">
                     <LoginPrompt />
                   </div>
                 )}
-              </TabsContent>
-
-              <TabsContent value="human" className="flex-1">
-                <div className="p-6 flex flex-col items-center justify-center h-full text-center space-y-4">
-                  <MessageCircle className="h-12 w-12 text-[#2E8B57]" />
-                  <h3 className="text-lg font-semibold">Chat with our team</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Our team is available on WhatsApp to assist you with your orders and queries.
-                  </p>
-                  <Button onClick={openWhatsApp} className="mt-4 bg-[#2E8B57] hover:bg-[#2E8B57]/90">
-                    <MessageCircle className="w-4 h-4 mr-2" />
-                    Open WhatsApp Chat
-                  </Button>
-                </div>
-              </TabsContent>
-            </Tabs>
-          </motion.div>
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </>

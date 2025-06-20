@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,7 +13,7 @@ import useSupabaseStorage from '@/hooks/useSupabaseStorage';
 const ProductForm = ({ product, categories, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
     name: '', price: '', unit: '', category_id: '', description: '',
-    image_url: '', in_stock: true, featured: false,
+    image_url: '', in_stock: true, featured: false, categories_ids: [],
   });
   const [errors, setErrors] = useState({});
   const [selectedFile, setSelectedFile] = useState(null);
@@ -33,12 +32,13 @@ const ProductForm = ({ product, categories, onSubmit, onCancel }) => {
         image_url: product.image_url || '',
         in_stock: product.in_stock !== undefined ? product.in_stock : true,
         featured: product.featured !== undefined ? product.featured : false,
+        categories_ids: product.categories_ids || [],
       });
       setPreviewUrl(product.image_url || '');
     } else {
       setFormData({
         name: '', price: '', unit: '', category_id: '', description: '',
-        image_url: '', in_stock: true, featured: false,
+        image_url: '', in_stock: true, featured: false, categories_ids: [],
       });
       setPreviewUrl('');
       setSelectedFile(null);
@@ -124,6 +124,7 @@ const ProductForm = ({ product, categories, onSubmit, onCancel }) => {
       in_stock: formData.in_stock,
       featured: formData.featured,
       updated_at: new Date(),
+      categories_ids: formData.categories_ids,
     };
 
     if (product?.id) {
@@ -131,6 +132,16 @@ const ProductForm = ({ product, categories, onSubmit, onCancel }) => {
     }
 
     onSubmit(submissionData);
+  };
+
+  // Add this handler for multi-select
+  const handleMultiSelectChange = (e) => {
+    const options = Array.from(e.target.selectedOptions);
+    setFormData(prev => ({
+      ...prev,
+      categories_ids: options.map(opt => parseInt(opt.value))
+    }));
+    if (errors.categories_ids) setErrors(prev => ({ ...prev, categories_ids: '' }));
   };
 
   return (
@@ -191,6 +202,26 @@ const ProductForm = ({ product, categories, onSubmit, onCancel }) => {
           {errors.category_id && <p className="text-xs text-destructive">{errors.category_id}</p>}
         </div>
       </div>
+      {/* Multi-select for other categories */}
+      <div className="space-y-2">
+        <Label htmlFor="categories_ids">Other Categories</Label>
+        <select
+          id="categories_ids"
+          name="categories_ids"
+          multiple
+          value={formData.categories_ids.map(String)}
+          onChange={handleMultiSelectChange}
+          className="w-full border rounded p-2 min-h-[40px]"
+          disabled={isUploading}
+        >
+          {categories
+            .filter(cat => String(cat.id) !== formData.category_id)
+            .map(cat => (
+              <option key={cat.id} value={cat.id}>{cat.name}</option>
+            ))}
+        </select>
+        <p className="text-xs text-muted-foreground">Hold Ctrl (Windows) or Cmd (Mac) to select multiple categories.</p>
+      </div>
       <div className="space-y-2">
         <Label htmlFor="description">Description</Label>
         <Textarea id="description" name="description" value={formData.description} onChange={handleChange} className={errors.description ? 'border-destructive' : ''} disabled={isUploading} />
@@ -216,4 +247,3 @@ const ProductForm = ({ product, categories, onSubmit, onCancel }) => {
 };
 
 export default ProductForm;
-  

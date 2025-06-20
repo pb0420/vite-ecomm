@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import ProductCard from '@/components/products/ProductCard';
 import { supabase } from '@/lib/supabaseClient';
+import { setQueryCache, getQueryCache } from '@/lib/queryCache';
 
 const PRODUCTS_PER_PAGE = 25;
 
@@ -52,13 +53,17 @@ const ShopPage = () => {
 
   const fetchCategories = async () => {
     try {
-      const { data: categoriesData, error: categoriesError } = await supabase
-        .from('categories')
-        .select('*')
-        .order('name');
-
-      if (categoriesError) throw categoriesError;
-      setCategories(categoriesData || []);
+      let categoriesData = getQueryCache('categories_all');
+      if (!categoriesData) {
+        const { data, error } = await supabase
+          .from('categories')
+          .select('*')
+          .order('name');
+        if (error) throw error;
+        categoriesData = data || [];
+        setQueryCache('categories_all', categoriesData);
+      }
+      setCategories(categoriesData);
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
@@ -66,67 +71,65 @@ const ShopPage = () => {
 
   const fetchProducts = async (reset = false) => {
     const pageToFetch = reset ? 0 : currentPage;
-    
+    const cacheKey = `products_${featuredParam || 'all'}_${searchTerm || 'all'}_${selectedCategory}_${sortBy}_${pageToFetch}`;
     if (reset) {
       setInitialLoading(true);
     } else {
       setLoadingMore(true);
     }
-
     try {
-      let query = supabase
-        .from('products')
-        .select(`
-          *,
-          categories (
-            id,
-            name
-          )
-        `);
-
-      // Apply filters
-      if (featuredParam === 'true') {
-        query = query.eq('featured', true);
+      let cachedProducts = getQueryCache(cacheKey);
+      let newProducts = [];
+      if (cachedProducts) {
+        newProducts = cachedProducts;
+      } else {
+        let query = supabase
+          .from('products')
+          .select(`
+            *,
+            categories (
+              id,
+              name
+            )
+          `);
+        // Apply filters
+        if (featuredParam === 'true') {
+          query = query.eq('featured', true);
+        }
+        if (searchTerm && searchTerm.length >= 2) {
+          query = query.or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
+        }
+        if (selectedCategory !== 'all') {
+          const categoryId = parseInt(selectedCategory);
+          query = query.or(`category_id.eq.${categoryId},categories_ids.cs.[${categoryId}]`);
+        }
+        // Apply sorting
+        switch (sortBy) {
+          case 'name-asc':
+            query = query.order('name', { ascending: true });
+            break;
+          case 'name-desc':
+            query = query.order('name', { ascending: false });
+            break;
+          case 'price-asc':
+            query = query.order('price', { ascending: true });
+            break;
+          case 'price-desc':
+            query = query.order('price', { ascending: false });
+            break;
+          default:
+            query = query.order('name', { ascending: true });
+            break;
+        }
+        // Apply pagination
+        const from = pageToFetch * PRODUCTS_PER_PAGE;
+        const to = from + PRODUCTS_PER_PAGE - 1;
+        query = query.range(from, to);
+        const { data: productsData, error: productsError } = await query;
+        if (productsError) throw productsError;
+        newProducts = productsData || [];
+        setQueryCache(cacheKey, newProducts);
       }
-
-      if (searchTerm && searchTerm.length >= 2) {
-        query = query.or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
-      }
-
-      if (selectedCategory !== 'all') {
-        query = query.eq('category_id', parseInt(selectedCategory));
-      }
-
-      // Apply sorting
-      switch (sortBy) {
-        case 'name-asc':
-          query = query.order('name', { ascending: true });
-          break;
-        case 'name-desc':
-          query = query.order('name', { ascending: false });
-          break;
-        case 'price-asc':
-          query = query.order('price', { ascending: true });
-          break;
-        case 'price-desc':
-          query = query.order('price', { ascending: false });
-          break;
-        default:
-          query = query.order('name', { ascending: true });
-          break;
-      }
-
-      // Apply pagination
-      const from = pageToFetch * PRODUCTS_PER_PAGE;
-      const to = from + PRODUCTS_PER_PAGE - 1;
-      query = query.range(from, to);
-
-      const { data: productsData, error: productsError } = await query;
-
-      if (productsError) throw productsError;
-
-      const newProducts = productsData || [];
-      
       if (reset) {
         setProducts(newProducts);
         setCurrentPage(1);
@@ -134,10 +137,8 @@ const ShopPage = () => {
         setProducts(prev => [...prev, ...newProducts]);
         setCurrentPage(prev => prev + 1);
       }
-
       // Check if there are more products
       setHasMore(newProducts.length === PRODUCTS_PER_PAGE);
-
     } catch (error) {
       console.error('Error fetching products:', error);
     } finally {
@@ -176,7 +177,7 @@ const ShopPage = () => {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Enhanced Hero Section with Filters - Made smaller */}
-      <section className="relative min-h-[320px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
+      <section className="relative min-h-[280px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
         <div className="absolute inset-0">
           <img 
             src="/banner_bg.jpeg" 
@@ -187,23 +188,23 @@ const ShopPage = () => {
         </div>
         
         <div className="container relative h-full px-4 md:px-6">
-          <div className="flex flex-col justify-center h-full py-6">
+          <div className="flex flex-col justify-center h-full py-5">
             <motion.div 
-              className="space-y-4 max-w-4xl mx-auto w-full"
+              className="space-y-3 max-w-4xl mx-auto w-full"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
               {/* Title and Description */}
               <div className="text-center">
-                <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
+                <h1 className="text-xl md:text-2xl font-bold text-white mb-1">
                   {featuredParam === 'true' ? 'Featured Products' : 'Shop'}
                 </h1>
-                <p className="text-white/90 text-base">
+                <p className="text-white/90 text-sm">
                   Browse from our selection of groceries, household essentials and more.
                 </p>
                 {searchParam && (
-                  <p className="text-white/80 text-sm mt-2">
+                  <p className="text-white/80 text-xs mt-1">
                     Showing results for: "{searchParam}"
                   </p>
                 )}
@@ -221,12 +222,12 @@ const ShopPage = () => {
                   <Input
                     type="search"
                     placeholder="Search for products..."
-                    className="h-10 pl-10 pr-4 bg-white/95 backdrop-blur-sm border-0 shadow-lg text-gray-800 placeholder:text-gray-500"
+                    className="h-9 pl-10 pr-4 bg-white/95 backdrop-blur-sm border-0 shadow-lg text-gray-800 placeholder:text-gray-500"
                     value={searchInput}
                     onChange={(e) => handleSearchInputChange(e.target.value)}
                   />
                   {searchInput.length > 0 && searchInput.length < 2 && (
-                    <p className="absolute -bottom-5 left-0 text-xs text-white/80">
+                    <p className="absolute -bottom-4 left-0 text-xs text-white/80">
                       Enter at least 2 characters to search
                     </p>
                   )}
@@ -235,15 +236,15 @@ const ShopPage = () => {
 
               {/* Filters Row */}
               <motion.div
-                className="flex flex-col sm:flex-row gap-3 items-center justify-center max-w-3xl mx-auto"
+                className="flex flex-col sm:flex-row gap-2 items-center justify-center max-w-3xl mx-auto"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4, duration: 0.5 }}
               >
                 {/* Category Filter */}
-                <div className="w-full sm:w-auto min-w-[180px]">
+                <div className="w-full sm:w-auto min-w-[160px]">
                   <Select value={selectedCategory} onValueChange={handleCategoryChange}>
-                    <SelectTrigger className="bg-white/95 backdrop-blur-sm border-0 shadow-lg">
+                    <SelectTrigger className="bg-white/95 backdrop-blur-sm border-0 shadow-lg h-8 text-sm">
                       <SelectValue placeholder="All Categories" />
                     </SelectTrigger>
                     <SelectContent>
@@ -258,9 +259,9 @@ const ShopPage = () => {
                 </div>
 
                 {/* Sort Filter */}
-                <div className="w-full sm:w-auto min-w-[160px]">
+                <div className="w-full sm:w-auto min-w-[140px]">
                   <Select value={sortBy} onValueChange={handleSortChange}>
-                    <SelectTrigger className="bg-white/95 backdrop-blur-sm border-0 shadow-lg">
+                    <SelectTrigger className="bg-white/95 backdrop-blur-sm border-0 shadow-lg h-8 text-sm">
                       <SelectValue placeholder="Sort by" />
                     </SelectTrigger>
                     <SelectContent>
@@ -276,10 +277,11 @@ const ShopPage = () => {
                 {hasActiveFilters && (
                   <Button 
                     variant="outline" 
-                    className="bg-white/95 backdrop-blur-sm border-0 shadow-lg hover:bg-white text-gray-800"
+                    size="sm"
+                    className="bg-white/95 backdrop-blur-sm border-0 shadow-lg hover:bg-white text-gray-800 h-8 text-xs"
                     onClick={handleResetFilters}
                   >
-                    <X className="w-4 h-4 mr-2" />
+                    <X className="w-3 h-3 mr-1" />
                     Reset
                   </Button>
                 )}
@@ -288,23 +290,23 @@ const ShopPage = () => {
               {/* Active Filters Display */}
               {hasActiveFilters && (
                 <motion.div
-                  className="flex flex-wrap gap-2 justify-center"
+                  className="flex flex-wrap gap-1 justify-center"
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.6, duration: 0.5 }}
                 >
                   {searchInput && (
-                    <div className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 text-white text-sm">
+                    <div className="bg-white/20 backdrop-blur-sm rounded-full px-2 py-0.5 text-white text-xs">
                       Search: "{searchInput}"
                     </div>
                   )}
                   {selectedCategory !== 'all' && (
-                    <div className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 text-white text-sm">
+                    <div className="bg-white/20 backdrop-blur-sm rounded-full px-2 py-0.5 text-white text-xs">
                       Category: {categories.find(c => c.id.toString() === selectedCategory)?.name}
                     </div>
                   )}
                   {sortBy !== 'name-asc' && (
-                    <div className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 text-white text-sm">
+                    <div className="bg-white/20 backdrop-blur-sm rounded-full px-2 py-0.5 text-white text-xs">
                       Sort: {sortBy.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                     </div>
                   )}

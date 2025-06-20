@@ -440,7 +440,7 @@ const StorePickupPage = () => {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Banner Section with How it Works - Made smaller */}
-      <section className="relative h-[35vh] min-h-[280px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
+      <section className="relative h-[30vh] min-h-[240px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
         <div className="absolute inset-0">
           <img 
             src="/banner_bg.jpeg" 
@@ -451,44 +451,44 @@ const StorePickupPage = () => {
         </div>
         
         <div className="container relative h-full px-4 md:px-6">
-          <div className="flex flex-col justify-center h-full py-3">
+          <div className="flex flex-col justify-center h-full py-2">
             <motion.div 
-              className="space-y-3"
+              className="space-y-2"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <div className="text-center mb-3">
-                <h1 className="text-xl md:text-2xl font-bold text-white mb-1">Grocery Run</h1>
-                <p className="text-white/90 text-sm">Let us do the shopping for you at multiple stores!</p>
+              <div className="text-center mb-2">
+                <h1 className="text-lg md:text-xl font-bold text-white mb-1">Grocery Run</h1>
+                <p className="text-white/90 text-xs">Let us do the shopping for you at multiple stores!</p>
               </div>
 
               {/* How it works steps - Made smaller */}
-              <div className="grid gap-2 grid-cols-2 md:grid-cols-4 max-w-3xl mx-auto">
-                <div className="flex flex-col items-center text-center space-y-1 bg-white/10 backdrop-blur-sm rounded-lg p-2">
-                  <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-white/20 flex items-center justify-center">
-                    <Store className="w-3 h-3 md:w-4 md:h-4 text-white" />
+              <div className="grid gap-1 grid-cols-2 md:grid-cols-4 max-w-2xl mx-auto">
+                <div className="flex flex-col items-center text-center space-y-0.5 bg-white/10 backdrop-blur-sm rounded-lg p-1.5">
+                  <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-white/20 flex items-center justify-center">
+                    <Store className="w-2.5 h-2.5 md:w-3 md:h-3 text-white" />
                   </div>
-                  <h3 className="font-medium text-white text-xs">1. Choose Stores</h3>
+                  <h3 className="font-medium text-white text-xs">1. Add Stores</h3>
                   <p className="text-xs text-white/80 hidden md:block">Select stores and set budget</p>
                 </div>
-                <div className="flex flex-col items-center text-center space-y-1 bg-white/10 backdrop-blur-sm rounded-lg p-2">
-                  <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-white/20 flex items-center justify-center">
-                    <MessageCircle className="w-3 h-3 md:w-4 md:h-4 text-white" />
+                <div className="flex flex-col items-center text-center space-y-0.5 bg-white/10 backdrop-blur-sm rounded-lg p-1.5">
+                  <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-white/20 flex items-center justify-center">
+                    <MessageCircle className="w-2.5 h-2.5 md:w-3 md:h-3 text-white" />
                   </div>
                   <h3 className="font-medium text-white text-xs">2. Share Lists</h3>
                   <p className="text-xs text-white/80 hidden md:block">Add shopping lists</p>
                 </div>
-                <div className="flex flex-col items-center text-center space-y-1 bg-white/10 backdrop-blur-sm rounded-lg p-2">
-                  <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-white/20 flex items-center justify-center">
-                    <Clock className="w-3 h-3 md:w-4 md:h-4 text-white" />
+                <div className="flex flex-col items-center text-center space-y-0.5 bg-white/10 backdrop-blur-sm rounded-lg p-1.5">
+                  <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-white/20 flex items-center justify-center">
+                    <Clock className="w-2.5 h-2.5 md:w-3 md:h-3 text-white" />
                   </div>
                   <h3 className="font-medium text-white text-xs">3. We Shop</h3>
                   <p className="text-xs text-white/80 hidden md:block">We shop at all stores</p>
                 </div>
-                <div className="flex flex-col items-center text-center space-y-1 bg-white/10 backdrop-blur-sm rounded-lg p-2">
-                  <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-white/20 flex items-center justify-center">
-                    <MapPin className="w-3 h-3 md:w-4 md:h-4 text-white" />
+                <div className="flex flex-col items-center text-center space-y-0.5 bg-white/10 backdrop-blur-sm rounded-lg p-1.5">
+                  <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-white/20 flex items-center justify-center">
+                    <MapPin className="w-2.5 h-2.5 md:w-3 md:h-3 text-white" />
                   </div>
                   <h3 className="font-medium text-white text-xs">4. Delivery</h3>
                   <p className="text-xs text-white/80 hidden md:block">All items in one trip</p>
@@ -499,7 +499,7 @@ const StorePickupPage = () => {
         </div>
       </section>
 
-      <div className="container px-8 py-8 mx-auto md:px-8">
+      <div className="container px-4 py-6 mx-auto md:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -615,7 +615,9 @@ const StorePickupPage = () => {
                           <CardDescription>Please sign in to complete your grocery run order</CardDescription>
                         </CardHeader>
                         <CardContent>
-                          <PhoneLoginForm onSuccess={handleLoginSuccess} />
+                          <div className="max-w-lg mx-auto">
+                            <PhoneLoginForm onSuccess={handleLoginSuccess} />
+                          </div>
                         </CardContent>
                       </Card>
                     )}
@@ -750,6 +752,17 @@ const StorePickupPage = () => {
                               appliedPromo={appliedPromo}
                               onPromoRemoved={handlePromoRemoved}
                             />
+                          </div>
+                        )}
+                        <hr></hr>
+                        {/* Selected Stores Pills */}
+                        {selectedStores.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mb-2">
+                            {selectedStores.map(store => (
+                              <span key={store.id} className="bg-seagreen text-white-800 border border-gray-200 rounded-full px-6 py-1 text-xs font-medium shadow-sm">
+                                {store.name}
+                              </span>
+                            ))}
                           </div>
                         )}
 

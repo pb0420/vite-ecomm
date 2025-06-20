@@ -84,10 +84,23 @@ const StoreSelector = ({ stores, selectedStores, onStoreToggle, onNotesChange, o
                 <Card className={`cursor-pointer transition-all ${isSelected ? 'ring-2 ring-primary' : 'hover:shadow-md'}`}>
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-base flex items-center">
-                        <Store className="w-4 h-4 mr-2" />
-                        {store.name}
-                      </CardTitle>
+                      <div className="flex items-center space-x-3">
+                        {/* Store Image */}
+                        <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center overflow-hidden">
+                          {store.image ? (
+                            <img 
+                              src={store.image} 
+                              alt={store.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <Store className="w-6 h-6 text-muted-foreground" />
+                          )}
+                        </div>
+                        <CardTitle className="text-base">
+                          {store.name}
+                        </CardTitle>
+                      </div>
                       <Button
                         type="button"
                         variant={isSelected ? "default" : "outline"}
@@ -136,7 +149,7 @@ const StoreSelector = ({ stores, selectedStores, onStoreToggle, onNotesChange, o
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor={`notes-${store.id}`}>Shopping List / Notes</Label>
+                          <Label htmlFor={`notes-${store.id}`}>Shopping List / Notes (or do it later) </Label>
                           <Textarea
                             id={`notes-${store.id}`}
                             value={selectedStore?.notes || ''}
@@ -154,34 +167,6 @@ const StoreSelector = ({ stores, selectedStores, onStoreToggle, onNotesChange, o
           })}
         </div>
       </div>
-
-      {selectedStores.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="p-4 border rounded-lg bg-muted/30"
-        >
-          <h4 className="font-semibold mb-2">Order Summary</h4>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span>Estimated Subtotal:</span>
-              <span>{formatCurrency(getTotalEstimated())}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Service Charge (12%):</span>
-              <span>{formatCurrency(getServiceCharge())}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Delivery Fee (Highest):</span>
-              <span>{formatCurrency(getHighestDeliveryFee())}</span>
-            </div>
-            <div className="flex justify-between font-semibold pt-2 border-t">
-              <span>Estimated Total:</span>
-              <span>{formatCurrency(getTotalEstimated() + getServiceCharge() + getHighestDeliveryFee())}</span>
-            </div>
-          </div>
-        </motion.div>
-      )}
     </div>
   );
 };

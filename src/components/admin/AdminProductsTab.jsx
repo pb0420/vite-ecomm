@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Filter, PlusCircle, Edit, Trash2, Image as ImageIcon } from 'lucide-react';
@@ -77,6 +76,7 @@ const AdminProductsTab = ({ openDeleteDialog }) => {
            .update({
              ...productData,
              category_id: productData.category_id, // Ensure category_id is passed
+             categories_ids: productData.categories_ids || [], // Pass categories_ids array
              updated_at: new Date(), // Ensure updated_at is set
            })
            .eq('id', editingProduct.id)
@@ -92,6 +92,7 @@ const AdminProductsTab = ({ openDeleteDialog }) => {
            .insert({
             ...productData,
             category_id: productData.category_id,
+            categories_ids: productData.categories_ids || [], // Pass categories_ids array
            })
            .select('*, categories(id, name)')
            .single();
@@ -313,4 +314,3 @@ const AdminProductsTab = ({ openDeleteDialog }) => {
 };
 
 export default AdminProductsTab;
-  
