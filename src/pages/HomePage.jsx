@@ -48,7 +48,7 @@ const HomePage = () => {
             .limit(7);
           if (error) throw error;
           categoriesData = data || [];
-          setQueryCache('categorie_home', categoriesData);
+          setQueryCache('categories_home', categoriesData);
         }
         if (!deliverySettings) {
           const { data, error } = await supabase

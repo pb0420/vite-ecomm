@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import CategoryCard from '@/components/products/CategoryCard';
 import { supabase } from '@/lib/supabaseClient';
+import { getQueryCache, setQueryCache } from '@/lib/queryCache';
 
 const CategoriesPage = () => {
   const [categories, setCategories] = useState([]);
@@ -10,13 +11,18 @@ const CategoriesPage = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const { data, error } = await supabase
-          .from('categories')
-          .select('*')
-          .order('name');
-
-        if (error) throw error;
-        setCategories(data || []);
+        let cached = getQueryCache('categories_all');
+        if (cached) {
+          setCategories(cached);
+        } else {
+          const { data, error } = await supabase
+            .from('categories')
+            .select('*')
+            .order('name');
+          if (error) throw error;
+          setCategories(data || []);
+          setQueryCache('categories_all', data || []);
+        }
       } catch (error) {
         console.error('Error fetching categories:', error);
       } finally {

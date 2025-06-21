@@ -217,11 +217,11 @@ const PickupOrderDetailsPage = () => {
               </p>
             </div>
             <div className="flex items-center space-x-2">
-              <Badge className={getStatusColor(order.status)}>
-                {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-              </Badge>
               <Badge className={getPaymentStatusColor(order.payment_status)}>
-                {order.payment_status.charAt(0).toUpperCase() + order.payment_status.slice(1)}
+                Payment Status: {order.payment_status.charAt(0).toUpperCase() + order.payment_status.slice(1)}
+              </Badge>
+              <Badge className={getStatusColor(order.status)}>
+                Order Status: {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
               </Badge>
             </div>
           </div>
@@ -280,11 +280,13 @@ const PickupOrderDetailsPage = () => {
                     {index > 0 && <Separator />}
                     <div className="flex justify-between items-start">
                       <div>
-                        <h4 className="font-medium">{storeOrder.stores?.name}</h4>
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-medium mb-0">{storeOrder.stores?.name}</h4>
+                          <Badge className={getStatusColor(storeOrder.status)} variant="outline">
+                            {storeOrder.status.charAt(0).toUpperCase() + storeOrder.status.slice(1)}
+                          </Badge>
+                        </div>
                         <p className="text-sm text-muted-foreground">{storeOrder.stores?.address}</p>
-                        <Badge className={getStatusColor(storeOrder.status)} variant="outline">
-                          {storeOrder.status.charAt(0).toUpperCase() + storeOrder.status.slice(1)}
-                        </Badge>
                       </div>
                       <div className="text-right">
                         <p className="font-medium">
