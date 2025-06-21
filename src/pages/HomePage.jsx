@@ -370,7 +370,7 @@ const HomePage = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-8 bg-gradient-to-r from-gray-50 to-gray-100">
+      {/* <section className="py-8 bg-gradient-to-r from-gray-50 to-gray-100">
         <div className="container px-4 md:px-6">
           <div className="grid gap-6 md:grid-cols-3">
             <motion.div
@@ -419,7 +419,7 @@ const HomePage = () => {
             </motion.div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Integrate the AiChatBot component */}
       <AiChatBot />

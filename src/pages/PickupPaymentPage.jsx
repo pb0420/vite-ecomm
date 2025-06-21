@@ -121,7 +121,7 @@ const PickupPaymentPage = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="max-w-2xl mx-auto"
+        className="max-w-3xl md:max-w-4xl mx-auto"
       >
         <div className="mb-6">
           <Button 
@@ -136,9 +136,9 @@ const PickupPaymentPage = () => {
           <p className="text-muted-foreground">Secure payment for your grocery run</p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-8 md:grid-cols-2">
           {/* Order Summary */}
-          <Card>
+          <Card className="bg-muted/30 border">
             <CardHeader>
               <CardTitle className="flex items-center">
                 <CreditCard className="w-5 h-5 mr-2" />
@@ -169,7 +169,6 @@ const PickupPaymentPage = () => {
                   </span>
                 </div>
               </div>
-              
               <div className="pt-4 border-t">
                 <div className="flex justify-between font-semibold">
                   <span>Total Amount:</span>
