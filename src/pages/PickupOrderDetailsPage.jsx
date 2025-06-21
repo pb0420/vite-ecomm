@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Calendar, Clock, Store, MessageCircle, Camera, Send, Package, MapPin, Phone } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, Store, MessageCircle, Camera, Send, Package, MapPin, Phone, CreditCard, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
@@ -218,10 +218,10 @@ const PickupOrderDetailsPage = () => {
             </div>
             <div className="flex items-center space-x-2">
               <Badge className={getPaymentStatusColor(order.payment_status)}>
-                Payment Status: {order.payment_status.charAt(0).toUpperCase() + order.payment_status.slice(1)}
+                <CreditCard />&nbsp; {order.payment_status.charAt(0).toUpperCase() + order.payment_status.slice(1)}
               </Badge>
               <Badge className={getStatusColor(order.status)}>
-                Order Status: {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+               <Info />&nbsp; {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
               </Badge>
             </div>
           </div>
@@ -260,9 +260,42 @@ const PickupOrderDetailsPage = () => {
                 <div className="flex justify-between items-center pt-4 border-t">
                   <span className="font-medium">Total Amount:</span>
                   <span className="text-lg font-bold">
-                    {order.actual_total ? formatCurrency(order.actual_total) : formatCurrency(order.estimated_total)}
+                    {order.actual_total ? formatCurrency(order.actual_total) : '(Est.)' + formatCurrency(order.estimated_total)}
                   </span>
                 </div>
+                {order.actual_total && (
+                  <div className="flex justify-between items-center pt-2">
+                    <span className="font-medium">Actual Total:</span>
+                    <span className="text-base font-semibold">{formatCurrency(order.actual_total)}</span>
+                  </div>
+                )}
+                {order.payment_status === 'paid' && order.payment_data && (
+                  <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded">
+                    <div className="font-medium mb-1 text-green-800">Payment Details:</div>
+                    <pre className="text-xs text-green-900 whitespace-pre-wrap break-all">{JSON.stringify(order.payment_data, null, 2)}</pre>
+                  </div>
+                )}
+                {/* Cancel Order Button */}
+                {order.status !== 'cancelled' && order.status !== 'completed' && (
+                  <div className="mt-4 flex justify-end">
+                    <Button variant="destructive" onClick={async () => {
+                      if (!window.confirm('Are you sure you want to cancel this order? Cancellation fees may apply')) return;
+                      try {
+                        const { error } = await supabase
+                          .from('pickup_orders')
+                          .update({ status: 'cancelled' })
+                          .eq('id', order.id);
+                        if (error) throw error;
+                        setOrder(prev => ({ ...prev, status: 'cancelled' }));
+                        toast({ title: 'Order Cancelled', description: 'Your order has been cancelled.' });
+                      } catch (err) {
+                        toast({ variant: 'destructive', title: 'Error', description: 'Could not cancel order.' });
+                      }
+                    }}>
+                      Cancel Order
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -380,7 +413,7 @@ const PickupOrderDetailsPage = () => {
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <MessageCircle className="w-5 h-5 mr-2" />
-                  Messages
+                  Support
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">

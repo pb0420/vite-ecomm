@@ -2,11 +2,12 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Search } from 'lucide-react'; // Import Search icon
+import { ArrowLeft, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input'; // Import Input component
+import { Input } from '@/components/ui/input';
 import ProductCard from '@/components/products/ProductCard';
 import { supabase } from '@/lib/supabaseClient';
+import { setQueryCache, getQueryCache } from '@/lib/queryCache';
 
 const CategoryPage = () => {
   const { id } = useParams();
@@ -18,41 +19,39 @@ const CategoryPage = () => {
   useEffect(() => {
     const fetchCategoryAndProducts = async () => {
       if (!id) return;
-
+      setLoading(true);
       try {
-        // Fetch category details
-        const { data: categoryData, error: categoryError } = await supabase
-          .from('categories')
-          .select('*')
-          .eq('id', id)
-          .single();
-
-        if (categoryError) throw categoryError;
+        // Try cache first
+        let categoryData = getQueryCache(`category_${id}`);
+        let productsData = getQueryCache(`category_products_${id}`);
+        if (!categoryData) {
+          const { data, error } = await supabase
+            .from('categories')
+            .select('*')
+            .eq('id', id)
+            .single();
+          if (error) throw error;
+          categoryData = data;
+          setQueryCache(`category_${id}`, data);
+        }
         setCategory(categoryData);
-
-        // Fetch products for this category
-        const { data: productsData, error: productsError } = await supabase
-          .from('products')
-          .select(`
-            *,
-            categories (
-              id,
-              name
-            )
-          `)
-          .or(`category_id.eq.${id},categories_ids.cs.[${id}]`)
-          .order('name');
-
-        if (productsError) throw productsError;
-        setProducts(productsData || []);
-
+        if (!productsData) {
+          const { data, error } = await supabase
+            .from('products')
+            .select(`*, categories ( id, name )`)
+            .or(`category_id.eq.${id},categories_ids.cs.[${id}]`)
+            .order('name');
+          if (error) throw error;
+          productsData = data || [];
+          setQueryCache(`category_products_${id}`, productsData);
+        }
+        setProducts(productsData);
       } catch (error) {
         console.error('Error fetching category or products:', error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchCategoryAndProducts();
   }, [id]);
 
@@ -103,15 +102,18 @@ const CategoryPage = () => {
         transition={{ duration: 0.3 }}
         className="mb-8"
       >
-        <div className="relative h-48 overflow-hidden rounded-lg bg-muted mb-4">
-          <img
-            alt={category.name}
-            className="w-full h-full object-cover"
-            src={category.image_url || "https://images.unsplash.com/photo-1675825547463-0788eca2320e"}
-          />
-          {/* Added greenish tint overlay */}
+        <div
+          className="relative h-48 overflow-hidden rounded-lg bg-muted mb-4"
+          style={category?.icon_url ? {
+            backgroundImage: `url(${category.icon_url})`,
+            backgroundRepeat: 'repeat',
+            backgroundSize: '60px',
+            backgroundPosition: 'center',
+          } : {}}
+        >
+          {/* Tint overlay */}
           <div className="absolute inset-0 bg-[#3CB371] opacity-90"></div>
-          {/* Existing gradient overlay for text readability */}
+          {/* Gradient overlay for text readability */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
           <div className="absolute bottom-0 left-0 p-6">
             <h1 className="text-3xl font-bold text-white">{category.name}</h1>

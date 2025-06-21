@@ -48,6 +48,7 @@ const CheckoutPage = () => {
   const [postcodeSearch, setPostcodeSearch] = useState('');
   const [showPostcodeDropdown, setShowPostcodeDropdown] = useState(false);
   const [appliedPromo, setAppliedPromo] = useState(null);
+  const [serviceFeePercent, setServiceFeePercent] = useState(3);
 
   useEffect(() => {
     const fetchInitialFee = async () => {
@@ -95,6 +96,20 @@ const CheckoutPage = () => {
     fetchPostcodes();
     checkIfAccountSet();
   }, [user]);
+
+  useEffect(() => {
+    const fetchServiceFee = async () => {
+      const { data, error } = await supabase
+        .from('delivery_settings')
+        .select('service_fee_percent')
+        .eq('id', 1)
+        .single();
+      if (!error && data && data.service_fee_percent) {
+        setServiceFeePercent(data.service_fee_percent);
+      }
+    };
+    fetchServiceFee();
+  }, []);
 
   useEffect(() => {
     if (postcodeSearch.length === 0) {
@@ -161,18 +176,22 @@ const CheckoutPage = () => {
   };
 
   const getSubtotal = () => {
-    return getCartTotal();
+    return Number(getCartTotal() || 0);
   };
-
   const getDiscountAmount = () => {
-    return appliedPromo ? appliedPromo.discountAmount : 0;
+    return Number(appliedPromo ? appliedPromo.discountAmount : 0);
   };
-
+  const getServiceFee = () => {
+    const base = getSubtotal() + Number(deliveryDetails.fee || 0);
+    return parseFloat((base * (serviceFeePercent / 100)).toFixed(2));
+  };
   const getFinalTotal = () => {
     const subtotal = getSubtotal();
     const discount = getDiscountAmount();
-    const deliveryFee = deliveryDetails.fee;
-    return subtotal - discount + deliveryFee;
+    const deliveryFee = Number(deliveryDetails.fee || 0);
+    const serviceFee = getServiceFee();
+    const total = subtotal - discount + deliveryFee + serviceFee;
+    return parseFloat(total.toFixed(2));
   };
   
   if (cart.length === 0 && !isSubmitting) {
@@ -307,6 +326,7 @@ const CheckoutPage = () => {
               deliveryFee={deliveryDetails.fee} 
               appliedPromo={appliedPromo}
               discountAmount={getDiscountAmount()}
+              serviceFee={getServiceFee()}
             />
           </motion.div>
 
@@ -321,17 +341,18 @@ const CheckoutPage = () => {
               <Link to="/privacy" className="text-primary hover:underline" target="_blank">Privacy Policy</Link>
             </Label>
           </div>
-
-          <div style={{marginTop:'20px',zIndex:1}}>
-            <Button 
-              onClick={() => navigate('/stripe-payment',{state: {orderData:orderData,deliveryFee:deliveryDetails.fee, finalTotal: getFinalTotal()}})} 
-              disabled={!user || !termsAccepted || showAccountSetup}
-            >
-              Proceed to Payment &nbsp; <CreditCard />
-            </Button>
-          </div>
         </div>
       </motion.div>
+      {/* Proceed to Payment Button at the bottom of the page, above the footer */}
+      <div className="flex justify-center w-full mt-8 mb-4">
+        <Button
+          className="w-full max-w-xl text-base h-12 md:h-12 md:text-lg shadow-lg"
+          onClick={() => navigate('/stripe-payment',{state: {orderData:orderData,deliveryFee:deliveryDetails.fee, finalTotal: getFinalTotal(), serviceFee: getServiceFee()}})}
+          disabled={!user || !termsAccepted || showAccountSetup || customerDetails.address.length === 0 || getSubtotal() <= 0 || isSubmitting}
+        >
+          Proceed to Payment &nbsp; <CreditCard />
+        </Button>
+      </div>
     </div>
   );
 };

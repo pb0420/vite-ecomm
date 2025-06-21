@@ -1,6 +1,6 @@
 // File: groceroo/src/pages/HomePage.jsx
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { color, motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Clock, ShieldCheck, MessageCircle, Handshake, ShoppingCart, CupSoda, EggFried, Cookie, Hamburger, Croissant, Apple, Banana, Beef, Candy, Fish, Utensils, Car, MapPinCheckInside, Truck, Store, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -217,7 +217,7 @@ const HomePage = () => {
               {/* Search Bar */}
               <motion.form
                 onSubmit={handleSearch}
-                className="flex gap-2 w-full"
+                className="flex gap-1 w-full"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4, duration: 0.5 }}
@@ -228,15 +228,15 @@ const HomePage = () => {
                     placeholder="Search for groceries and more..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="h-10 md:h-12 pl-3 pr-3 bg-white/95 backdrop-blur-sm border-0 shadow-lg text-gray-800 placeholder:text-gray-500 text-sm"
+                    className="h-10 md:h-12 pl-3 bg-white/95 backdrop-blur-sm border-0 shadow-lg text-gray-800 placeholder:text-gray-500 text-sm"
                   />
                 </div>
                 <Button
                   type="submit"
                   size="sm"
-                  className="h-10 md:h-12 px-4 bg-[#fd7507] hover:bg-[#fd7507]/90 shadow-lg text-sm"
+                  className="h-10 md:h-12 bg-white hover:bg-white/90 shadow-lg text-sm"
                 >
-                  <ArrowRight className="w-8 h-6" />
+                  <Store style={{color:"orange"}} className="w-8 h-6" />
                 </Button>
               </motion.form>
 
@@ -247,39 +247,39 @@ const HomePage = () => {
                 transition={{ delay: 0.6, duration: 0.5 }}
                 className="relative"
               >
-                <div className="flex overflow-x-auto pb-1 space-x-3 scrollbar-hide px-4 md:px-0 md:justify-center">
+                <div className="flex overflow-x-auto pb-1 space-x-6 scrollbar-hide px-4 md:px-0 md:justify-center">
                   {categories.map((category) => (
                     <Link
                       key={category.id}
                       to={`/category/${category.id}`}
                       className="flex-none group text-center"
                     >
-                      <div className="w-12 h-12 md:w-14 md:h-14 mx-auto mb-1 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:bg-white/30 transition-all duration-300 shadow-lg">
+                      <div className="w-16 h-16 md:w-20 md:h-20 mx-auto mb-1 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:bg-white/30 transition-all duration-300 shadow-lg">
                         <img
                           src={category.icon_url}
                           alt={category.name}
-                          className="w-8 h-8 md:w-10 md:h-10 object-cover rounded-full"
+                          className="w-12 h-12 md:w-14 md:h-14 object-cover rounded-full"
                           onError={(e) => {
                             e.target.style.display = 'none';
                             e.target.nextSibling.style.display = 'flex';
                           }}
                         />
-                        <div className="w-8 h-8 md:w-10 md:h-10 hidden items-center justify-center">
+                        <div className="w-12 h-12 md:w-14 md:h-14 hidden items-center justify-center">
                           {getCatIcon(category.name)}
                         </div>
                       </div>
-                      <span className="text-xs font-medium text-white/90 group-hover:text-white transition-colors block truncate max-w-[45px] md:max-w-[55px]">
+                      <span className="text-xs font-medium text-white/90 group-hover:text-white transition-colors block truncate max-w-[60px] md:max-w-[75px]">
                         {category.name}
                       </span>
                     </Link>
                   ))}
                   <Link to="/categories" className="flex-none group text-center">
-                    <div className="w-12 h-12 md:w-14 md:h-14 mx-auto mb-1 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:bg-white/30 transition-all duration-300 shadow-lg">
+                    <div className="w-16 h-16 md:w-20 md:h-20 mx-auto mb-1 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:bg-white/30 transition-all duration-300 shadow-lg">
                       <div className="flex flex-col items-center">
-                        <ArrowRight className="h-4 w-4 md:h-5 w-5 text-white" />
+                        <ArrowRight className="h-6 w-6 md:h-8 md:w-8 text-white" />
                       </div>
                     </div>
-                    <span className="text-xs font-medium text-white/90 group-hover:text-white transition-colors block truncate max-w-[45px] md:max-w-[55px]">View All</span>
+                    <span className="text-xs font-medium text-white/90 group-hover:text-white transition-colors block truncate max-w-[60px] md:max-w-[75px]">View All</span>
                   </Link>
                 </div>
               </motion.div>
@@ -297,8 +297,8 @@ const HomePage = () => {
                     variant="outline"
                     className="w-full h-10 md:h-12 bg-white/95 hover:bg-white border-2 border-white/50 shadow-lg text-[#2E8B57] hover:text-[#2E8B57] font-bold text-sm mx-auto backdrop-blur-sm transition-all duration-300 hover:scale-105"
                   >
-                    <Truck className="w-4 h-4 mr-2" />
-                    Schedule a Grocery Run
+                    ...<Truck className="w-4 h-4 mr-2" />
+                    Schedule Grocery Run
                   </Button>
                 </Link>
               </motion.div>

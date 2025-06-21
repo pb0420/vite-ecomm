@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useParams, Link } from 'react-router-dom';
-import { CheckCircle, Package, ArrowRight, Truck, Clock, XCircle } from 'lucide-react';
+import { CheckCircle, Package, ArrowRight, Truck, Clock, XCircle, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/lib/supabaseClient';
 import { formatCurrency } from '@/lib/utils';
@@ -11,7 +11,11 @@ const OrderConfirmationPage = () => {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [deliveryTime, setDeliveryTime] = useState(null);
-  
+  const [cancelling, setCancelling] = useState(false);
+  const [cancelError, setCancelError] = useState(null);
+  const [newMessage, setNewMessage] = useState('');
+  const [sendingMessage, setSendingMessage] = useState(false);
+
   useEffect(() => {
     const fetchOrder = async () => {
       if (!id) return;
@@ -94,6 +98,51 @@ const OrderConfirmationPage = () => {
     };
 
     return statusConfig[order.status] || statusConfig.pending;
+  };
+  
+  const canCancel = order && ['pending', 'processing'].includes(order.status);
+
+  const handleCancelOrder = async () => {
+    if (!order) return;
+    if (!window.confirm('Are you sure you want to cancel this order? Cancellation fees may apply.')) return;
+    setCancelling(true);
+    setCancelError(null);
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({ status: 'cancelled' })
+        .eq('id', order.id);
+      if (error) throw error;
+      setOrder({ ...order, status: 'cancelled' });
+    } catch (err) {
+      setCancelError('Failed to cancel order. Please try again.');
+    } finally {
+      setCancelling(false);
+    }
+  };
+
+  const handleSendMessage = async () => {
+    if (!newMessage.trim() || sendingMessage) return;
+    setSendingMessage(true);
+    try {
+      const currentMessages = order.admin_messages || [];
+      const message = {
+        from: 'customer',
+        message: newMessage.trim(),
+        timestamp: new Date().toISOString()
+      };
+      const { error } = await supabase
+        .from('orders')
+        .update({ admin_messages: [...currentMessages, message] })
+        .eq('id', order.id);
+      if (error) throw error;
+      setOrder(prev => ({ ...prev, admin_messages: [...currentMessages, message] }));
+      setNewMessage('');
+    } catch (error) {
+      setCancelError('Could not send message.');
+    } finally {
+      setSendingMessage(false);
+    }
   };
   
   if (loading) {
@@ -251,6 +300,82 @@ const OrderConfirmationPage = () => {
               View All Orders
             </Button>
           </Link>
+          {canCancel && (
+            <Button
+              variant="destructive"
+              onClick={handleCancelOrder}
+              disabled={cancelling}
+            >
+              {cancelling ? 'Cancelling...' : 'Cancel Order'}
+            </Button>
+          )}
+        </div>
+        {cancelError && (
+          <div className="mt-4 text-red-500 text-center">{cancelError}</div>
+        )}
+
+        {/* Payment Details if paid */}
+        {order.payment_status === 'paid' && order.payment_data && (
+          <div className="mt-8 p-4 bg-green-50 border border-green-200 rounded">
+            <div className="font-medium mb-1 text-green-800">Payment Details:</div>
+            <pre className="text-xs text-green-900 whitespace-pre-wrap break-all">{JSON.stringify(order.payment_data, null, 2)}</pre>
+          </div>
+        )}
+
+        {/* Admin/Customer Messages */}
+        <div className="mt-8">
+          <h3 className="font-semibold mb-2">Support Messages</h3>
+          <div className="space-y-2 max-h-60 overflow-y-auto">
+            {order.admin_messages && order.admin_messages.length > 0 ? (
+              order.admin_messages.map((message, index) => (
+                <div
+                  key={index}
+                  className={`p-3 rounded text-sm ${
+                    message.from === 'admin'
+                      ? 'bg-blue-50 border-l-4 border-blue-400 ml-4'
+                      : 'bg-gray-50 border-l-4 border-gray-400 mr-4'
+                  }`}
+                >
+                  <div className="flex justify-between items-start mb-1">
+                    <span className="font-medium">
+                      {message.from === 'admin' ? 'Support Team' : 'You'}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(message.timestamp).toLocaleString()}
+                    </span>
+                  </div>
+                  <p>{message.message}</p>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-muted-foreground text-center py-4">
+                No messages yet. Send a message to our team if you have any questions.
+              </p>
+            )}
+          </div>
+          <div className="space-y-2 mt-4">
+            <label className="block font-medium">Send a message:</label>
+            <div className="flex space-x-2">
+              <textarea
+                value={newMessage}
+                onChange={e => setNewMessage(e.target.value)}
+                placeholder="Type your message..."
+                rows={2}
+                className="flex-1 border rounded p-2"
+              />
+              <Button
+                onClick={handleSendMessage}
+                disabled={!newMessage.trim() || sendingMessage}
+                size="sm"
+              >
+                {sendingMessage ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Send className="w-4 h-4" />
+                )}
+              </Button>
+            </div>
+          </div>
         </div>
       </motion.div>
     </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Store, Clock, Calendar, MessageCircle, Bot, MapPin, Phone, Search } from 'lucide-react';
+import { Store, Clock, Calendar, MessageCircle, Bot, MapPin, Phone, Search, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -62,6 +62,7 @@ const StorePickupPage = () => {
   const [timezone, setTimezone] = useState(DEFAULT_TIMEZONE);
   const [showLoginForm, setShowLoginForm] = useState(false);
   const [reorderPreviousItems, setReorderPreviousItems] = useState(false);
+  const [deliverySettings, setDeliverySettings] = useState({ convenience_fee_percent: 7, service_fee_percent: 3 });
   
   const navigate = useNavigate();
 
@@ -106,6 +107,23 @@ const StorePickupPage = () => {
       fetchAvailableTimeSlots(selectedDate);
     }
   }, [selectedDate, timezone]);
+
+  useEffect(() => {
+    const fetchDeliverySettings = async () => {
+      const { data, error } = await supabase
+        .from('delivery_settings')
+        .select('convenience_fee_percent, service_fee_percent')
+        .eq('id', 1)
+        .single();
+      if (!error && data) {
+        setDeliverySettings({
+          convenience_fee_percent: data.convenience_fee_percent || 7,
+          service_fee_percent: data.service_fee_percent || 3
+        });
+      }
+    };
+    fetchDeliverySettings();
+  }, []);
 
   // Check if user needs to sign in (after store/date/time selection)
   const shouldShowLogin = !user && selectedStores.length > 0 && selectedDate && selectedTimeSlot;
@@ -198,6 +216,7 @@ const StorePickupPage = () => {
           )
         `)
         .eq('user_id', user.id)
+        .in('status', ['pending', 'processing', 'ready'])
         .gte('pickup_date', formatDateForTimezone(getCurrentDateInTimezone(timezone), timezone))
         .order('pickup_date', { ascending: true });
 
@@ -285,9 +304,9 @@ const StorePickupPage = () => {
     }
 
     try {
-      const subtotal = selectedStores.reduce((total, store) => total + store.estimatedTotal, 0);
+      const subtotal = selectedStores.reduce((total, store) => total + (store.estimatedTotal || 0), 0);
       const discountAmount = appliedPromo ? appliedPromo.discountAmount : 0;
-      const finalTotal = orderSummary.total;
+      const finalTotal = getFinalTotal();
 
       // Get the selected time slot for timeslot_id
       const timeSlot = availableTimeSlots.find(slot => slot.id === selectedTimeSlot);
@@ -308,7 +327,7 @@ const StorePickupPage = () => {
           photos: photos,
           status: 'pending',
           payment_status: 'pending',
-          estimated_total: finalTotal,
+          estimated_total: subtotal, // Use subtotal, not finalTotal
           promo_code: appliedPromo?.code || null,
           discount_amount: discountAmount,
           admin_messages: reorderPreviousItems ? [{
@@ -404,10 +423,32 @@ const StorePickupPage = () => {
     }
   };
 
-  // Calculate totals with service charge and highest delivery fee
+  // Calculation helpers
+  const getSubtotal = () => {
+    return Number(orderSummary.subtotal || 0);
+  };
+  const getDeliveryFee = () => {
+    return Number(orderSummary.deliveryFee || 0);
+  };
+  const getDiscount = () => {
+    return Number(orderSummary.discountAmount || 0);
+  };
+  const getConvenienceFee = () => {
+    return parseFloat((getSubtotal() * (deliverySettings.convenience_fee_percent / 100)).toFixed(2));
+  };
+  const getServiceFee = () => {
+    const base = getSubtotal() + getDeliveryFee() + getConvenienceFee();
+    return parseFloat((base * (deliverySettings.service_fee_percent / 100)).toFixed(2));
+  };
+  const getFinalTotal = () => {
+    const total = getSubtotal() + getDeliveryFee() + getConvenienceFee() + getServiceFee() - getDiscount();
+    return parseFloat(total.toFixed(2));
+  };
+
+   // Calculate totals with service charge and highest delivery fee
   const getOrderSummary = () => {
     const subtotal = selectedStores.reduce((total, store) => total + (store.estimatedTotal || 0), 0);
-    const serviceCharge = subtotal * 0.12; // 12% service charge
+    const serviceCharge = subtotal * 0.10; // 10% service charge
     
     // Get highest delivery fee instead of sum
     const highestDeliveryFee = selectedStores.reduce((highest, selectedStore) => {
@@ -777,25 +818,29 @@ const StorePickupPage = () => {
                             <div className="space-y-2 text-sm">
                               <div className="flex justify-between">
                                 <span>Estimated Subtotal:</span>
-                                <span>{formatCurrency(orderSummary.subtotal)}</span>
+                                <span>{formatCurrency(getSubtotal())}</span>
                               </div>
                               <div className="flex justify-between">
-                                <span>Service Charge (12%):</span>
-                                <span>{formatCurrency(orderSummary.serviceCharge)}</span>
+                                <span>Convenience Fee ({deliverySettings.convenience_fee_percent}%):</span>
+                                <span>{formatCurrency(getConvenienceFee())}</span>
                               </div>
                               <div className="flex justify-between">
-                                <span>Delivery Fee (Highest):</span>
-                                <span>{formatCurrency(orderSummary.deliveryFee)}</span>
+                                <span>Delivery Fee :</span>
+                                <span>{formatCurrency(getDeliveryFee())}</span>
                               </div>
-                              {appliedPromo && orderSummary.discountAmount > 0 && (
+                              <div className="flex justify-between">
+                                <span>Service Fee ({deliverySettings.service_fee_percent}%):</span>
+                                <span>{formatCurrency(getServiceFee())}</span>
+                              </div>
+                              {appliedPromo && getDiscount() > 0 && (
                                 <div className="flex justify-between text-green-600">
                                   <span>Discount ({appliedPromo.code}):</span>
-                                  <span>-{formatCurrency(orderSummary.discountAmount)}</span>
+                                  <span>-{formatCurrency(getDiscount())}</span>
                                 </div>
                               )}
                               <div className="flex justify-between font-semibold pt-2 border-t">
                                 <span>Estimated Total:</span>
-                                <span>{formatCurrency(orderSummary.total)}</span>
+                                <span>{formatCurrency(getFinalTotal())}</span>
                               </div>
                             </div>
                           </motion.div>
@@ -815,7 +860,7 @@ const StorePickupPage = () => {
                         {formErrors.terms && <p className="text-xs text-destructive">{formErrors.terms}</p>}
 
                         <Button type="submit" className="w-full" disabled={selectedStores.length === 0}>
-                          Proceed to Payment
+                          Proceed to Payment &nbsp;<CreditCard />
                         </Button>
                       </>
                     )}

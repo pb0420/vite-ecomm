@@ -72,8 +72,8 @@ const StoreSelector = ({ stores, selectedStores, onStoreToggle, onNotesChange, o
           {stores.map((store) => {
             const isSelected = selectedStores.some(s => s.id === store.id);
             const selectedStore = selectedStores.find(s => s.id === store.id);
-            const minimumOrder = getMinimumOrder(selectedStores.length + (isSelected ? 0 : 1));
-            
+            // const minimumOrder = getMinimumOrder(selectedStores.length + (isSelected ? 0 : 1));
+            const minimumOrder = store.minimum_order_amount || getMinimumOrder(selectedStores.length + (isSelected ? 0 : 1));
             return (
               <motion.div
                 key={store.id}
@@ -124,9 +124,9 @@ const StoreSelector = ({ stores, selectedStores, onStoreToggle, onNotesChange, o
                       <Badge variant="secondary">
                         Min: {formatCurrency(minimumOrder)}
                       </Badge>
-                      <span className="text-sm font-medium">
-                        Delivery: {formatCurrency(store.store_delivery_fee)}
-                      </span>
+                      {/* <span className="text-sm font-medium">
+                        Delivery: {formatCurrency(  store.store_delivery_fee)}
+                      </span> */}
                     </div>
                     
                     {isSelected && (
@@ -140,11 +140,24 @@ const StoreSelector = ({ stores, selectedStores, onStoreToggle, onNotesChange, o
                           <Label htmlFor={`estimated-${store.id}`}>Estimated Total ($)</Label>
                           <Input
                             id={`estimated-${store.id}`}
-                            type="number"
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
                             min={minimumOrder}
-                            step="0.01"
-                            value={selectedStore?.estimatedTotal || minimumOrder}
-                            onChange={(e) => handleEstimatedTotalChange(store.id, e.target.value)}
+                            step="5"
+                            value={selectedStore?.estimatedTotal}
+                            onChange={(e) => {
+                              // Allow only numbers
+                              const val = e.target.value.replace(/[^0-9.]/g, '');
+                              handleEstimatedTotalChange(store.id, val);
+                            }}
+                            onBlur={(e) => {
+                              let val = parseFloat(e.target.value);
+                              if (isNaN(val) || val < minimumOrder) {
+                                val = minimumOrder;
+                              }
+                              handleEstimatedTotalChange(store.id, val);
+                            }}
                             placeholder={`Minimum ${formatCurrency(minimumOrder)}`}
                           />
                         </div>

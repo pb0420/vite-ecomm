@@ -110,7 +110,7 @@ const StripePaymentPage = () => {
       <div className="max-w-md mx-auto">
         <div className="mb-6 p-4 border rounded-lg bg-muted/30">
           <p className="text-sm text-muted-foreground mb-2">Order Total</p>
-          <p className="text-2xl font-bold">{formatCurrency(getCartTotal() + (location.state?.deliveryFee || 0))}</p>
+          <p className="text-2xl font-bold">{formatCurrency(getCartTotal() + (location.state?.deliveryFee || 0) + (location.state?.serviceFee || 0))}</p>
         </div>
         <StripeCheckoutForm 
           clientSecret={clientSecret} 

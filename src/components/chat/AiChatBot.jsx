@@ -62,18 +62,21 @@ const AiChatBot = () => {
       }
       let foundProducts = [];
       if (productNames.length > 0) {
-        // Search products in Supabase by name (case-insensitive, partial match)
+        // Use Supabase full-text search to find products by name
+        const searchQuery = productNames
+          .map(name => `'${name.replace(/'/g, "''")}'`)
+          .join(' | ');
         const { data: products, error } = await supabase
           .from('products')
           .select('*')
-          .ilike('name', `%${productNames[0]}%`); // Only search for the first product for now
+          .textSearch('name', searchQuery);
         if (!error && products) {
           foundProducts = products;
         }
       }
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: data.reply || 'Here are some products I found:',
+        content: data.message || 'Here are some suggestions:',
         products: foundProducts
       }]);
       setIsLoading(false);
@@ -134,7 +137,7 @@ const AiChatBot = () => {
       {/* Floating Chat Button */}
       <Button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg bg-[#2E8B57] hover:bg-[#2E8B57]/90 z-50"
+        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg bg-[#2A8A57] hover:bg-[#2E7A57]/90 z-50"
         size="icon"
       >
         <MessageSquareMore className="h-6 w-6" />
@@ -246,7 +249,7 @@ const AiChatBot = () => {
                         <Input
                           value={input}
                           onChange={(e) => setInput(e.target.value)}
-                          placeholder="Ask about products..."
+                          placeholder="I want to cook some Pasta for dinner"
                           disabled={isLoading}
                         />
                         <Button type="submit" size="icon" disabled={isLoading}>

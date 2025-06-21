@@ -3,10 +3,10 @@ import { Separator } from '@/components/ui/separator';
 import { useCart } from '@/contexts/CartContext';
 import { formatCurrency } from '@/lib/utils';
 
-const OrderSummary = ({ deliveryFee = 0, appliedPromo = null, discountAmount = 0 }) => {
+const OrderSummary = ({ deliveryFee = 0, appliedPromo = null, discountAmount = 0, serviceFee = 0 }) => {
   const { cart, getCartTotal } = useCart();
   const subtotal = getCartTotal();
-  const total = subtotal - discountAmount + deliveryFee;
+  const total = subtotal - discountAmount + deliveryFee + serviceFee;
 
   return (
     <div className="sticky top-20 p-6 border rounded-lg bg-muted/20">
@@ -47,9 +47,13 @@ const OrderSummary = ({ deliveryFee = 0, appliedPromo = null, discountAmount = 0
           <span className="text-muted-foreground">Delivery Fee</span>
           <span>{formatCurrency(deliveryFee)}</span>
         </div>
-        
+        {serviceFee > 0 && (
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Service Fee</span>
+            <span>{formatCurrency(serviceFee)}</span>
+          </div>
+        )}
         <Separator className="my-2" />
-        
         <div className="flex justify-between font-bold text-base pt-1">
           <span>Total</span>
           <span>{formatCurrency(total)}</span>
