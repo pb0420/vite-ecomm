@@ -354,7 +354,7 @@ const AccountPage = () => {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold">Your Grocery Runs</h2>
                 <Link to="/store-pickup">
-                  <Button>Schedule New Run</Button>
+                  <Button>Schedule New</Button>
                 </Link>
               </div>
               {loadingOrders ? (

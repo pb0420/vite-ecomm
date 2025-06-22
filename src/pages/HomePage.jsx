@@ -12,6 +12,30 @@ import { useAuth } from '@/contexts/AuthContext';
 import AiChatBot from '@/components/chat/AiChatBot'; // Assuming this path is correct
 import { setQueryCache, getQueryCache } from '@/lib/queryCache';
 
+function isIos() {
+  return /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
+}
+function isAndroid() {
+  return /android/.test(window.navigator.userAgent.toLowerCase());
+}
+function isInStandaloneMode() {
+  return (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true
+  );
+}
+
+const AddToHomeScreenToast = ({ onClose, platform }) => (
+  <div className="fixed top-2 left-1/2 z-50 -translate-x-1/2 bg-primary text-primary-foreground px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 animate-fade-in-down max-w-xs w-full">
+    <span>
+      {platform === 'ios'
+        ? 'Install this app on your iPhone: tap Share, then "Add to Home Screen".'
+        : 'Install this app: tap the menu and "Add to Home screen".'}
+    </span>
+    <button onClick={onClose} className="ml-2 text-lg font-bold">×</button>
+  </div>
+);
+
 const HomePage = () => {
   const { user } = useAuth();
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -20,6 +44,8 @@ const HomePage = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [deliveryTime, setDeliveryTime] = useState(45); // Default fallback
+  const [showA2HS, setShowA2HS] = useState(false);
+  const [platform, setPlatform] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -168,8 +194,27 @@ const HomePage = () => {
     }
   }
 
+  useEffect(() => {
+    if (window.innerWidth > 768) return; // Only show on small screens
+    if (isInStandaloneMode()) return; // Already installed
+    if (localStorage.getItem('a2hs-dismissed')) return;
+    if (isIos()) {
+      setPlatform('ios');
+      setShowA2HS(true);
+    } else if (isAndroid()) {
+      setPlatform('android');
+      setShowA2HS(true);
+    }
+  }, []);
+
+  const handleCloseA2HS = () => {
+    setShowA2HS(false);
+    localStorage.setItem('a2hs-dismissed', '1');
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
+      {showA2HS && <AddToHomeScreenToast onClose={handleCloseA2HS} platform={platform} />}
       {/* Hero Section - Made smaller */}
       <section className="relative min-h-[350px] h-[40vh] max-h-[500px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
         <div className="absolute inset-0">
