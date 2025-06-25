@@ -97,7 +97,8 @@ const ShopPage = () => {
           query = query.eq('featured', true);
         }
         if (searchTerm && searchTerm.length >= 2) {
-          query = query.or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
+          //query = query.or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
+          query = query.textSearch('fts', `${searchTerm}:*`);
         }
         if (selectedCategory !== 'all') {
           const categoryId = parseInt(selectedCategory);

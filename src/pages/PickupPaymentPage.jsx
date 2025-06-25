@@ -22,7 +22,7 @@ const PickupPaymentPage = () => {
 
   useEffect(() => {
     if (!orderId || !orderData || !finalTotal) {
-      navigate('/store-pickup');
+      navigate('/grocery-run');
       return;
     }
 
@@ -80,7 +80,7 @@ const PickupPaymentPage = () => {
         description: "Your grocery run has been scheduled and payment confirmed." 
       });
 
-      navigate('/store-pickup', { 
+      navigate('/grocery-run', { 
         state: { 
           tab: 'upcoming-orders',
           message: 'Your grocery run has been scheduled successfully!'
@@ -106,7 +106,7 @@ const PickupPaymentPage = () => {
         <div className="max-w-md mx-auto text-center">
           <h2 className="text-xl font-semibold text-destructive mb-4">Payment Error</h2>
           <p className="text-muted-foreground mb-4">{error}</p>
-          <Button onClick={() => navigate('/store-pickup')} variant="outline">
+          <Button onClick={() => navigate('/grocery-run')} variant="outline">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Return to Grocery Run
           </Button>
@@ -126,7 +126,7 @@ const PickupPaymentPage = () => {
         <div className="mb-6">
           <Button 
             variant="ghost" 
-            onClick={() => navigate('/store-pickup')}
+            onClick={() => navigate('/grocery-run')}
             className="mb-4"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />

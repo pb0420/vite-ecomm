@@ -26,11 +26,11 @@ function isInStandaloneMode() {
 }
 
 const AddToHomeScreenToast = ({ onClose, platform }) => (
-  <div className="fixed top-2 left-1/2 z-50 -translate-x-1/2 bg-primary text-primary-foreground px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 animate-fade-in-down max-w-xs w-full">
+  <div className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 bg-primary text-primary-foreground px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 animate-fade-in-up max-w-xs w-full">
     <span>
       {platform === 'ios'
-        ? 'Install this app on your iPhone: tap Share, then "Add to Home Screen".'
-        : 'Install this app: tap the menu and "Add to Home screen".'}
+        ? 'Install the app on your iOS device: tap Share, then "Add to Home Screen".'
+        : 'Install the app: tap the menu and "Add to Home screen".'}
     </span>
     <button onClick={onClose} className="ml-2 text-lg font-bold">×</button>
   </div>
@@ -336,7 +336,7 @@ const HomePage = () => {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.8, duration: 0.5 }}
               >
-                <Link to="/store-pickup" className="block w-full max-w-md">
+                <Link to="/grocery-run" className="block w-full max-w-md">
                   <Button
                     size="lg"
                     variant="outline"

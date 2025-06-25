@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Menu, X, User, LogOut, Package,UserRound } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -31,6 +31,31 @@ const Header = () => {
     open: { opacity: 1, x: 0, transition: { type: 'spring', stiffness: 300, damping: 30 } }
   };
 
+  const [userLocation, setUserLocation] = useState(() => {
+    const stored = localStorage.getItem('userLocation');
+    return stored ? JSON.parse(stored) : null;
+  });
+
+  useEffect(() => {
+    if (!userLocation) {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const coords = {
+              lat: pos.coords.latitude,
+              lng: pos.coords.longitude,
+            };
+            setUserLocation(coords);
+            localStorage.setItem('userLocation', JSON.stringify(coords));
+          },
+          (err) => {
+            // User denied or error
+          }
+        );
+      }
+    }
+  }, [userLocation]);
+
   return (
     <header className="sticky top-0 z-40 w-full bg-gradient-to-r from-[#2E8B57] via-[#3CB371] to-[#98D598] border-b shadow-sm">
       <div className="container flex items-center justify-between h-16 px-4 mx-auto md:px-6">
@@ -50,7 +75,7 @@ const Header = () => {
         </Link>
 
         <nav className="hidden md:flex md:items-center md:space-x-6">
-            <Link to="/store-pickup" className="text-sm font-medium transition-colors hover:text-white text-white/90">Grocery Run</Link>
+            <Link to="/grocery-run" className="text-sm font-medium transition-colors hover:text-white text-white/90">Grocery Run</Link>
           <Link to="/shop" className="text-sm font-medium transition-colors hover:text-white text-white/90">Shop</Link>
           <Link to="/categories" className="text-sm font-medium transition-colors hover:text-white text-white/90">Categories</Link>
           {isAdmin && (

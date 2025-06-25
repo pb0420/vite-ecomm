@@ -97,11 +97,6 @@ const AiChatBot = () => {
 
   const LoginPrompt = () => (
     <div className="p-4">
-      <div className="text-sm text-center text-muted-foreground mb-4">
-        By continuing, you agree to our{' '}
-        <a href="/privacy" target="_blank" className="text-primary hover:underline">Privacy Policy</a> and{' '}
-        <a href="/terms" target="_blank" className="text-primary hover:underline">Terms of Service</a>
-      </div>
       <PhoneLoginForm onSuccess={() => {}} />
     </div>
   );

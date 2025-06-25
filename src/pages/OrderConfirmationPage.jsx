@@ -5,6 +5,7 @@ import { CheckCircle, Package, ArrowRight, Truck, Clock, XCircle, Send } from 'l
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/lib/supabaseClient';
 import { formatCurrency } from '@/lib/utils';
+import CancelOrderDialog from '@/components/common/CancelOrderDialog';
 
 const OrderConfirmationPage = () => {
   const { id } = useParams();
@@ -15,6 +16,7 @@ const OrderConfirmationPage = () => {
   const [cancelError, setCancelError] = useState(null);
   const [newMessage, setNewMessage] = useState('');
   const [sendingMessage, setSendingMessage] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -102,18 +104,17 @@ const OrderConfirmationPage = () => {
   
   const canCancel = order && ['pending', 'processing'].includes(order.status);
 
-  const handleCancelOrder = async () => {
-    if (!order) return;
-    if (!window.confirm('Are you sure you want to cancel this order? Cancellation fees may apply.')) return;
+  const handleCancelOrder = async (reason) => {
     setCancelling(true);
     setCancelError(null);
     try {
       const { error } = await supabase
         .from('orders')
-        .update({ status: 'cancelled' })
+        .update({ status: 'cancelled', cancel_reason: reason })
         .eq('id', order.id);
       if (error) throw error;
-      setOrder({ ...order, status: 'cancelled' });
+      setOrder({ ...order, status: 'cancelled', cancel_reason: reason });
+      setShowCancelDialog(false);
     } catch (err) {
       setCancelError('Failed to cancel order. Please try again.');
     } finally {
@@ -300,16 +301,25 @@ const OrderConfirmationPage = () => {
               View All Orders
             </Button>
           </Link>
-          {canCancel && (
+        </div>
+        {canCancel && (
+          <div className="mt-4 flex justify-center">
             <Button
               variant="destructive"
-              onClick={handleCancelOrder}
+              className="w-full max-w-xs"
+              onClick={() => setShowCancelDialog(true)}
               disabled={cancelling}
             >
-              {cancelling ? 'Cancelling...' : 'Cancel Order'}
+              Cancel Order
             </Button>
-          )}
-        </div>
+            <CancelOrderDialog
+              open={showCancelDialog}
+              onClose={() => setShowCancelDialog(false)}
+              onConfirm={handleCancelOrder}
+              loading={cancelling}
+            />
+          </div>
+        )}
         {cancelError && (
           <div className="mt-4 text-red-500 text-center">{cancelError}</div>
         )}
@@ -324,7 +334,7 @@ const OrderConfirmationPage = () => {
 
         {/* Admin/Customer Messages */}
         <div className="mt-8">
-          <h3 className="font-semibold mb-2">Support Messages</h3>
+          <h3 className="font-semibold mb-2">Conversation</h3>
           <div className="space-y-2 max-h-60 overflow-y-auto">
             {order.admin_messages && order.admin_messages.length > 0 ? (
               order.admin_messages.map((message, index) => (

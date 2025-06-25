@@ -63,6 +63,10 @@ const StorePickupPage = () => {
   const [showLoginForm, setShowLoginForm] = useState(false);
   const [reorderPreviousItems, setReorderPreviousItems] = useState(false);
   const [deliverySettings, setDeliverySettings] = useState({ convenience_fee_percent: 7, service_fee_percent: 3 });
+  const [userLocation, setUserLocation] = useState(() => {
+    const stored = localStorage.getItem('userLocation');
+    return stored ? JSON.parse(stored) : null;
+  });
   
   const navigate = useNavigate();
 
@@ -478,6 +482,44 @@ const StorePickupPage = () => {
     return dateStr < todayStr;
   };
 
+  // Time slot conflict detection
+  const handleTimeSlotChange = (slotId) => {
+    const slot = availableTimeSlots.find(s => s.id === slotId);
+    if (!slot) return setSelectedTimeSlot(slotId);
+
+    // For each selected store, check if slot is within store hours
+    const conflicts = selectedStores
+      .map(store => {
+        const storeData = stores.find(s => s.id === store.id);
+        if (!storeData || !storeData.opening_time || !storeData.closing_time) return null;
+        const [slotStartHour, slotStartMin] = slot.start_time.split(':').map(Number);
+        const [slotEndHour, slotEndMin] = slot.end_time.split(':').map(Number);
+        const [openHour, openMin] = storeData.opening_time.split(':').map(Number);
+        const [closeHour, closeMin] = storeData.closing_time.split(':').map(Number);
+
+        const slotStart = slotStartHour * 60 + slotStartMin;
+        const slotEnd = slotEndHour * 60 + slotEndMin;
+        const open = openHour * 60 + openMin;
+        const close = closeHour * 60 + closeMin;
+
+        if (slotStart < open || slotEnd > close) {
+          return storeData.name;
+        }
+        return null;
+      })
+      .filter(Boolean);
+
+    if (conflicts.length > 0) {
+      toast({
+        variant: "destructive",
+        title: "Store Hours Conflict",
+        description: `The selected time slot is outside operating hours for: ${conflicts.join(', ')}. Please choose another slot.`,
+      });
+      return; // Don't allow selection
+    }
+    setSelectedTimeSlot(slotId);
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Banner Section with How it Works - Made smaller */}
@@ -558,9 +600,9 @@ const StorePickupPage = () => {
             <TabsContent value="new-order" className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Schedule a Multi-Store Run</CardTitle>
+                  <CardTitle>Schedule a new Grocery Run</CardTitle>
                   <CardDescription>
-                    Add one or more stores and we'll shop at all of them for you
+                    Add one or more stores and provide your lists/notes anytime before your slot. We will shop for you and deliver everything in one trip.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -587,6 +629,7 @@ const StorePickupPage = () => {
                         onStoreToggle={setSelectedStores}
                         onNotesChange={() => {}}
                         onEstimatedTotalChange={() => {}}
+                        userLocation={userLocation}
                       />
                     </div>
                     {formErrors.stores && <p className="text-xs text-destructive">{formErrors.stores}</p>}
@@ -631,7 +674,7 @@ const StorePickupPage = () => {
                             No available time slots for this date.
                           </p>
                         ) : (
-                          <Select value={selectedTimeSlot} onValueChange={setSelectedTimeSlot}>
+                          <Select value={selectedTimeSlot} onValueChange={handleTimeSlotChange}>
                             <SelectTrigger className={formErrors.timeSlot ? 'border-destructive' : ''}>
                               <SelectValue placeholder="Choose a time slot" />
                             </SelectTrigger>

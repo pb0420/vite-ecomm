@@ -53,7 +53,7 @@ const App = () => {
                     <Route path="/category/:id" element={<CategoryPage />} />
                     <Route path="/product/:id" element={<ProductPage />} />
                     <Route path="/checkout" element={<CheckoutPage />} />
-                    <Route path="/store-pickup" element={<StorePickupPage />} />
+                    <Route path="/grocery-run" element={<StorePickupPage />} />
                     <Route path="/pickup-payment" element={<PickupPaymentPage />} />
                     <Route path="/pickup-order/:id" element={<PickupOrderDetailsPage />} />
                     <Route path="/order-confirmation/:id" element={<OrderConfirmationPage />} />
@@ -67,6 +67,7 @@ const App = () => {
                     <Route path="/stripe-payment" element={<StripePaymentPage />} />
                     <Route path="/contact" element={<ContactPage />} />
                     <Route path="/work" element={<WorkPage />} />
+                    <Route path="*" element={<div><h1>URL not Found</h1><p>Click the top-left icon to return to home</p></div>} />
                   </Routes>
                 </AnimatePresence>
               </main>

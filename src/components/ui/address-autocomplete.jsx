@@ -25,11 +25,12 @@ const AddressAutocomplete = ({
     setLoading(true);
     try {
       if (searchValue.length >= 3) {
+        let searchValueSpacesReplacedWithPlus = searchValue.replace(/\s+/g, '+');
         const fallbackResponse = await supabase
           .from('adelaide_address_data')
           .select('ADDRESS_LA, LOCALITY_N, POSTCODE')
-          .ilike('ADDRESS_LA', `%${searchValue.toUpperCase()}%`)
-          .limit(50);
+          .textSearch('fts', `${searchValueSpacesReplacedWithPlus}:*`)
+          .limit(18446744);
         if (fallbackResponse.error) throw fallbackResponse.error;
         const transformedData = transformData(fallbackResponse.data);
         setSuggestions(transformedData);

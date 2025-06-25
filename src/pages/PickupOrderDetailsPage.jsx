@@ -14,6 +14,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { toast } from '@/components/ui/use-toast';
 import { formatCurrency } from '@/lib/utils';
 import { format } from 'date-fns';
+import CancelOrderDialog from '@/components/common/CancelOrderDialog';
 
 const PickupOrderDetailsPage = () => {
   const { id } = useParams();
@@ -26,10 +27,12 @@ const PickupOrderDetailsPage = () => {
   const [storeNotes, setStoreNotes] = useState({});
   const [storePhotos, setStorePhotos] = useState({});
   const [savingNotes, setSavingNotes] = useState({});
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
 
   useEffect(() => {
     if (!user) {
-      navigate('/store-pickup');
+      navigate('/grocery-run');
       return;
     }
     fetchOrderDetails();
@@ -48,7 +51,7 @@ const PickupOrderDetailsPage = () => {
             actual_total,
             notes,
             status,
-            stores (name, address)
+            stores (name, address, store_suggested_items)
           )
         `)
         .eq('id', id)
@@ -59,7 +62,7 @@ const PickupOrderDetailsPage = () => {
       
       if (!data) {
         toast({ variant: "destructive", title: "Order not found", description: "This order doesn't exist or you don't have access to it." });
-        navigate('/store-pickup');
+        navigate('/grocery-run');
         return;
       }
 
@@ -78,7 +81,7 @@ const PickupOrderDetailsPage = () => {
     } catch (error) {
       console.error('Error fetching order details:', error);
       toast({ variant: "destructive", title: "Error", description: "Could not load order details." });
-      navigate('/store-pickup');
+      navigate('/grocery-run');
     } finally {
       setLoading(false);
     }
@@ -149,6 +152,24 @@ const PickupOrderDetailsPage = () => {
     }
   };
 
+  const handleCancelOrder = async (reason) => {
+    setCancelling(true);
+    try {
+      const { error } = await supabase
+        .from('pickup_orders')
+        .update({ status: 'cancelled', cancel_reason: reason })
+        .eq('id', order.id);
+      if (error) throw error;
+      setOrder(prev => ({ ...prev, status: 'cancelled', cancel_reason: reason }));
+      toast({ title: 'Order Cancelled', description: 'Your order has been cancelled.' });
+      setShowCancelDialog(false);
+    } catch (err) {
+      toast({ variant: 'destructive', title: 'Error', description: 'Could not cancel order.' });
+    } finally {
+      setCancelling(false);
+    }
+  };
+
   const getStatusColor = (status) => {
     switch (status) {
       case 'pending': return 'bg-yellow-100 text-yellow-800';
@@ -183,7 +204,7 @@ const PickupOrderDetailsPage = () => {
     return (
       <div className="container py-8 text-center">
         <h2 className="text-xl font-semibold mb-4">Order not found</h2>
-        <Link to="/store-pickup">
+        <Link to="/grocery-run">
           <Button variant="outline">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Grocery Runs
@@ -203,20 +224,21 @@ const PickupOrderDetailsPage = () => {
       >
         {/* Header */}
         <div className="mb-6">
-          <Link to="/store-pickup">
+          {/* Link to go back */}
+          <Link to="/account">
             <Button variant="ghost" className="mb-4">
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Grocery Runs
+              Return to Account
             </Button>
           </Link>
           <div className="flex items-center justify-between">
-            <div>
+            <div style={{ flex: 1 }}>
               <h1 className="text-2xl font-bold">Grocery Run #{order.id.slice(0, 6).toUpperCase()}</h1>
               <p className="text-muted-foreground">
                 {order.pickup_date ? format(new Date(order.pickup_date), 'PPP') : 'N/A'} • {order.time_slot}
               </p>
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-4 ">
               <Badge className={getPaymentStatusColor(order.payment_status)}>
                 <CreditCard />&nbsp; {order.payment_status.charAt(0).toUpperCase() + order.payment_status.slice(1)}
               </Badge>
@@ -231,7 +253,7 @@ const PickupOrderDetailsPage = () => {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* Order Summary */}
-            <Card>
+            <Card className="bg-gray-50">
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <Package className="w-5 h-5 mr-2" />
@@ -275,27 +297,6 @@ const PickupOrderDetailsPage = () => {
                     <pre className="text-xs text-green-900 whitespace-pre-wrap break-all">{JSON.stringify(order.payment_data, null, 2)}</pre>
                   </div>
                 )}
-                {/* Cancel Order Button */}
-                {order.status !== 'cancelled' && order.status !== 'completed' && (
-                  <div className="mt-4 flex justify-end">
-                    <Button variant="destructive" onClick={async () => {
-                      if (!window.confirm('Are you sure you want to cancel this order? Cancellation fees may apply')) return;
-                      try {
-                        const { error } = await supabase
-                          .from('pickup_orders')
-                          .update({ status: 'cancelled' })
-                          .eq('id', order.id);
-                        if (error) throw error;
-                        setOrder(prev => ({ ...prev, status: 'cancelled' }));
-                        toast({ title: 'Order Cancelled', description: 'Your order has been cancelled.' });
-                      } catch (err) {
-                        toast({ variant: 'destructive', title: 'Error', description: 'Could not cancel order.' });
-                      }
-                    }}>
-                      Cancel Order
-                    </Button>
-                  </div>
-                )}
               </CardContent>
             </Card>
 
@@ -320,6 +321,64 @@ const PickupOrderDetailsPage = () => {
                           </Badge>
                         </div>
                         <p className="text-sm text-muted-foreground">{storeOrder.stores?.address}</p>
+                        {/* Suggested Items */}
+                        {Array.isArray(storeOrder.stores?.store_suggested_items) && storeOrder.stores.store_suggested_items.length > 0 && (
+                          <div className="mt-2">
+                            <span className="text-xs font-semibold">Suggested Items:</span>
+                            <div className="flex flex-wrap gap-2 mt-1">
+                              {storeOrder.stores.store_suggested_items.map((item, idx) => {
+                                const regex = new RegExp(`${item.name} x(\\d+)`, 'g');
+                                const match = (storeNotes[storeOrder.store_id] || '').match(regex);
+                                const selectedQty = match ? parseInt(match[0].split('x')[1], 10) : 1;
+                                const checked = !!match;
+                                return (
+                                  <div key={item.name} className="flex items-center gap-1 bg-gray-100 rounded px-2 py-1">
+                                    <input
+                                      type="checkbox"
+                                      checked={checked}
+                                      onChange={e => {
+                                        let notes = storeNotes[storeOrder.store_id] || '';
+                                        const itemLine = `${item.name} x${selectedQty}`;
+                                        if (e.target.checked) {
+                                          // Add or update
+                                          if (regex.test(notes)) {
+                                            notes = notes.replace(regex, itemLine);
+                                          } else {
+                                            notes = notes ? `${notes}\n${itemLine}` : itemLine;
+                                          }
+                                        } else {
+                                          // Remove
+                                          notes = notes.replace(regex, '').replace(/^\s*[\r\n]/gm, '').trim();
+                                        }
+                                        setStoreNotes(prev => ({ ...prev, [storeOrder.store_id]: notes }));
+                                      }}
+                                      disabled={order.status === 'completed' || order.status === 'cancelled'}
+                                    />
+                                    <span className="text-xs">{item.name} : Qty&nbsp;</span>
+                                    <input
+                                      type="number"
+                                      min={1}
+                                      value={selectedQty}
+                                      onChange={e => {
+                                        let notes = storeNotes[storeOrder.store_id] || '';
+                                        const qty = Math.max(1, parseInt(e.target.value) || 1);
+                                        const itemLine = `${item.name} x${qty}`;
+                                        if (regex.test(notes)) {
+                                          notes = notes.replace(regex, itemLine);
+                                        } else {
+                                          notes = notes ? `${notes}\n${itemLine}` : itemLine;
+                                        }
+                                        setStoreNotes(prev => ({ ...prev, [storeOrder.store_id]: notes }));
+                                      }}
+                                      className="w-10 text-xs ml-1 border rounded px-1 py-0.5"
+                                      disabled={!checked || order.status === 'completed' || order.status === 'cancelled'}
+                                    />
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
                       </div>
                       <div className="text-right">
                         <p className="font-medium">
@@ -413,7 +472,7 @@ const PickupOrderDetailsPage = () => {
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <MessageCircle className="w-5 h-5 mr-2" />
-                  Support
+                  Conversation
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -471,8 +530,27 @@ const PickupOrderDetailsPage = () => {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Cancel Order Button at the bottom */}
+            {order.status !== 'cancelled' && order.status !== 'completed' && (
+              <Button
+                variant="destructive"
+                className="w-full"
+                onClick={() => setShowCancelDialog(true)}
+              >
+                Cancel Order
+              </Button>
+            )}
           </div>
         </div>
+
+        {/* Cancel Order Dialog */}
+        <CancelOrderDialog
+          open={showCancelDialog}
+          onClose={() => setShowCancelDialog(false)}
+          onConfirm={handleCancelOrder}
+          loading={cancelling}
+        />
       </motion.div>
     </div>
   );
