@@ -281,7 +281,7 @@ const HomePage = () => {
                   size="sm"
                   className="h-10 md:h-12 bg-white hover:bg-white/90 shadow-lg text-sm"
                 >
-                  <Store style={{color:"orange"}} className="w-8 h-6" />
+                  <Store style={{color:"#3cb371"}} className="w-8 h-6" />
                 </Button>
               </motion.form>
 

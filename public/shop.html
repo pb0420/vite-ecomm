@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- ✅ SEO Basics -->
+  <meta charset="UTF-8">
+  <title>Shop | Groceroo - Online Grocery Delivery in Adelaide</title>
+  <meta name="description" content="Groceroo delivers fresh groceries online in Adelaide. Shop from a wide range of categories and get them delivered right to your door.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- ✅ Open Graph / Social Tags -->
+  <meta property="og:title" content="Groceroo - Online Grocery Delivery in Adelaide">
+  <meta property="og:description" content="Fresh groceries delivered to your door in Adelaide. Shop online with Groceroo!">
+  <meta property="og:image" content="/logo.png">
+  <meta property="og:type" content="website">
+
+  <!-- ✅ Favicon -->
+  <link rel="icon" href="/favicon.png">
+
+  <!-- ✅ Styles -->
+  <style>
+    body, html {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+    .hero {
+      position: relative;
+      background: url('/outbanner.jpeg') center center / cover no-repeat;
+      color: #fff;
+      text-align: center;
+      padding: 100px 20px;
+    }
+    .overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(60, 179, 113, 0.7);
+    }
+    .logo {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      height: 60px;
+    }
+    .content {
+      position: relative;
+      z-index: 1;
+    }
+    .search-box {
+      margin: 20px 0;
+    }
+    .search-box input {
+      padding: 12px;
+      font-size: 16px;
+      width: 300px;
+      border-radius: 4px;
+      border: none;
+    }
+    .enter-button {
+      padding: 14px 30px;
+      font-size: 18px;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+      background-color: #df6f32;
+      color: #ffffff;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    .categories {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      padding: 40px 20px;
+      background-color: #fafafa;
+    }
+    .category {
+      text-align: center;
+      flex: 1 1 120px;
+      margin: 20px;
+    }
+    .category img {
+      max-width: 64px;
+      height: auto;
+    }
+    .category p {
+      margin: 10px 0 0;
+      font-size: 16px;
+      font-weight: bold;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <!-- ✅ Logo -->
+  <img style="height:60px;z-index:1" src="/logo.png" alt="Groceroo Logo" class="logo">
+
+  <!-- ✅ Hero Section -->
+  <div class="hero">
+    <div class="overlay"></div>
+    <div class="content">
+      <h1>Groceroo – Online Grocery Delivery in Adelaide</h1>
+      <p>Fresh groceries delivered straight to your door</p>
+      <div class="search-box">
+        <input id="search-box" type="text" placeholder="Search for groceries...">
+      </div>
+      <a onclick="searchShop()" class="enter-button">Shop in App</a>
+    </div>
+  </div>
+
+  <!-- ✅ Categories Section -->
+  <div class="categories">
+    <div class="category">
+      <img src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/category_icons/1a3f759e-6486-465e-9ca9-cdafdb209fb1.jpeg" alt="Fruits">
+      <p>Milk & Dairy</p>
+    </div>
+    <div class="category">
+      <img src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/category_icons/81422d32-ab02-4a39-bdeb-45e2ecf58953.jpeg" alt="Vegetables">
+      <p>Fruits & Vegetables</p>
+    </div>
+    <div class="category">
+      <img src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/category_icons/48638553-7197-4668-8b6f-b9a2e22587f2.jpeg" alt="Dairy & Eggs">
+      <p>Eggs</p>
+    </div>
+    <div class="category">
+      <img src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/category_icons/d92c0c13-47cf-41c4-81f3-7c0bfabadc9b.jpeg" alt="Meat & Seafood">
+      <p>Health & Hygeine</p>
+    </div>
+    <div class="category">
+      <img src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/category_icons/7970380a-f1b2-4890-9c51-9336f6b125e7.jpeg" alt="Bakery">
+      <p>Bakery</p>
+    </div>
+    <div class="category">
+      <img src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/category_icons/5436444d-accf-45ab-9e76-9225792662ac.jpeg" alt="Pantry Staples">
+      <p>Meats</p>
+    </div>
+      <div class="category">
+      <img src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/category_icons/28993b24-72e3-43fb-beaf-b45a01bd17e0.jpeg" alt="Pantry Staples">
+      <p>Snacks</p>
+    </div>
+  </div>
+</body>
+<script>
+  function searchShop() {
+    const query = document.getElementById('search-box').value;
+    if (query) {
+      window.location.href = `/shop?search=${encodeURIComponent(query)}`;
+    }else{
+        window.location.href = '/shop';
+    }
+   
+}
+</script>
+</html>

@@ -721,6 +721,10 @@ const StorePickupPage = () => {
                                 <RadioGroupItem value="phone" id="phone" />
                                 <Label htmlFor="phone">SMS/Call</Label>
                               </div>
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="inapp" id="inapp" />
+                                <Label htmlFor="inapp">In-App</Label>
+                              </div>
                             </RadioGroup>
                           </div>
 

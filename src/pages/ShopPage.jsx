@@ -204,11 +204,11 @@ const ShopPage = () => {
                 <p className="text-white/90 text-sm">
                   Browse from our selection of groceries, household essentials and more.
                 </p>
-                {searchParam && (
+                {/* {searchParam && (
                   <p className="text-white/80 text-xs mt-1">
                     Showing results for: "{searchParam}"
                   </p>
-                )}
+                )} */}
               </div>
 
               {/* Search Bar */}
@@ -223,7 +223,7 @@ const ShopPage = () => {
                   <Input
                     type="search"
                     placeholder="Search for products..."
-                    className="h-9 pl-10 pr-4 bg-white/95 backdrop-blur-sm border-0 shadow-lg text-gray-800 placeholder:text-gray-500"
+                    className="h-9 pl-2 pr-4 bg-white/95 backdrop-blur-sm border-0 shadow-lg text-gray-800 placeholder:text-gray-500"
                     value={searchInput}
                     onChange={(e) => handleSearchInputChange(e.target.value)}
                   />

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Menu, X, User, LogOut, Package,UserRound } from 'lucide-react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { ShoppingCart, Menu, X, User, LogOut, Package,UserRound , Home} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
@@ -25,6 +25,9 @@ const Header = () => {
     closeMenu();
     navigate('/');
   };
+
+  const location = useLocation();
+  const isHome = location.pathname === '/';
 
   const menuVariants = {
     closed: { opacity: 0, x: '100%', transition: { type: 'spring', stiffness: 300, damping: 30 } },
@@ -72,6 +75,11 @@ const Header = () => {
             }}
             aria-label="Groceroo Logo" // Add aria-label for accessibility
           ></div>
+           {isHome ? (
+            <></>
+      ) : (
+        <Home style={{color:"white"}} className="w-4 h-4" aria-label="Home" />
+      )}
         </Link>
 
         <nav className="hidden md:flex md:items-center md:space-x-6">
