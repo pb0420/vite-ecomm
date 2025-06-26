@@ -67,7 +67,7 @@ const App = () => {
                     <Route path="/stripe-payment" element={<StripePaymentPage />} />
                     <Route path="/contact" element={<ContactPage />} />
                     <Route path="/work" element={<WorkPage />} />
-                    <Route path="*" element={<div><h1>URL not Found</h1><p>Click the top-left icon to return to home</p></div>} />
+                    <Route path="*" element={<div><h1>404 - Page not Found</h1><p>Click the top-left icon to return to home</p></div>} />
                   </Routes>
                 </AnimatePresence>
               </main>

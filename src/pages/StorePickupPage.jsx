@@ -526,7 +526,7 @@ const StorePickupPage = () => {
       <section className="relative h-[30vh] min-h-[240px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
         <div className="absolute inset-0">
           <img 
-            src="/banner_bg.jpeg" 
+            src="/outbanner.jpeg" 
             alt="Grocery Delivery" 
             className="w-full h-full object-cover opacity-20"
           />

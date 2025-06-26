@@ -132,10 +132,10 @@ const AiChatBot = () => {
       {/* Floating Chat Button */}
       <Button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg bg-[#2A8A57] hover:bg-[#2E7A57]/90 z-50"
+        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg bg-[#3cb371] hover:bg-[#3cb371]/90 z-50"
         size="icon"
       >
-        <MessageSquareMore className="h-6 w-6" />
+        <img src="/icon-plain.png" alt="Groceroo AI" className="h-10 w-10" />
       </Button>
 
       <AnimatePresence>
