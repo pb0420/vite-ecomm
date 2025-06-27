@@ -4,12 +4,12 @@
   <!-- ✅ SEO Basics -->
   <meta charset="UTF-8">
   <title>Shop | Groceroo - Online Grocery Delivery in Adelaide</title>
-  <meta name="description" content="Groceroo delivers fresh groceries online in Adelaide. Shop from a wide range of categories and get them delivered right to your door.">
+  <meta name="description" content="Groceroo delivers fresh groceries online in Adelaide. Shop from a wide range of categories and get them delivered straight to you.">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- ✅ Open Graph / Social Tags -->
   <meta property="og:title" content="Groceroo - Online Grocery Delivery in Adelaide">
-  <meta property="og:description" content="Fresh groceries delivered to your door in Adelaide. Shop online with Groceroo!">
+  <meta property="og:description" content="Groceries delivered to you in Adelaide. Shop online with Groceroo!">
   <meta property="og:image" content="/logo.png">
   <meta property="og:type" content="website">
 
@@ -33,12 +33,6 @@
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
       background-color: rgba(60, 179, 113, 0.7);
-    }
-    .logo {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      height: 60px;
     }
     .content {
       position: relative;
@@ -89,16 +83,28 @@
     }
   </style>
 </head>
-<body>
-  <!-- ✅ Logo -->
-  <img style="height:60px;z-index:1" src="/logo.png" alt="Groceroo Logo" class="logo">
+<body style="background-color: rgb(68, 148, 103)">
+  <!-- ✅ Header with Logo and Nav -->
+<header style="position:relative; z-index:2; padding:10px 20px; display:flex; align-items:center; justify-content:space-between; background:transparent;">
+  <!-- Logo on the left -->
+  <a href="/">
+    <img src="/logo-plain.png" alt="Groceroo Logo" class="logo" style="height:40px;" />
+  </a>
+
+  <!-- Navigation links aligned to the right -->
+  <nav style="display:flex; gap:20px; align-items:center;">
+    <a href="/" style="color:white; text-decoration:none; font-weight:bold;">Home</a>
+    <a href="/grocery-run" style="color:white; text-decoration:none; font-weight:bold;">Grocery Run</a>
+    <a href="/shop" style="color:white; text-decoration:none; font-weight:bold;">Shop</a>
+  </nav>
+</header>
 
   <!-- ✅ Hero Section -->
   <div class="hero">
     <div class="overlay"></div>
     <div class="content">
-      <h1>Groceroo – Online Grocery Delivery in Adelaide</h1>
-      <p>Fresh groceries delivered straight to your door</p>
+      <h1>Groceroo – Online Grocery Shopping and Delivery in Adelaide</h1>
+      <p>Shop Groceries easily and get it delivered straight to you</p>
       <div class="search-box">
         <input id="search-box" type="text" placeholder="Search for groceries...">
       </div>
@@ -137,6 +143,37 @@
       <p>Snacks</p>
     </div>
   </div>
+<div>
+    <h2 style="padding:10px; color:white">Shop at Groceroo</h2>
+    <p style="padding:10px; color:white">
+        Welcome to Groceroo, Adelaide’s new platform for fast and affordable online grocery delivery. Say goodbye to traffic, long checkout lines, and time-consuming supermarket visits. With Groceroo, you can shop for all your grocery needs from the comfort of your home and have them delivered straight to your doorstep — quickly, safely, and reliably.
+
+    We offer a wide range of grocery categories tailored to suit every household. Browse through fresh fruits and vegetables, dairy and eggs, meat and seafood, bakery items, snacks, beverages, pantry staples, and cleaning and household essentials. Whether you’re looking for everyday basics or special ingredients for a recipe, Groceroo has you covered.
+
+    Our platform is designed for simplicity and speed. With intuitive search, smart recommendations, and category browsing, it’s easy to find exactly what you need. Plus, we offer regular discounts and bundle offers, ensuring you get the best value for your money. Enjoy competitive prices, bulk savings, and daily deals across all categories.
+    
+    Use our AI chat to help you find products or talk to a human instead. We offer great customer support to help with all your needs.
+
+    We partner with trusted local suppliers to ensure that everything — from leafy greens to fresh meat — is of the highest quality. Orders are packed with care and delivered on-time across Adelaide, including nearby suburbs.
+
+    Groceroo supports busy families, students, professionals, and seniors with a reliable and convenient service. Whether you need a quick top-up or a full grocery restock, our app and website make it simple to schedule and track your delivery.
+
+    Try Groceroo today — Adelaide’s easiest way to shop for groceries online. Freshness guaranteed. Convenience unmatched.
+
+
+    </p>
+</div>
+    
+ <footer style="background:#f8f8f8; padding:20px; text-align:center; margin-top:50px;">
+    <div style="margin-bottom:10px;">
+      <a href="/" style="margin:0 10px; color:#444; text-decoration:none;">Home</a>
+      <a href="/grocery-run" style="margin:0 10px; color:#444; text-decoration:none;">Grocery Run</a>
+      <a href="/shop" style="margin:0 10px; color:#444; text-decoration:none;">Shop</a>
+      <a href="/privacy" style="margin:0 10px; color:#444; text-decoration:none;">Privacy</a>
+      <a href="/terms" style="margin:0 10px; color:#444; text-decoration:none;">Terms</a>
+    </div>
+    <p style="color:#888; font-size:13px;">© 2025 Groceroo. All rights reserved.</p>
+  </footer>
 </body>
 <script>
   function searchShop() {

@@ -27,7 +27,7 @@ const Footer = () => {
               backgroundSize: 'contain',
               backgroundRepeat: 'no-repeat',
               backgroundPosition: 'center',
-              backgroundColor: '#3cb371',
+              // backgroundColor: '#3cb371',
               width: '100px',
               height: '40px',
             }}

@@ -66,7 +66,7 @@ const Header = () => {
           {/* <img src="/logo.png" alt="Groceroo Logo" style={{width:'180px',height:'60px'}} /> */}
            <div
             style={{
-              backgroundImage: 'url(/logo.png)',
+              backgroundImage: 'url(/logo-plain.png)',
               backgroundSize: 'contain',
               backgroundRepeat: 'no-repeat',
               backgroundPosition: 'center',

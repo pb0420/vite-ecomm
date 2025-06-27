@@ -27,12 +27,12 @@ function isInStandaloneMode() {
 
 const AddToHomeScreenToast = ({ onClose, platform }) => (
   <div className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 bg-primary text-primary-foreground px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 animate-fade-in-up max-w-xs w-full">
+    <button onClick={onClose} className="ml-1 mr-2 text-lg font-bold">×</button>
     <span>
       {platform === 'ios'
         ? 'Install the app on your iOS device: tap Share, then "Add to Home Screen".'
         : 'Install the app: tap the menu and "Add to Home screen".'}
     </span>
-    <button onClick={onClose} className="ml-2 text-lg font-bold">×</button>
   </div>
 );
 
