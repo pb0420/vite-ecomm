@@ -8,6 +8,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/supabaseClient';
 import StoreForm from '@/components/admin/StoreForm';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 
 const AdminStoresTab = () => {
   const [stores, setStores] = useState([]);
@@ -15,6 +17,10 @@ const AdminStoresTab = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingStore, setEditingStore] = useState(null);
+  const [suggestedItems, setSuggestedItems] = useState([]);
+  const [editingSuggestedStore, setEditingSuggestedStore] = useState(null);
+  const [suggestedDialogOpen, setSuggestedDialogOpen] = useState(false);
+  const [suggestedInput, setSuggestedInput] = useState('');
 
   const fetchStores = async () => {
     try {
@@ -88,6 +94,33 @@ const AdminStoresTab = () => {
     store.address.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleEditSuggestedItems = (store) => {
+    setEditingSuggestedStore(store);
+    setSuggestedItems(Array.isArray(store.store_suggested_items) ? store.store_suggested_items : []);
+    setSuggestedInput((Array.isArray(store.store_suggested_items) ? store.store_suggested_items : []).map(i => i.name + (i.qty ? `:${i.qty}` : '')).join('\n'));
+    setSuggestedDialogOpen(true);
+  };
+
+  const handleSaveSuggestedItems = async () => {
+    const items = suggestedInput.split('\n').map(line => {
+      const [name, qty] = line.split(':');
+      return name ? { name: name.trim(), qty: qty ? parseInt(qty, 10) : 1 } : null;
+    }).filter(Boolean);
+    try {
+      const { error } = await supabase
+        .from('stores')
+        .update({ store_suggested_items: items })
+        .eq('id', editingSuggestedStore.id);
+      if (error) throw error;
+      toast({ title: "Suggested Items Updated", description: `Suggested items updated for ${editingSuggestedStore.name}.` });
+      setSuggestedDialogOpen(false);
+      setEditingSuggestedStore(null);
+      fetchStores();
+    } catch (error) {
+      toast({ variant: "destructive", title: "Error", description: "Could not update suggested items." });
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -160,6 +193,22 @@ const AdminStoresTab = () => {
                         <Clock className="w-4 h-4 text-muted-foreground" />
                         <span>{store.opening_time.slice(0, 5)} - {store.closing_time.slice(0, 5)}</span>
                       </div>
+                      {/* Suggested Items */}
+                      <div className="mt-1">
+                        <span className="text-xs font-semibold">Suggested Items:</span>
+                        <ul className="list-disc ml-5 text-xs text-muted-foreground">
+                          {Array.isArray(store.store_suggested_items) && store.store_suggested_items.length > 0 ? (
+                            store.store_suggested_items.map((item, idx) => (
+                              <li key={idx}>{item.name}{item.qty ? ` (Qty: ${item.qty})` : ''}</li>
+                            ))
+                          ) : (
+                            <li className="italic text-muted-foreground">None</li>
+                          )}
+                        </ul>
+                        <Button size="xs" variant="outline" className="mt-1" onClick={() => handleEditSuggestedItems(store)}>
+                          Edit Suggested Items
+                        </Button>
+                      </div>
                     </TableCell>
                     <TableCell className="text-right">
                       <Button
@@ -188,6 +237,28 @@ const AdminStoresTab = () => {
           </Table>
         </div>
       )}
+
+      {/* Suggested Items Dialog */}
+      <Dialog open={suggestedDialogOpen} onOpenChange={setSuggestedDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Suggested Items</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label>Enter one item per line. Use <code>Item Name:Qty</code> for quantity (default 1).</Label>
+            <Textarea
+              value={suggestedInput}
+              onChange={e => setSuggestedInput(e.target.value)}
+              rows={6}
+              placeholder={"Milk:2\nBread\nEggs:12"}
+            />
+            <div className="flex justify-end gap-2 mt-2">
+              <Button variant="outline" onClick={() => setSuggestedDialogOpen(false)}>Cancel</Button>
+              <Button onClick={handleSaveSuggestedItems}>Save</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 };

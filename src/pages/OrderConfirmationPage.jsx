@@ -281,6 +281,21 @@ const OrderConfirmationPage = () => {
                 </div>
               ))}
             </div>
+            <div className="space-y-3">
+              {/* show service fee and delivery fee from fees_data */}
+              {order.fees_data && order.fees_data.delivery_fee > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Delivery Fee</span>
+                  <span>{formatCurrency(order.fees_data.delivery_fee)}</span>
+                </div>
+              )}
+              {order.fees_data && order.fees_data.service_fee > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Service Fee ({order.fees_data.serviceFeePercent}%)</span>
+                  <span>{formatCurrency(order.fees_data.service_fee)}</span>
+                </div> 
+              )}
+            </div>
             
             <div className="mt-4 pt-4 border-t flex justify-between font-bold">
               <span>Total</span>

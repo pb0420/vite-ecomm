@@ -55,14 +55,16 @@ const CheckoutPage = () => {
       try {
         const { data, error } = await supabase
           .from('delivery_settings')
-          .select('express_fee')
+          .select('express_fee,service_fee_percent')
           .eq('id', 1)
           .single();
         if (error && error.code !== 'PGRST116') throw error;
         setDeliveryDetails(prev => ({ ...prev, fee: data?.express_fee || 9.99 }));
+        setServiceFeePercent(data?.service_fee_percent || 3);
       } catch (error) {
         console.error("Error fetching initial delivery fee:", error);
         setDeliveryDetails(prev => ({ ...prev, fee: 9.99 }));
+        setServiceFeePercent(3);
       }
     };
 
@@ -96,20 +98,6 @@ const CheckoutPage = () => {
     fetchPostcodes();
     checkIfAccountSet();
   }, [user]);
-
-  useEffect(() => {
-    const fetchServiceFee = async () => {
-      const { data, error } = await supabase
-        .from('delivery_settings')
-        .select('service_fee_percent')
-        .eq('id', 1)
-        .single();
-      if (!error && data && data.service_fee_percent) {
-        setServiceFeePercent(data.service_fee_percent);
-      }
-    };
-    fetchServiceFee();
-  }, []);
 
   useEffect(() => {
     if (postcodeSearch.length === 0) {
@@ -219,6 +207,13 @@ const CheckoutPage = () => {
     timeslot_id: deliveryDetails.timeslot_id,
     promo_code: appliedPromo?.code || null,
     discount_amount: getDiscountAmount(),
+    fees_data: {
+      delivery_fee: deliveryDetails.fee,
+      service_fee: getServiceFee(),
+      subtotal: getSubtotal(),
+      total: getFinalTotal(),
+      serviceFeePercent: serviceFeePercent
+    }
   };
 
   return (
@@ -326,6 +321,7 @@ const CheckoutPage = () => {
               deliveryFee={deliveryDetails.fee} 
               appliedPromo={appliedPromo}
               discountAmount={getDiscountAmount()}
+              serviceFeePercent={serviceFeePercent}
               serviceFee={getServiceFee()}
             />
           </motion.div>

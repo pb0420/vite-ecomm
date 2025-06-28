@@ -169,7 +169,7 @@ const CartDrawer = () => {
                       <span className="text-sm font-medium">{formatCurrency(getCartTotal())}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Shipping</span>
+                      <span className="text-sm text-muted-foreground">Charges & Fees</span>
                       <span className="text-sm text-muted-foreground">Calculated at checkout</span>
                     </div>
                     <div className="flex items-center justify-between pt-4 border-t">

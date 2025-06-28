@@ -33,7 +33,8 @@ export const OrderProvider = ({ children }) => {
           scheduled_delivery_time: orderInput.scheduled_delivery_time,
           delivery_fee: orderInput.delivery_fee,
           items: orderInput.items,
-          payment_data:orderInput.payment_data
+          payment_data:orderInput.payment_data,
+          fees_data: orderInput.fees_data || null
         })
         .select()
         .single();

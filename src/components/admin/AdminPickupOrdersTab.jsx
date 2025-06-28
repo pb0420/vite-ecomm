@@ -18,12 +18,18 @@ const AdminPickupOrdersTab = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('pending');
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
   const [adminMessage, setAdminMessage] = useState('');
   const [actualAmount, setActualAmount] = useState('');
   const [confirmingPayment, setConfirmingPayment] = useState(false);
+  const [lastOrderCount, setLastOrderCount] = useState(0);
+
+  const playNotificationSound = () => {
+    const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT');
+    audio.play().catch(() => {});
+  };
 
   const fetchOrders = async () => {
     try {
@@ -42,9 +48,17 @@ const AdminPickupOrdersTab = () => {
             stores (name, address)
           )
         `)
+        .eq('status', statusFilter)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
+      
+      const newOrderCount = data?.length || 0;
+      if (statusFilter === 'pending' && newOrderCount > lastOrderCount && lastOrderCount > 0) {
+        playNotificationSound();
+        toast({ title: "New pickup order!", description: "A new pickup order has been received." });
+      }
+      setLastOrderCount(newOrderCount);
       setOrders(data || []);
     } catch (error) {
       console.error('Error fetching pickup orders:', error);
@@ -56,7 +70,9 @@ const AdminPickupOrdersTab = () => {
 
   useEffect(() => {
     fetchOrders();
-  }, []);
+    const interval = setInterval(fetchOrders, 60000);
+    return () => clearInterval(interval);
+  }, [statusFilter]);
 
   const updateOrderStatus = async (orderId, status) => {
     try {
@@ -87,7 +103,6 @@ const AdminPickupOrdersTab = () => {
       toast({ title: "Store Status Updated", description: `Store order status changed to ${status}` });
       fetchOrders();
       
-      // Refresh selected order details
       if (selectedOrder) {
         const updatedOrder = orders.find(o => o.id === selectedOrder.id);
         setSelectedOrder(updatedOrder);
@@ -103,7 +118,6 @@ const AdminPickupOrdersTab = () => {
 
     setConfirmingPayment(true);
     try {
-      // Call edge function to confirm payment intent with actual amount
       const response = await fetch('https://bcbxcnxutotjzmdjeyde.supabase.co/functions/v1/confirm-pickup-payment', {
         method: 'POST',
         headers: {
@@ -122,7 +136,6 @@ const AdminPickupOrdersTab = () => {
         throw new Error(result.error);
       }
 
-      // Update order with actual total
       const { error: updateError } = await supabase
         .from('pickup_orders')
         .update({ 
@@ -142,7 +155,6 @@ const AdminPickupOrdersTab = () => {
       setActualAmount('');
       fetchOrders();
       
-      // Update selected order
       setSelectedOrder({
         ...selectedOrder,
         actual_total: parseFloat(actualAmount),
@@ -185,7 +197,6 @@ const AdminPickupOrdersTab = () => {
       setAdminMessage('');
       fetchOrders();
       
-      // Update selected order
       setSelectedOrder({
         ...selectedOrder,
         admin_messages: [...currentMessages, newMessage]
@@ -208,9 +219,7 @@ const AdminPickupOrdersTab = () => {
       order.phone_number?.includes(searchTerm) ||
       order.id.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
-    
-    return matchesSearch && matchesStatus;
+    return matchesSearch;
   });
 
   const getStatusColor = (status) => {
@@ -260,7 +269,6 @@ const AdminPickupOrdersTab = () => {
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Orders</SelectItem>
               <SelectItem value="pending">Pending</SelectItem>
               <SelectItem value="confirmed">Confirmed</SelectItem>
               <SelectItem value="processing">Processing</SelectItem>
@@ -390,7 +398,6 @@ const AdminPickupOrdersTab = () => {
                           
                           {selectedOrder && (
                             <div className="space-y-6">
-                              {/* Customer Info */}
                               <div className="grid grid-cols-2 gap-4">
                                 <div>
                                   <h4 className="font-semibold mb-2">Customer Information</h4>
@@ -407,16 +414,16 @@ const AdminPickupOrdersTab = () => {
                                   <div className="space-y-1 text-sm">
                                     <p><strong>Date:</strong> {selectedOrder.pickup_date ? format(new Date(selectedOrder.pickup_date), 'PPP') : 'N/A'}</p>
                                     <p><strong>Time Slot:</strong> {selectedOrder.time_slot}</p>
-                                    <p><strong>Status:</strong> 
+                                    <span><strong>Status:</strong> 
                                       <Badge className={`ml-2 ${getStatusColor(selectedOrder.status)}`}>
                                         {selectedOrder.status}
                                       </Badge>
-                                    </p>
-                                    <p><strong>Payment:</strong> 
+                                    </span>
+                                    <span><strong>Payment:</strong> 
                                       <Badge className={`ml-2 ${getPaymentStatusColor(selectedOrder.payment_status)}`}>
                                         {selectedOrder.payment_status}
                                       </Badge>
-                                    </p>
+                                    </span>
                                     <p><strong>Estimated Total:</strong> {formatCurrency(selectedOrder.estimated_total || 0)}</p>
                                     {selectedOrder.actual_total && (
                                       <p><strong>Actual Total:</strong> {formatCurrency(selectedOrder.actual_total)}</p>
@@ -425,7 +432,6 @@ const AdminPickupOrdersTab = () => {
                                 </div>
                               </div>
 
-                              {/* Payment Confirmation Section */}
                               {selectedOrder.payment_status === 'paid' && !selectedOrder.actual_total && (
                                 <div className="p-4 border rounded-lg bg-blue-50">
                                   <h4 className="font-semibold mb-2 flex items-center">
@@ -460,7 +466,6 @@ const AdminPickupOrdersTab = () => {
                                 </div>
                               )}
 
-                              {/* Store Orders */}
                               <div>
                                 <h4 className="font-semibold mb-2">Store Orders</h4>
                                 <div className="space-y-4">
@@ -504,7 +509,6 @@ const AdminPickupOrdersTab = () => {
                                 </div>
                               </div>
 
-                              {/* Photos */}
                               {selectedOrder.photos && selectedOrder.photos.length > 0 && (
                                 <div>
                                   <h4 className="font-semibold mb-2">Customer Photos</h4>
@@ -522,7 +526,6 @@ const AdminPickupOrdersTab = () => {
                                 </div>
                               )}
 
-                              {/* Messages */}
                               <div>
                                 <h4 className="font-semibold mb-2">Messages</h4>
                                 <div className="space-y-2 max-h-40 overflow-y-auto mb-4">
