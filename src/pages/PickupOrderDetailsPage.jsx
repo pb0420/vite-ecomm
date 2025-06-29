@@ -207,7 +207,7 @@ const PickupOrderDetailsPage = () => {
         <Link to="/grocery-run">
           <Button variant="outline">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Grocery Runs
+            Back to Grocery Run
           </Button>
         </Link>
       </div>
@@ -291,12 +291,19 @@ const PickupOrderDetailsPage = () => {
                     <span className="text-base font-semibold">{formatCurrency(order.actual_total)}</span>
                   </div>
                 )}
-                {order.payment_status === 'paid' && order.payment_data && (
-                  <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded">
-                    <div className="font-medium mb-1 text-green-800">Payment Details:</div>
-                    <pre className="text-xs text-green-900 whitespace-pre-wrap break-all">{JSON.stringify(order.payment_data, null, 2)}</pre>
-                  </div>
-                )}
+                {/* Show convenience, service, and delivery fees */}
+                <div className="flex justify-between items-center pt-2">
+                  <span className="text-sm text-muted-foreground">Convenience Fee ({order.fees_data?.convenience_fee_percent}) :</span>
+                  <span className="text-sm">{formatCurrency(order.fees_data?.convenienceFee || 0)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Service Fee ({order.fees_data?.service_fee_percent}) :</span>
+                  <span className="text-sm">{formatCurrency(order.fees_data?.serviceFee || 0)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Delivery Fee:</span>
+                  <span className="text-sm">{formatCurrency(order.fees_data?.deliveryFee || 0)}</span>
+                </div>
               </CardContent>
             </Card>
 

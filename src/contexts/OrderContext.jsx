@@ -28,7 +28,7 @@ export const OrderProvider = ({ children }) => {
           customer_postcode: orderInput.customer_postcode,
           delivery_notes: orderInput.delivery_notes,
           total: orderInput.total,
-          status: 'pending',
+          status: 'processing',
           delivery_type: orderInput.delivery_type,
           scheduled_delivery_time: orderInput.scheduled_delivery_time,
           delivery_fee: orderInput.delivery_fee,

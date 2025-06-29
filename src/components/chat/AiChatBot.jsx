@@ -180,7 +180,6 @@ const AiChatBot = () => {
                   <Bot className="inline-block mr-2" />
                   AI Chat (beta)
                 </span>
-                {/* WhatsApp Button */} 
               
                 <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
                   <X className="h-4 w-4" />

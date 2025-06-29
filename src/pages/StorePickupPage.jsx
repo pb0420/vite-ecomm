@@ -334,6 +334,13 @@ const StorePickupPage = () => {
           estimated_total: subtotal, // Use subtotal, not finalTotal
           promo_code: appliedPromo?.code || null,
           discount_amount: discountAmount,
+          fees_data: {
+              convenience_fee_percent: deliverySettings.convenience_fee_percent,
+              service_fee_percent: deliverySettings.service_fee_percent,
+              serviceFee: getServiceFee(),
+              convenienceFee: getConvenienceFee(),
+              deliveryFee: getDeliveryFee()
+          },
           admin_messages: reorderPreviousItems ? [{
             from: 'customer',
             message: 'Please reorder my previous items along with this order.',
@@ -380,7 +387,14 @@ const StorePickupPage = () => {
             estimated_total: finalTotal,
             promo_code: appliedPromo?.code || null,
             discount_amount: discountAmount,
-            stores: selectedStores
+            stores: selectedStores,
+            fees_data: {
+              convenience_fee_percent: deliverySettings.convenience_fee_percent,
+              service_fee_percent: deliverySettings.service_fee_percent,
+              serviceFee: getServiceFee(),
+              convenienceFee: getConvenienceFee(),
+              deliveryFee: getDeliveryFee()
+            }
           },
           finalTotal
         }

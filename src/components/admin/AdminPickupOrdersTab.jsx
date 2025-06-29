@@ -18,7 +18,7 @@ const AdminPickupOrdersTab = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('pending');
+  const [statusFilter, setStatusFilter] = useState('processing');
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
   const [adminMessage, setAdminMessage] = useState('');
@@ -424,6 +424,15 @@ const AdminPickupOrdersTab = () => {
                                         {selectedOrder.payment_status}
                                       </Badge>
                                     </span>
+                                     {selectedOrder.fees_data?.deliveryFee && (
+                                      <p><strong>Delivery Fee: </strong> {formatCurrency(selectedOrder.fees_data?.deliveryFee)}</p>
+                                    )}
+                                    {selectedOrder.fees_data?.serviceFee && (
+                                      <p><strong>Service Fee ({selectedOrder.fees_data?.service_fee_percent}):</strong> {formatCurrency(selectedOrder.fees_data.serviceFee)}</p>
+                                    )}
+                                    {selectedOrder.fees_data?.convenienceFee && (
+                                      <p><strong>Convenience Fee ({selectedOrder.fees_data?.convenience_fee_percent}) :</strong> {formatCurrency(selectedOrder.fees_data.convenienceFee)}</p>
+                                    )}
                                     <p><strong>Estimated Total:</strong> {formatCurrency(selectedOrder.estimated_total || 0)}</p>
                                     {selectedOrder.actual_total && (
                                       <p><strong>Actual Total:</strong> {formatCurrency(selectedOrder.actual_total)}</p>

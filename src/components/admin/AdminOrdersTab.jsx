@@ -16,7 +16,7 @@ import { getCurrentDateInTimezone, DEFAULT_TIMEZONE } from '@/lib/timezone';
 const AdminOrdersTab = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState('pending');
+  const [statusFilter, setStatusFilter] = useState('processing');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);

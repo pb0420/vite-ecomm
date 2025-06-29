@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useParams, Link } from 'react-router-dom';
-import { CheckCircle, Package, ArrowRight, Truck, Clock, XCircle, Send } from 'lucide-react';
+import { CheckCircle, Package, ArrowLeft, Truck, Clock, XCircle, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/lib/supabaseClient';
 import { formatCurrency } from '@/lib/utils';
@@ -145,7 +145,7 @@ const OrderConfirmationPage = () => {
       setSendingMessage(false);
     }
   };
-  
+
   if (loading) {
     return (
       <div className="container px-4 py-8 mx-auto md:px-6">
@@ -177,12 +177,23 @@ const OrderConfirmationPage = () => {
   
   return (
     <div className="container px-4 py-8 mx-auto md:px-6">
+      <div>
+          <Link to="/account">
+            <Button variant="ghost" className="mb-4">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Return to Account
+            </Button>
+          </Link>
+        </div>
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
         className="max-w-2xl mx-auto"
       >
+
+        
+
         {/* Order Status Section */}
         <div className="mb-8 text-center">
           <motion.div

@@ -123,18 +123,6 @@ const PickupPaymentPage = () => {
         transition={{ duration: 0.3 }}
         className="max-w-3xl md:max-w-4xl mx-auto"
       >
-        <div className="mb-6">
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate('/grocery-run')}
-            className="mb-4"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Grocery Run
-          </Button>
-          <h1 className="text-2xl font-bold">Complete Payment</h1>
-          <p className="text-muted-foreground">Secure payment for your grocery run</p>
-        </div>
 
         <div className="grid gap-8 md:grid-cols-2">
           {/* Order Summary */}
