@@ -356,7 +356,7 @@ const StorePickupPage = () => {
             message: 'Please reorder my previous items along with this order.',
             timestamp: new Date().toISOString()
           }] : [],
-          delivery_notes: deliveryNotes // Add delivery notes
+          notes: deliveryNotes // Add delivery notes
         })
         .select()
         .single();
@@ -405,7 +405,8 @@ const StorePickupPage = () => {
               serviceFee: getServiceFee(),
               convenienceFee: getConvenienceFee(),
               deliveryFee: getDeliveryFee()
-            }
+            },
+            notes: deliveryNotes
           },
           finalTotal
         }
