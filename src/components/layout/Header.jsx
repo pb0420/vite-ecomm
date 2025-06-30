@@ -78,7 +78,7 @@ const Header = () => {
            {isHome ? (
             <></>
       ) : (
-        <Home style={{color:"white"}} className="p-1 w-6 h-6" aria-label="Home" />
+        <Home style={{marginLeft:'35x' ,color:"rgb(255, 255, 255)"}} className="w-6 h-6" aria-label="Home" />
       )}
         </Link>
 

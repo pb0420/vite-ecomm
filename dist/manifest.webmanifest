@@ -1,0 +1,1 @@
+{"name":"Groceroo","short_name":"Groceroo","description":"Your grocery delivery app","start_url":"/","display":"standalone","background_color":"#ffffff","theme_color":"#2E8B57","lang":"en","scope":"/","icons":[{"src":"/favicon.webp","sizes":"192x192","type":"image/png"},{"src":"/favicon2.webp","sizes":"512x512","type":"image/png"}]}
