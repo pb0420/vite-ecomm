@@ -32,7 +32,7 @@ const OrderSummary = ({ deliveryFee = 0, appliedPromo = null, discountAmount = 0
 
       <div className="space-y-2 text-sm">
         <div className="flex justify-between">
-          <span className="text-muted-foreground">Subtotal</span>
+          <span className="text-muted-foreground">Cart Total</span>
           <span>{formatCurrency(subtotal)}</span>
         </div>
         

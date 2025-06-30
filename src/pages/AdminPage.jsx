@@ -9,6 +9,7 @@ import AdminProductsTab from '@/components/admin/AdminProductsTab';
 import AdminCategoriesTab from '@/components/admin/AdminCategoriesTab';
 import AdminSettingsTab from '@/components/admin/AdminSettingsTab';
 import AdminStoresTab from '@/components/admin/AdminStoresTab';
+import AdminPromoCodesTab from '@/components/admin/AdminPromoCodesTab';
 import AdminPickupOrdersTab from '@/components/admin/AdminPickupOrdersTab';
 import AdminTimeSlotsTab from '@/components/admin/AdminTimeSlotsTab';
 import DeleteConfirmationDialog from '@/components/admin/DeleteConfirmationDialog';
@@ -139,6 +140,7 @@ const AdminPage = () => {
     { value: "categories", label: "Categories", icon: Tag, component: <AdminCategoriesTab key="categories" openDeleteDialog={openDeleteDialog} /> },
     { value: "stores", label: "Stores", icon: Store, component: <AdminStoresTab /> },
     { value: "time-slots", label: "Time Slots", icon: Clock, component: <AdminTimeSlotsTab key="time-slots" openDeleteDialog={openDeleteDialog} /> },
+    { value: "promo-codes", label: "Promo Codes", icon: Clock, component: <AdminPromoCodesTab key="promo-codes" openDeleteDialog={openDeleteDialog} /> },
     { value: "settings", label: "Settings", icon: SettingsIcon, component: <AdminSettingsTab /> },
   ];
 

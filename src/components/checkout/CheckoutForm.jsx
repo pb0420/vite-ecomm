@@ -88,7 +88,7 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
       setFormData(prev => ({
         ...prev,
         address: selectedAddress.address,
-        postcode: selectedAddress.postcode
+        postcode: selectedAddress.postcode.toString()
       }));
       // Find and set the postcode search
       const postcodeData = postcodes.find(pc => pc.postcode === selectedAddress.postcode);

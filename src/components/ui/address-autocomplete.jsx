@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabaseClient';
+import { setQueryCache, getQueryCache } from '@/lib/queryCache';
 
 const AddressAutocomplete = ({ 
   value, 
@@ -25,6 +26,15 @@ const AddressAutocomplete = ({
     setLoading(true);
     try {
       if (searchValue.length >= 3) {
+        // Use cache first
+        const cacheKey = `address_suggestions_${searchValue.toLowerCase()}`;
+        const cached = getQueryCache(cacheKey);
+        if (cached) {
+          setSuggestions(cached);
+          setShowSuggestions(cached.length > 0);
+          setLoading(false);
+          return;
+        }
         let searchValueSpacesReplacedWithPlus = searchValue.replace(/\s+/g, '+');
         const fallbackResponse = await supabase
           .from('adelaide_address_data')
@@ -35,6 +45,8 @@ const AddressAutocomplete = ({
         const transformedData = transformData(fallbackResponse.data);
         setSuggestions(transformedData);
         setShowSuggestions(transformedData.length > 0);
+        // Cache for 365 days (525600 minutes)
+        setQueryCache(cacheKey, transformedData, 525600);
         return;
       }
       setSuggestions([]);

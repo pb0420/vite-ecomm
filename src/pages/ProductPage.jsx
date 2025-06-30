@@ -103,7 +103,7 @@ const ProductPage = () => {
           <img  
             alt={product.name} 
             className="w-full h-full object-cover" 
-            src={product.image_url || "https://images.pexels.com/photos/264636/pexels-photo-264636.jpeg"} 
+            src={product.image_url || "/product-placeholder.webp"} 
           />
         </motion.div>
         

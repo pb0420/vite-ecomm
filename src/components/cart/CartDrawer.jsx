@@ -114,7 +114,7 @@ const CartDrawer = () => {
                             <img 
                               alt={item.name} 
                               className="w-full h-full object-cover" 
-                              src={item.image_url || "https://images.pexels.com/photos/264636/pexels-photo-264636.jpeg"} 
+                              src={item.image_url || "/product-placeholder.webp"} 
                             />
                           </div>
                           
@@ -161,7 +161,17 @@ const CartDrawer = () => {
                     </AnimatePresence>
                   </ul>
                 </div>
-                
+                {cart.length > 0 && (
+                  <div className="flex justify-center my-2">
+                    <a
+                      href="/shop"
+                      className="text-primary font-medium hover:underline text-sm flex items-center gap-1"
+                      onClick={() => closeCart()}
+                    >
+                      Forgot something? <span className="underline">Continue Shopping</span>
+                    </a>
+                  </div>
+                )}
                 <div className="p-4 border-t bg-muted/30">
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">

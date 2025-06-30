@@ -72,7 +72,7 @@ const HomePage = () => {
           const { data, error } = await supabase
             .from('categories')
             .select('*')
-            .order('name')
+            .order('priority',{ ascending: false })
             .limit(7);
           if (error) throw error;
           categoriesData = data || [];
@@ -239,7 +239,7 @@ const HomePage = () => {
       <section className="relative min-h-[350px] h-[40vh] max-h-[500px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
         <div className="absolute inset-0">
           <img
-            src="/outbanner.jpeg"
+            src="/outbanner.webp"
             alt="Grocery delivery"
             className="w-full h-full object-cover opacity-30"
           />
@@ -373,7 +373,7 @@ const HomePage = () => {
                     variant="outline"
                     className="w-full h-10 md:h-12 bg-white/95 hover:bg-white border-2 border-white/50 shadow-lg text-[#2E8B57] hover:text-[#2E8B57] font-bold text-sm mx-auto backdrop-blur-sm transition-all duration-300 hover:scale-105"
                   >
-                  <Truck className="w-4 h-4 mr-2" />
+                  ..<Truck className="w-4 h-4 mr-2" />
                     Grocery Run
                   </Button>
                 </Link>

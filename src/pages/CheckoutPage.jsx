@@ -137,7 +137,7 @@ const CheckoutPage = () => {
     setAccountDetails(prev => ({
       ...prev,
       address: addressDetails.address,
-      postcode: addressDetails.postcode
+      postcode: addressDetails.postcode.toString()
     }));
     setPostcodeSearch(`${addressDetails.suburb.toUpperCase()}, ${addressDetails.postcode}`);
   };
@@ -164,22 +164,24 @@ const CheckoutPage = () => {
     setAppliedPromo(null);
   };
 
+  // cart toal + delivery fee
   const getSubtotal = () => {
-    return Number(getCartTotal() || 0);
+    const cartTotal =  Number(getCartTotal() || 0);
+    const deliveryFee = Number(deliveryDetails.fee || 0);
+    return parseFloat((cartTotal + deliveryFee).toFixed(2));
   };
   const getDiscountAmount = () => {
     return Number(appliedPromo ? appliedPromo.discountAmount : 0);
   };
   const getServiceFee = () => {
-    const base = getSubtotal() + Number(deliveryDetails.fee || 0);
+    const base = getSubtotal();
     return parseFloat((base * (serviceFeePercent / 100)).toFixed(2));
   };
   const getFinalTotal = () => {
     const subtotal = getSubtotal();
     const discount = getDiscountAmount();
-    const deliveryFee = Number(deliveryDetails.fee || 0);
     const serviceFee = getServiceFee();
-    const total = subtotal - discount + deliveryFee + serviceFee;
+    const total = subtotal - discount + serviceFee;
     return parseFloat(total.toFixed(2));
   };
   
@@ -211,7 +213,6 @@ const CheckoutPage = () => {
     fees_data: {
       delivery_fee: deliveryDetails.fee,
       service_fee: getServiceFee(),
-      subtotal: getSubtotal(),
       total: getFinalTotal(),
       serviceFeePercent: serviceFeePercent
     }
@@ -312,6 +313,16 @@ const CheckoutPage = () => {
             </motion.div>
           </div>
 
+          <div>
+              <a
+          href="/shop"
+          className="text-primary font-medium hover:underline text-sm flex items-center gap-1 mb-4"
+          style={{ textDecoration: 'none' }}
+        >
+          Forgot something? <span className="underline">Continue Shopping</span>
+        </a>
+          </div>
+
           <motion.div 
             initial={{ opacity: 0, y: 20 }} 
             animate={{ opacity: 1, y: 0 }} 
@@ -345,7 +356,7 @@ const CheckoutPage = () => {
       <div className="flex justify-center w-full mt-8 mb-4">
         <Button
           className="w-full max-w-xl text-base h-12 md:h-12 md:text-lg shadow-lg"
-          onClick={() => navigate('/stripe-payment',{state: {orderData:orderData,deliveryFee:deliveryDetails.fee, finalTotal: getFinalTotal(), serviceFee: getServiceFee()}})}
+          onClick={() => navigate('/stripe-payment',{state: {orderData:orderData,deliveryFee:deliveryDetails.fee, finalTotal: getFinalTotal(), serviceFee: getServiceFee(), discountAmount: getDiscountAmount()}})}
           disabled={!user || !termsAccepted || showAccountSetup || customerDetails.address.length === 0 || getSubtotal() <= 0 || isSubmitting}
         >
           Proceed to Payment &nbsp; <CreditCard />

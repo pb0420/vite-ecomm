@@ -49,6 +49,7 @@ export const CartProvider = ({ children }) => {
           title: "Item updated",
           description: `${product.name} quantity updated in your cart.`,
           duration: 2000,
+          action: 'view-cart'
         });
         return updatedCart;
       } else {
@@ -57,6 +58,7 @@ export const CartProvider = ({ children }) => {
           title: "Item added",
           description: `${product.name} added to your cart.`,
           duration: 2000,
+          action: 'view-cart'
         });
         return [...prevCart, { ...product, quantity }];
       }
@@ -71,6 +73,7 @@ export const CartProvider = ({ children }) => {
           title: "Item removed",
           description: `${itemToRemove.name} removed from your cart.`,
           duration: 2000,
+          action: 'view-cart'
         });
       }
       return prevCart.filter(item => item.id !== productId);
@@ -98,6 +101,7 @@ export const CartProvider = ({ children }) => {
       title: "Cart cleared",
       description: "All items have been removed from your cart.",
       duration: 2000,
+      action: 'view-cart'
     });
   };
 

@@ -11,7 +11,7 @@ console.warn = () => {};
 export default defineConfig({
 	plugins: [react(),  VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.png', 'logo.png', 'robots.txt'],
+      includeAssets: ['favicon.webp', 'logo.webp', 'robots.txt'],
       manifest: {
         name: 'Groceroo',
         short_name: 'Groceroo',
@@ -19,12 +19,12 @@ export default defineConfig({
         theme_color: '#2E8B57',
         icons: [
           {
-            src: '/favicon.png',
+            src: '/favicon.webp',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: '/favicon2.png',
+            src: '/favicon2.webp',
             sizes: '512x512',
             type: 'image/png'
           }

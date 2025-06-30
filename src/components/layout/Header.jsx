@@ -63,10 +63,10 @@ const Header = () => {
     <header className="sticky top-0 z-40 w-full bg-gradient-to-r from-[#2E8B57] via-[#3CB371] to-[#98D598] border-b shadow-sm">
       <div className="container flex items-center justify-between h-16 px-4 mx-auto md:px-6">
         <Link to="/" className="flex items-center space-x-2">
-          {/* <img src="/logo.png" alt="Groceroo Logo" style={{width:'180px',height:'60px'}} /> */}
+          {/* <img src="/logo.webp" alt="Groceroo Logo" style={{width:'180px',height:'60px'}} /> */}
            <div
             style={{
-              backgroundImage: 'url(/logo-plain.png)',
+              backgroundImage: 'url(/logo-plain.webp)',
               backgroundSize: 'contain',
               backgroundRepeat: 'no-repeat',
               backgroundPosition: 'center',

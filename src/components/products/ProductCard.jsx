@@ -37,7 +37,7 @@ const ProductCard = ({ product }) => {
           <img  
             alt={product.name}
             className="w-full h-full object-cover"
-            src={product.image_url || "https://images.unsplash.com/photo-1554702299-1ac5541cd63b"} 
+            src={product.image_url || "/product-placeholder.webp"} 
           />
           
           {product.featured && (

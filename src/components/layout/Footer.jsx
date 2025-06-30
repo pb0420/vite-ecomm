@@ -23,7 +23,7 @@ const Footer = () => {
           <div className="space-y-4">
             <div
             style={{
-              backgroundImage: 'url(/logo.png)',
+              backgroundImage: 'url(/logo.webp)',
               backgroundSize: 'contain',
               backgroundRepeat: 'no-repeat',
               backgroundPosition: 'center',
