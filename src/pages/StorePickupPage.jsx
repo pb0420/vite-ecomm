@@ -5,6 +5,7 @@ import { Store, Clock, Calendar, MessageCircle, Bot, MapPin, Phone, Search, Cred
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -31,6 +32,14 @@ import {
   getCurrentDateInTimezone,
   DEFAULT_TIMEZONE
 } from '@/lib/timezone';
+
+const NOTE_SUGGESTIONS = [
+  "Don't ring doorbell, leave at door\n",
+  "Call on arrival\n",
+  "Leave with reception\n",
+  "Knock softly, baby sleeping\n",
+  "Text me before delivery\n"
+];
 
 const StorePickupPage = () => {
   const { user } = useAuth();
@@ -67,6 +76,7 @@ const StorePickupPage = () => {
     const stored = localStorage.getItem('userLocation');
     return stored ? JSON.parse(stored) : null;
   });
+  const [deliveryNotes, setDeliveryNotes] = useState('');
   
   const navigate = useNavigate();
 
@@ -345,7 +355,8 @@ const StorePickupPage = () => {
             from: 'customer',
             message: 'Please reorder my previous items along with this order.',
             timestamp: new Date().toISOString()
-          }] : []
+          }] : [],
+          delivery_notes: deliveryNotes // Add delivery notes
         })
         .select()
         .single();
@@ -605,9 +616,9 @@ const StorePickupPage = () => {
         >
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="new-order">New Order</TabsTrigger>
+              <TabsTrigger value="new-order">Schedule</TabsTrigger>
               <TabsTrigger value="upcoming-orders">
-                Upcoming Orders ({upcomingOrders.length})
+                Upcoming ({upcomingOrders.length})
               </TabsTrigger>
             </TabsList>
 
@@ -906,6 +917,35 @@ const StorePickupPage = () => {
                             </div>
                           </motion.div>
                         )}
+
+                        {/* Delivery Notes with Suggestions */}
+                        <div className="space-y-2">
+                          <Label htmlFor="delivery-notes">Delivery Notes</Label>
+                          <div className="flex flex-wrap gap-2 mb-2">
+                            {NOTE_SUGGESTIONS.map(suggestion => (
+                              <button
+                                type="button"
+                                key={suggestion}
+                                className="px-3 py-1 rounded-full bg-gray-100 hover:bg-primary/10 text-xs border border-gray-200 text-gray-700 transition"
+                                onClick={() => setDeliveryNotes(notes => notes ? notes + (notes.endsWith('\n')?'':' ') + suggestion : suggestion)}
+                              >
+                                {suggestion}
+                              </button>
+                            ))}
+                          </div>
+                          <Textarea
+                            id="delivery-notes"
+                            value={deliveryNotes}
+                            onChange={e => setDeliveryNotes(e.target.value)}
+                            placeholder="Add any delivery instructions (optional)"
+                            className={formErrors.deliveryNotes ? 'border-destructive' : ''}
+                            rows={2}
+                          />
+                          {formErrors.deliveryNotes && <p className="text-xs text-destructive">{formErrors.deliveryNotes}</p>}
+                          <div className="text-xs text-muted-foreground mt-1">
+                            <span className="font-medium text-orange-600">Note:</span> The final amount may change after shopping. If it is higher, you will need to pay the difference before delivery.
+                          </div>
+                        </div>
 
                         <div className="flex items-center space-x-2">
                           <Checkbox 

@@ -217,6 +217,19 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
         </div>
         <div className="space-y-2">
           <Label htmlFor="deliveryNotes">Delivery Notes (Optional)</Label>
+            {/* Delivery Notes with Suggestions */}
+           <div className="flex flex-wrap gap-2 mb-2">
+              {["Don't ring the doorbell","Leave at door","Call on arrival","Hand to me only","Knock softly","Text when here"].map(suggestion => (
+                <button
+                  type="button"
+                  key={suggestion}
+                  className="px-3 py-1 rounded-full bg-gray-100 hover:bg-primary/10 text-xs border border-gray-200 text-gray-700 transition"
+                  onClick={() => setFormData(prev => ({ ...prev, deliveryNotes: formData.deliveryNotes + suggestion+'\n' }))}
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>   
           <Textarea
             id="deliveryNotes"
             name="deliveryNotes"

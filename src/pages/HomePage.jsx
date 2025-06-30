@@ -11,6 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 // Import the AiChatBot component
 import AiChatBot from '@/components/chat/AiChatBot'; // Assuming this path is correct
 import { setQueryCache, getQueryCache } from '@/lib/queryCache';
+import LoginDialog from '@/components/auth/LoginDialog';
 
 function isIos() {
   return /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
@@ -46,6 +47,7 @@ const HomePage = () => {
   const [deliveryTime, setDeliveryTime] = useState(45); // Default fallback
   const [showA2HS, setShowA2HS] = useState(false);
   const [platform, setPlatform] = useState(null);
+  const [showLoginDialog, setShowLoginDialog] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -156,6 +158,24 @@ const HomePage = () => {
     }
   };
 
+  // Debounced search navigation
+  useEffect(() => {
+    if (!searchQuery) return;
+    const timer = setTimeout(() => {
+      // Search limit for logged out users
+      if (!user) {
+        const count = parseInt(localStorage.getItem('search_count') || '0', 10);
+        if (count >= 10) {
+          setShowLoginDialog(true);
+          return;
+        }
+        localStorage.setItem('search_count', (count + 1).toString());
+      }
+      navigate(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery, user, navigate]);
+
   // Remove the old openWhatsApp function
   // const openWhatsApp = () => {
   //   window.open('https://wa.me/61478477036', '_blank');
@@ -261,7 +281,7 @@ const HomePage = () => {
 
               {/* Search Bar */}
               <motion.form
-                onSubmit={handleSearch}
+                onSubmit={e => e.preventDefault()}
                 className="flex gap-1 w-full"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -276,14 +296,16 @@ const HomePage = () => {
                     className="h-10 md:h-12 pl-3 bg-white/95 backdrop-blur-sm border-0 shadow-lg text-gray-800 placeholder:text-gray-500 text-sm"
                   />
                 </div>
-                <Button
-                  type="submit"
-                  size="sm"
-                  className="h-10 md:h-12 bg-white hover:bg-white/90 shadow-lg text-sm"
-                >
-                  <Store style={{color:"#3cb371"}} className="w-8 h-6" />
-                </Button>
               </motion.form>
+
+              {/* Grocery Run and Shop Buttons */}
+              <motion.div
+                className="pt-2 flex justify-center gap-2"
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.8, duration: 0.5 }}
+              >
+              </motion.div>
 
               {/* Categories Scroller */}
               <motion.div
@@ -331,21 +353,31 @@ const HomePage = () => {
 
               {/* Grocery Run Button */}
               <motion.div
-                className="pt-2 flex justify-center"
+                className="pt-2 flex justify-center md:max-w-[400px] lg:max-w-[400px] mx-auto gap-2"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.8, duration: 0.5 }}
               >
-                <Link to="/grocery-run" className="block w-full max-w-md">
+                <Link to="/shop" className="block w-full max-w-[160px]">
+                  <Button
+                    size="lg"
+                    style={{ background: '#fd7507', color: 'white' }}
+                    className="w-full h-10 md:h-12 font-bold text-sm mx-auto backdrop-blur-sm transition-all duration-300 hover:scale-105"
+                  >
+                   <Store className="w-4 h-4 mr-2" /> Shop
+                  </Button>
+                </Link>
+                <Link to="/grocery-run" className="block w-full">
                   <Button
                     size="lg"
                     variant="outline"
                     className="w-full h-10 md:h-12 bg-white/95 hover:bg-white border-2 border-white/50 shadow-lg text-[#2E8B57] hover:text-[#2E8B57] font-bold text-sm mx-auto backdrop-blur-sm transition-all duration-300 hover:scale-105"
                   >
-                    ...<Truck className="w-4 h-4 mr-2" />
-                    Schedule Grocery Run
+                  <Truck className="w-4 h-4 mr-2" />
+                    Grocery Run
                   </Button>
                 </Link>
+                
               </motion.div>
             </motion.div>
           </div>
@@ -477,6 +509,10 @@ const HomePage = () => {
       >
         <MessageCircle className="h-6 w-6 text-white" />
       </Button> */}
+
+      {showLoginDialog && (
+        <LoginDialog open={showLoginDialog} onOpenChange={setShowLoginDialog} />
+      )}
     </div>
   );
 };

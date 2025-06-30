@@ -83,9 +83,9 @@ const PhoneLoginForm = ({ onSuccess }) => {
       <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl p-6 border border-primary/20 shadow-lg">
         {/* Header */}
         <div className="text-center mb-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-2">Welcome to Groceroo</h3>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">Welcome </h3>
           <p className="text-gray-600 text-sm">
-            Enter your phone number to get started
+            Please verify your phone number to continue.
           </p>
         </div>
         

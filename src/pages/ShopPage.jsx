@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import ProductCard from '@/components/products/ProductCard';
 import { supabase } from '@/lib/supabaseClient';
 import { setQueryCache, getQueryCache } from '@/lib/queryCache';
+import LoginDialog from '@/components/auth/LoginDialog';
 
 const PRODUCTS_PER_PAGE = 25;
 
@@ -27,11 +28,22 @@ const ShopPage = () => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
+  const [showLoginDialog, setShowLoginDialog] = useState(false);
 
   // Debounce search input
   useEffect(() => {
     const timer = setTimeout(() => {
       if (searchInput.length >= 2 || searchInput.length === 0) {
+        // Search limit for logged out users
+        const user = localStorage.getItem('user'); // or use context if available
+        if (!user) {
+          const count = parseInt(localStorage.getItem('search_count') || '0', 10);
+          if (count >= 10) {
+            setShowLoginDialog(true);
+            return;
+          }
+          localStorage.setItem('search_count', (count + 1).toString());
+        }
         setSearchTerm(searchInput);
       }
     }, 300);
@@ -242,38 +254,37 @@ const ShopPage = () => {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4, duration: 0.5 }}
               >
-                {/* Category Filter */}
-                <div className="w-full sm:w-auto min-w-[160px]">
-                  <Select value={selectedCategory} onValueChange={handleCategoryChange}>
-                    <SelectTrigger className="bg-white/95 backdrop-blur-sm border-0 shadow-lg h-8 text-sm">
-                      <SelectValue placeholder="All Categories" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Categories</SelectItem>
-                      {categories.map(category => (
-                        <SelectItem key={category.id} value={category.id.toString()}>
-                          {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                {/* Category Filter and Sort Filter in same line, less wide */}
+                <div className="flex gap-2 w-full sm:w-auto justify-center">
+                  <div className="min-w-[120px] w-full">
+                    <Select value={selectedCategory} onValueChange={handleCategoryChange}>
+                      <SelectTrigger className="bg-white/95 backdrop-blur-sm border-0 shadow-lg h-8 text-sm">
+                        <SelectValue placeholder="All Categories" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Categories</SelectItem>
+                        {categories.map(category => (
+                          <SelectItem key={category.id} value={category.id.toString()}>
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="min-w-[140px] w-[140px]">
+                    <Select value={sortBy} onValueChange={handleSortChange}>
+                      <SelectTrigger className="bg-white/95 backdrop-blur-sm border-0 shadow-lg h-8 text-sm">
+                        <SelectValue placeholder="Sort by" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="name-asc">Name (A-Z)</SelectItem>
+                        <SelectItem value="name-desc">Name (Z-A)</SelectItem>
+                        <SelectItem value="price-asc">Price (Low to High)</SelectItem>
+                        <SelectItem value="price-desc">Price (High to Low)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-
-                {/* Sort Filter */}
-                <div className="w-full sm:w-auto min-w-[140px]">
-                  <Select value={sortBy} onValueChange={handleSortChange}>
-                    <SelectTrigger className="bg-white/95 backdrop-blur-sm border-0 shadow-lg h-8 text-sm">
-                      <SelectValue placeholder="Sort by" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="name-asc">Name (A-Z)</SelectItem>
-                      <SelectItem value="name-desc">Name (Z-A)</SelectItem>
-                      <SelectItem value="price-asc">Price (Low to High)</SelectItem>
-                      <SelectItem value="price-desc">Price (High to Low)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
                 {/* Reset Filters Button */}
                 {hasActiveFilters && (
                   <Button 
@@ -380,6 +391,10 @@ const ShopPage = () => {
           </>
         )}
       </div>
+
+      {showLoginDialog && (
+        <LoginDialog open={showLoginDialog} onOpenChange={setShowLoginDialog} />
+      )}
     </div>
   );
 };

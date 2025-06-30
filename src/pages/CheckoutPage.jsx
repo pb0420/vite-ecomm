@@ -49,6 +49,7 @@ const CheckoutPage = () => {
   const [showPostcodeDropdown, setShowPostcodeDropdown] = useState(false);
   const [appliedPromo, setAppliedPromo] = useState(null);
   const [serviceFeePercent, setServiceFeePercent] = useState(3);
+  const [notes, setNotes] = useState("");
 
   useEffect(() => {
     const fetchInitialFee = async () => {
@@ -201,7 +202,7 @@ const CheckoutPage = () => {
     customer_address: customerDetails.address,
     customer_postcode: customerDetails.postcode,
     customer_city: customerDetails.city,
-    delivery_notes: customerDetails.deliveryNotes,
+    delivery_notes: notes,
     delivery_type: deliveryDetails.type,
     scheduled_delivery_time: deliveryDetails.scheduledTime,
     timeslot_id: deliveryDetails.timeslot_id,
@@ -339,6 +340,7 @@ const CheckoutPage = () => {
           </div>
         </div>
       </motion.div>
+
       {/* Proceed to Payment Button at the bottom of the page, above the footer */}
       <div className="flex justify-center w-full mt-8 mb-4">
         <Button
