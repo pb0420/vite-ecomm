@@ -314,13 +314,13 @@ const CheckoutPage = () => {
           </div>
 
           <div>
-              <a
-          href="/shop"
+              <Link
+          to="/shop"
           className="text-primary font-medium hover:underline text-sm flex items-center gap-1 mb-4"
           style={{ textDecoration: 'none' }}
         >
           Forgot something? <span className="underline">Continue Shopping</span>
-        </a>
+        </Link>
           </div>
 
           <motion.div 

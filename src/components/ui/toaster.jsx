@@ -14,14 +14,14 @@ import { Button } from '@/components/ui/button';
 function ViewCartButton() {
   const { openCart } = useCart();
   return (
-    <Button
-      size="sm"
-      className="bg-green-600 hover:bg-green-700 text-white ml-2 px-2 py-2 rounded"
+    <a
+      size="md"
+	  className='text-primary font-medium hover:underline text-lg flex items-center gap-1'
       onClick={openCart}
       tabIndex={0}
     >
-      <span style={{fontSize:'10px',padding:'4px', wordSpacing:'0.5px'}}>View Cart</span>
-    </Button>
+      <span style={{fontSize:'12px',padding:'4px', wordSpacing:'0.5px', cursor:'pointer'}}>View Cart</span>
+    </a>
   );
 }
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ShoppingCart, Trash2, Plus, Minus } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
 import { formatCurrency } from '@/lib/utils';
@@ -163,13 +163,13 @@ const CartDrawer = () => {
                 </div>
                 {cart.length > 0 && (
                   <div className="flex justify-center my-2">
-                    <a
-                      href="/shop"
+                    <Link
+                      to="/shop"
                       className="text-primary font-medium hover:underline text-sm flex items-center gap-1"
                       onClick={() => closeCart()}
                     >
                       Forgot something? <span className="underline">Continue Shopping</span>
-                    </a>
+                    </Link>
                   </div>
                 )}
                 <div className="p-4 border-t bg-muted/30">
