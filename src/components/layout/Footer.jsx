@@ -41,11 +41,8 @@ const Footer = () => {
               <a href="#" className="text-gray-500 hover:text-primary">
                 <Facebook className="w-5 h-5" />
               </a>
-              <a href="#" className="text-gray-500 hover:text-primary">
+              <a href="https://www.instagram.com/groceroo_adl?igsh=bXFmN2J2cHp3cHQ=" className="text-gray-500 hover:text-primary">
                 <Instagram className="w-5 h-5" />
-              </a>
-              <a href="#" className="text-gray-500 hover:text-primary">
-                <Twitter className="w-5 h-5" />
               </a>
             </div>
           </div>

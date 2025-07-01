@@ -20,7 +20,7 @@ function ViewCartButton() {
       onClick={openCart}
       tabIndex={0}
     >
-      <span style={{fontSize:'12px',padding:'4px', wordSpacing:'0.5px', cursor:'pointer'}}>View Cart</span>
+      <span style={{fontSize:'12px',padding:'4px', wordSpacing:'0.5px', cursor:'pointer'}}>View</span>
     </a>
   );
 }

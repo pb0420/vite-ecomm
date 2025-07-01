@@ -176,11 +176,6 @@ const HomePage = () => {
     return () => clearTimeout(timer);
   }, [searchQuery, user, navigate]);
 
-  // Remove the old openWhatsApp function
-  // const openWhatsApp = () => {
-  //   window.open('https://wa.me/61478477036', '_blank');
-  // };
-
   const iconClass = "w-5 h-5 text-primary";
   const getCatIcon = (cName) => {
     switch (cName.toLowerCase()) {
@@ -259,7 +254,7 @@ const HomePage = () => {
                 className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2"
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.2, duration: 0.4 }}
+                transition={{ delay: 0.1, duration: 0.2 }}
               >
                 {/* Location Pill - Left */}
                 <div className="inline-flex items-center bg-white/95 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg w-fit">
@@ -285,7 +280,7 @@ const HomePage = () => {
                 className="flex gap-1 w-full"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.4, duration: 0.5 }}
+                transition={{ delay: 0.2, duration: 0.3 }}
               >
                 <div className="flex-1 relative">
                   <Input
@@ -303,7 +298,7 @@ const HomePage = () => {
                 className="pt-2 flex justify-center gap-2"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.8, duration: 0.5 }}
+                transition={{ delay: 0.2, duration: 0.3 }}
               >
               </motion.div>
 
@@ -311,10 +306,10 @@ const HomePage = () => {
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.6, duration: 0.5 }}
+                transition={{ delay: 0.2, duration: 0.3 }}
                 className="relative"
               >
-                <div className="flex overflow-x-auto pb-1 space-x-6 scrollbar-hide px-4 md:px-0 md:justify-center">
+                <div className="flex overflow-x-auto pb-1 space-x-3 scrollbar-hide px-4 md:px-0 md:justify-center">
                   {categories.map((category) => (
                     <Link
                       key={category.id}
@@ -356,7 +351,7 @@ const HomePage = () => {
                 className="pt-2 flex justify-center md:max-w-[400px] lg:max-w-[400px] mx-auto gap-2"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.8, duration: 0.5 }}
+                transition={{ delay: 0.2, duration: 0.3 }}
               >
                 <Link to="/shop" className="block w-full max-w-[160px]">
                   <Button
@@ -373,7 +368,7 @@ const HomePage = () => {
                     variant="outline"
                     className="w-full h-10 md:h-12 bg-white/95 hover:bg-white border-2 border-white/50 shadow-lg text-[#2E8B57] hover:text-[#2E8B57] font-bold text-sm mx-auto backdrop-blur-sm transition-all duration-300 hover:scale-105"
                   >
-                  ..<Truck className="w-4 h-4 mr-2" />
+                  ...<Truck className="w-4 h-4 mr-2" />
                     Grocery Run
                   </Button>
                 </Link>
@@ -413,7 +408,7 @@ const HomePage = () => {
       )}
 
       {/* Featured Products Section */}
-      <section className="py-8 bg-white">
+      <section className="py-2 bg-white">
         <div className="container px-4 md:px-6">
           <div className="flex items-center justify-between mb-6">
             <motion.h2
@@ -446,69 +441,9 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Features Section */}
-      {/* <section className="py-8 bg-gradient-to-r from-gray-50 to-gray-100">
-        <div className="container px-4 md:px-6">
-          <div className="grid gap-6 md:grid-cols-3">
-            <motion.div
-              className="flex flex-col items-center text-center space-y-3 p-5 bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <div className="p-3 rounded-full bg-[#2E8B57]/10">
-                <Clock className="h-7 w-7 text-[#2E8B57]" />
-              </div>
-              <h3 className="text-lg font-semibold">Convenience</h3>
-              <p className="text-muted-foreground text-sm">
-                Get your groceries delivered right to your doorstep
-              </p>
-            </motion.div>
-
-            <motion.div
-              className="flex flex-col items-center text-center space-y-3 p-5 bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-            >
-              <div className="p-3 rounded-full bg-[#2E8B57]/10">
-                <ShieldCheck className="h-7 w-7 text-[#2E8B57]" />
-              </div>
-              <h3 className="text-lg font-semibold">Quality</h3>
-              <p className="text-muted-foreground text-sm">
-                Strict product quality assurance and control with safe handling
-              </p>
-            </motion.div>
-
-            <motion.div
-              className="flex flex-col items-center text-center space-y-3 p-5 bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <div className="p-3 rounded-full bg-[#2E8B57]/10">
-                <Handshake className="h-7 w-7 text-[#2E8B57]" />
-              </div>
-              <h3 className="text-lg font-semibold">Support</h3>
-              <p className="text-muted-foreground text-sm">
-                Fast and reliable customer support services online and via WhatsApp
-              </p>
-            </motion.div>
-          </div>
-        </div>
-      </section> */}
-
       {/* Integrate the AiChatBot component */}
       <AiChatBot />
 
-      {/* Remove the old WhatsApp Button */}
-      {/* <Button
-        onClick={openWhatsApp}
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg bg-[#25D366] hover:bg-[#25D366]/90 z-50"
-        size="icon"
-      >
-        <MessageCircle className="h-6 w-6 text-white" />
-      </Button> */}
 
       {showLoginDialog && (
         <LoginDialog open={showLoginDialog} onOpenChange={setShowLoginDialog} />
