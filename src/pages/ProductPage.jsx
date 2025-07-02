@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Minus, Plus, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
@@ -12,6 +12,7 @@ const ProductPage = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const { addToCart, updateQuantity, cart } = useCart();
+  const navigate = useNavigate();
   
   useEffect(() => {
     const fetchProduct = async () => {
@@ -87,10 +88,15 @@ const ProductPage = () => {
   return (
     <div className="container px-4 py-8 mx-auto md:px-6">
       <div className="mb-6">
-        <Link to="/shop" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
+          onClick={() => navigate(-1)}
+        >
           <ArrowLeft className="w-4 h-4 mr-1" />
-          Back to Shop
-        </Link>
+          Go Back
+        </Button>
       </div>
       
       <div className="grid gap-8 md:grid-cols-2">

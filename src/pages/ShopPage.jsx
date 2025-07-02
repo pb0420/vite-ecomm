@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Search, Filter, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -9,19 +9,24 @@ import ProductCard from '@/components/products/ProductCard';
 import { supabase } from '@/lib/supabaseClient';
 import { setQueryCache, getQueryCache } from '@/lib/queryCache';
 import LoginDialog from '@/components/auth/LoginDialog';
+import { useAuth } from '@/contexts/AuthContext';
 
 const PRODUCTS_PER_PAGE = 25;
 
 const ShopPage = () => {
+  const { user } = useAuth();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const featuredParam = queryParams.get('featured');
   const searchParam = queryParams.get('search');
+  const catFilterParam = queryParams.get('cat_filter');
+  const sortParam = queryParams.get('sort');
+  const navigate = useNavigate();
   
   const [searchInput, setSearchInput] = useState(searchParam || ''); // Input state for UI
   const [searchTerm, setSearchTerm] = useState(searchParam || ''); // Actual search term for API
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [sortBy, setSortBy] = useState('name-asc');
+  const [selectedCategory, setSelectedCategory] = useState(catFilterParam || 'all');
+  const [sortBy, setSortBy] = useState(sortParam || 'name-asc');
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -35,7 +40,6 @@ const ShopPage = () => {
     const timer = setTimeout(() => {
       if (searchInput.length >= 2 || searchInput.length === 0) {
         // Search limit for logged out users
-        const user = localStorage.getItem('user'); // or use context if available
         if (!user) {
           const count = parseInt(localStorage.getItem('search_count') || '0', 10);
           if (count >= 10) {
@@ -49,7 +53,7 @@ const ShopPage = () => {
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [searchInput]);
+  }, [user,searchInput]);
 
   useEffect(() => {
     fetchCategories();
@@ -61,6 +65,12 @@ const ShopPage = () => {
     setProducts([]);
     setHasMore(true);
     fetchProducts(true);
+
+    navigate({
+    pathname: location.pathname,
+    search: `search=${searchTerm}&cat_filter=${selectedCategory}&sort=${sortBy}`,
+  }, { replace: true });
+
   }, [searchTerm, selectedCategory, sortBy, featuredParam]);
 
   const fetchCategories = async () => {
@@ -240,7 +250,7 @@ const ShopPage = () => {
                     onChange={(e) => handleSearchInputChange(e.target.value)}
                   />
                   {searchInput.length > 0 && searchInput.length < 2 && (
-                    <p className="absolute -bottom-4 left-0 text-xs text-white/80">
+                    <p className="p-1 -bottom-4 left-0 text-xs text-white/80">
                       Enter at least 2 characters to search
                     </p>
                   )}

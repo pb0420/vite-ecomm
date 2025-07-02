@@ -45,7 +45,6 @@ export const AuthProvider = ({ children }) => {
 
 
       if (data) {
-        console.log(data)
         // format phone number if required
         const phoneNumber = data.phone;
         data.phone = phoneNumber.startsWith('61') ? `0${phoneNumber.replace(/^61/, '')}` : phoneNumber;
@@ -75,7 +74,7 @@ export const AuthProvider = ({ children }) => {
     const handleAuthStateChange = async (session) => {
       if (!isMounted) return;
 
-      console.log('Handling auth state change:', session); // Log auth state changes
+      // console.log('Handling auth state change:', session); // Log auth state changes
 
       if (session?.user) {
         setUser(session.user);

@@ -1,7 +1,7 @@
 // File: groceroo/src/pages/CategoryPage.jsx
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,6 +15,7 @@ const CategoryPage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState(''); // State for local search query
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCategoryAndProducts = async () => {
@@ -90,10 +91,15 @@ const CategoryPage = () => {
   return (
     <div className="container px-4 py-8 mx-auto md:px-6">
       <div className="mb-6">
-        <Link to="/categories" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
+          onClick={() => navigate(-1)}
+        >
           <ArrowLeft className="w-4 h-4 mr-1" />
-          Back to Categories
-        </Link>
+          Go Back
+        </Button>
       </div>
 
       <motion.div

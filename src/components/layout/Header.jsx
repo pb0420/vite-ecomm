@@ -78,7 +78,7 @@ const Header = () => {
            {isHome ? (
             <></>
       ) : (
-        <Home style={{marginLeft:'20px' ,color:"rgb(255, 255, 255)"}} className="w-5 h-5" aria-label="Home" />
+        <Home style={{marginLeft:'16px' ,color:"rgb(255, 255, 255)"}} className="w-5 h-5" aria-label="Home" />
       )}
         </Link>
 
@@ -91,7 +91,7 @@ const Header = () => {
           )}
         </nav>
 
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2">
           <Button variant="ghost" size="icon" className="relative hover:bg-white/20" onClick={toggleCart}>
             <ShoppingCart className="w-5 h-5 text-white" />
             {cartCount > 0 && (
@@ -103,9 +103,20 @@ const Header = () => {
             user ? (
               <div className="md:flex md:items-center md:space-x-2">
                 <Link to="/account">
-                  <Button variant="ghost" size="sm" className="flex items-center space-x-1 hover:bg-white/20 text-white">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="flex items-center space-x-1 text-white"
+                  >
                     <UserRound className="w-4 h-4" />
-                    <span>{user.name?.split(' ')[0] || 'My Account'}</span>
+                    <span>
+                      {user.name?.split(' ')
+                        .map(word => word[0])
+                        .join('')
+                        .toUpperCase()
+                        .slice(0, 4)
+                      }
+                    </span>
                   </Button>
                 </Link>
               </div>

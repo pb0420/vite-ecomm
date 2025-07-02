@@ -23,29 +23,31 @@ const CartDrawer = () => {
     navigate('/checkout');
   };
   
-  const drawerVariants = {
-    closed: {
-      x: '100%',
-      transition: {
-        type: 'spring',
-        stiffness: 300,
-        damping: 30
-      }
-    },
-    open: {
-      x: 0,
-      transition: {
-        type: 'spring',
-        stiffness: 300,
-        damping: 30
-      }
+ const drawerVariants = {
+  closed: {
+    x: '100%',
+    transition: {
+      type: 'spring',
+      stiffness: 180, // lower = softer
+      damping: 24,    // higher = less bounce
+      mass: 0.8
     }
-  };
-  
-  const overlayVariants = {
-    closed: { opacity: 0 },
-    open: { opacity: 1 }
-  };
+  },
+  open: {
+    x: 0,
+    transition: {
+      type: 'spring',
+      stiffness: 180,
+      damping: 24,
+      mass: 0.8
+    }
+  }
+};
+
+const overlayVariants = {
+  closed: { opacity: 0, transition: { duration: 0.18 } },
+  open: { opacity: 1, transition: { duration: 0.28 } }
+};
 
   return (
     <AnimatePresence>
@@ -53,6 +55,7 @@ const CartDrawer = () => {
         <>
           <motion.div 
             className="fixed inset-0 z-50 bg-black/50"
+            style={{ willChange: 'transform' }}
             initial="closed"
             animate="open"
             exit="closed"

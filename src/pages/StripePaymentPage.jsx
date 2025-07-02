@@ -75,7 +75,7 @@ const StripePaymentPage = () => {
         ...orderData,
         payment_data
       }
-      console.log(orderDataComplete)
+      // console.log(orderDataComplete)
       const order = await addOrder(orderDataComplete);
       clearCart();
       navigate(`/order-confirmation/${order.id}`);
