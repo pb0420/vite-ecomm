@@ -120,7 +120,8 @@ const ShopPage = () => {
         }
         if (searchTerm && searchTerm.length >= 2) {
           //query = query.or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
-          query = query.textSearch('fts', `${searchTerm}:*`);
+          const searchText = searchTerm.replace(/\s+/g, '+');
+          query = query.textSearch('fts', `${searchText}:*`);
         }
         if (selectedCategory !== 'all') {
           const categoryId = parseInt(selectedCategory);

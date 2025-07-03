@@ -60,11 +60,6 @@ const StoreSelector = ({
     });
   }, [stores, userLocation]);
 
-  const getMinimumOrder = (storeCount) => {
-    const baseAmount = 30;
-    return baseAmount;
-    //return baseAmount + (storeCount - 1) * 25; // $30 for first store, +$25 for each additional
-  };
 
   const handleStoreSelect = (store) => {
     const isSelected = selectedStores.some(s => s.id === store.id);
@@ -75,7 +70,7 @@ const StoreSelector = ({
       const newSelectedStores = [...selectedStores, {
         id: store.id,
         name: store.name,
-        estimatedTotal: getMinimumOrder(selectedStores.length + 1),
+        estimatedTotal: store.minimum_order_amount,
         notes: ''
       }];
       onStoreToggle(newSelectedStores);
@@ -124,7 +119,7 @@ const StoreSelector = ({
         {sortedStores.map((store) => {
           const isSelected = selectedStores.some(s => s.id === store.id);
           const selectedStore = selectedStores.find(s => s.id === store.id);
-          const minimumOrder = store.minimum_order_amount || 30;
+          const minimumOrder = store.minimum_order_amount;
           // Distance
           const distance =
             userLocation && store.lat && store.lng
@@ -134,7 +129,7 @@ const StoreSelector = ({
           const suggestedItems = Array.isArray(store.store_suggested_items)
             ? store.store_suggested_items
             : [];
-
+        
           return (
             <motion.div
               key={store.id}
@@ -143,7 +138,7 @@ const StoreSelector = ({
               transition={{ duration: 0.3 }}
             >
               <Card className={`transition-all ${isSelected ? 'ring-2 ring-primary shadow-lg' : 'hover:shadow-md'}`}>
-                <CardHeader className="pb-3 flex flex-row items-center justify-between">
+                <CardHeader className="pb-3 flex flex-row items-center justify-between border-b">
                   <div className="flex items-center space-x-3">
                     <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center overflow-hidden">
                       {store.image ? (
@@ -157,7 +152,12 @@ const StoreSelector = ({
                       )}
                     </div>
                     <div>
-                      <CardTitle className="text-base">{store.name}</CardTitle>
+                      <div className="flex items-center gap-2">
+                        <CardTitle className="text-base">{store.name}</CardTitle>
+                        <Badge className="bg-primary/10 text-primary font-semibold">
+                          Min ${minimumOrder}
+                        </Badge>
+                      </div>
                       <div className="text-xs text-muted-foreground">{store.address}</div>
                       <div className="flex items-center gap-2 mt-1">
                         <span className="text-xs">
@@ -181,7 +181,7 @@ const StoreSelector = ({
                   </Button>
                 </CardHeader>
                 {isSelected && (
-                  <CardContent className="space-y-4 border-t pt-4">
+                  <CardContent className="space-y-4 border-t pt-4 bg-gray-50">
                     {/* Suggested Items */}
                     {suggestedItems.length > 0 && (
                       <div>
@@ -193,7 +193,7 @@ const StoreSelector = ({
                             const selectedQty = match ? parseInt(match[0].split('x')[1], 10) : 1;
                             const checked = !!match;
                             return (
-                              <div key={item.name} className="flex items-center gap-1 bg-gray-100 rounded px-2 py-1">
+                              <div key={item.name} className="flex items-center gap-1 bg-white border rounded px-2 py-1 shadow-sm">
                                 <input
                                   type="checkbox"
                                   checked={checked}
@@ -201,7 +201,7 @@ const StoreSelector = ({
                                     handleSuggestedItemChange(store.id, item, e.target.checked, selectedQty)
                                   }
                                 />
-                                <span className="text-xs">{item.name} : Qty &nbsp;</span>
+                                <span className="text-xs">{item.name}:</span>
                                 <input
                                   type="number"
                                   min={1}
@@ -218,6 +218,7 @@ const StoreSelector = ({
                         </div>
                       </div>
                     )}
+                    <hr className="my-2" />
                     {/* Estimated Total */}
                     <div>
                       <Label htmlFor={`estimated-${store.id}`}>Estimated Total ($)</Label>

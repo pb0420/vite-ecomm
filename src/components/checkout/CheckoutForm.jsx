@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import AddressSelector from '@/components/checkout/AddressSelector';
 import AddressAutocomplete from '@/components/ui/address-autocomplete';
 import { supabase } from '@/lib/supabaseClient';
+import { fetchPostcodes } from '@/lib/fetchPostcodes';
 
 const CheckoutForm = ({ onDetailsChange, errors }) => {
   const { user } = useAuth();
@@ -26,6 +27,15 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
   const [postcodeSearch, setPostcodeSearch] = useState('');
   const [showPostcodeDropdown, setShowPostcodeDropdown] = useState(false);
 
+  const NOTE_SUGGESTIONS = [
+    "Don't ring doorbell, leave at door\n",
+    "Call on arrival\n",
+    "Leave with reception\n",
+    "Knock softly, baby sleeping\n",
+    "Text me before delivery\n",
+    "Hand to me only\n"
+    ];
+
   // Pre-fill form if user is logged in
   useEffect(() => {
     if (user) {
@@ -42,22 +52,16 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
 
   // Fetch postcodes
   useEffect(() => {
-    const fetchPostcodes = async () => {
-      const { data, error } = await supabase
-        .from('postcodes')
-        .select('*')
-        .order('suburb');
-      
-      if (error) {
+    const loadPostcodes = async () => {
+      try {
+        const data = await fetchPostcodes();
+        setPostcodes(data);
+        setFilteredPostcodes(data);
+      } catch (error) {
         console.error('Error fetching postcodes:', error);
-        return;
       }
-      
-      setPostcodes(data);
-      setFilteredPostcodes(data);
     };
-
-    fetchPostcodes();
+    loadPostcodes();
   }, []);
 
   useEffect(() => {
@@ -219,12 +223,12 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
           <Label htmlFor="deliveryNotes">Delivery Notes (Optional)</Label>
             {/* Delivery Notes with Suggestions */}
            <div className="flex flex-wrap gap-2 mb-2">
-              {["Don't ring the doorbell","Leave at door","Call on arrival","Hand to me only","Knock softly","Text when here"].map(suggestion => (
+              {NOTE_SUGGESTIONS.map(suggestion => (
                 <button
                   type="button"
                   key={suggestion}
                   className="px-3 py-1 rounded-full bg-gray-100 hover:bg-primary/10 text-xs border border-gray-200 text-gray-700 transition"
-                  onClick={() => setFormData(prev => ({ ...prev, deliveryNotes: formData.deliveryNotes + suggestion+'\n' }))}
+                  onClick={() => setFormData(prev => ({ ...prev, deliveryNotes: formData.deliveryNotes + suggestion }))}
                 >
                   {suggestion}
                 </button>

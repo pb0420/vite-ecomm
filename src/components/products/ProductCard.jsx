@@ -60,7 +60,7 @@ const ProductCard = ({ product }) => {
         </div>
         
         <div className="p-3">
-          <h3 className="text-sm font-medium truncate">{product.name}</h3>
+          <h3 className="text-sm font-medium line-clamp-2">{product.name}</h3>
           <div className="flex items-center justify-between mt-1">
             <div className="flex flex-col">
               <span className="text-base font-semibold">{formatCurrency(product.price)}</span>

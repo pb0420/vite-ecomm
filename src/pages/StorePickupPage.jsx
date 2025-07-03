@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Store, Clock, Calendar, MessageCircle, Bot, MapPin, Phone, Search, CreditCard } from 'lucide-react';
+import { Store, Clock, Calendar, MessageCircle, Bot, MapPin, Phone, Search, CreditCard, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -26,6 +26,8 @@ import { Link } from 'react-router-dom';
 import AddressSelector from '@/components/checkout/AddressSelector';
 import { formatCurrency } from '@/lib/utils';
 import { Calendar as CalendarPicker } from '@/components/ui/calendar';
+import { fetchPostcodes } from '@/lib/fetchPostcodes';
+
 import { 
   formatDateForTimezone, 
   formatTimeToAMPM, 
@@ -38,7 +40,8 @@ const NOTE_SUGGESTIONS = [
   "Call on arrival\n",
   "Leave with reception\n",
   "Knock softly, baby sleeping\n",
-  "Text me before delivery\n"
+  "Text me before delivery\n",
+  "Hand to me only\n"
 ];
 
 const StorePickupPage = () => {
@@ -81,7 +84,7 @@ const StorePickupPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    Promise.all([fetchStores(), fetchPostcodes(), fetchTimezone()]);
+    Promise.all([fetchStores(), loadPostcodes(), fetchTimezone()]);
     if (user) {
       fetchUpcomingOrders();
       // Auto-populate contact preferences if user has phone
@@ -176,22 +179,17 @@ const StorePickupPage = () => {
     }
   };
 
-  const fetchPostcodes = async () => {
+  const loadPostcodes = async () => {
     try {
-      const { data, error } = await supabase
-        .from('postcodes')
-        .select('*')
-        .order('suburb');
-      
-      if (error) throw error;
-      setPostcodes(data || []);
-      setFilteredPostcodes(data || []);
+      const data = await fetchPostcodes();
+      setPostcodes(data);
+      setFilteredPostcodes(data);
     } catch (error) {
       console.error('Error fetching postcodes:', error);
-      toast({ variant: "destructive", title: "Error", description: "Could not load postcodes." });
     }
   };
-
+  
+  
   const fetchAvailableTimeSlots = async (date) => {
     setLoadingSlots(true);
     try {
@@ -626,9 +624,9 @@ const StorePickupPage = () => {
             <TabsContent value="new-order" className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Schedule a new Grocery Run</CardTitle>
+                  <CardTitle>New Grocery Run ...<Truck style={{display:'inline'}}/></CardTitle>
                   <CardDescription>
-                    Add one or more stores and provide your lists/notes anytime before your slot. We will shop for you and deliver everything in one trip.
+                    Add one or more stores, provide your lists/notes/photos before your slot. We will shop for you and deliver everything in one trip.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>

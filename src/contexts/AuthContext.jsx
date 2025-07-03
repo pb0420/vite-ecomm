@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from '@/components/ui/use-toast';
+import { setQueryCache, getQueryCache, clearQueryCache } from '@/lib/queryCache';
 
 const AuthContext = createContext();
 
@@ -27,7 +28,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const { data, error, status } = await supabase
         .from('profiles')
-        .select(`name, phone, address, is_admin, addresses`)
+        .select(`name,email, phone, address, is_admin, addresses, ai_chat`)
         .eq('id', userId)
         .single();
 
@@ -50,6 +51,8 @@ export const AuthProvider = ({ children }) => {
         data.phone = phoneNumber.startsWith('61') ? `0${phoneNumber.replace(/^61/, '')}` : phoneNumber;
         setProfile(data);
         setIsAdmin(data.is_admin === true);
+        setQueryCache('user_profile', data, 1440); // cache for 1 day (1440 minutes)
+
         return data;
       } else {
         setProfile(null);
@@ -69,6 +72,13 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     let isMounted = true;
+
+    const cachedProfile = getQueryCache('user_profile');
+    if (cachedProfile) {
+      setProfile(cachedProfile);
+      setIsAdmin(cachedProfile.is_admin === true);
+      setLoading(false);
+    }
 
     // Function to handle setting user, profile, isAdmin, and loading state
     const handleAuthStateChange = async (session) => {
@@ -191,6 +201,8 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     setLoading(true); // Set loading true when logout starts
     const { error } = await supabase.auth.signOut();
+    clearQueryCache('user_profile');
+
     // The onAuthStateChange listener will handle state updates and setLoading(false)
 
     if (error) {
@@ -202,7 +214,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const updateUserInfo = async (newUserData) => {
+  const updateUserInfo = async (newUserData,toasty = true) => {
     if (!user) return;
     setLoading(true); // Set loading true when updating starts
 
@@ -210,9 +222,10 @@ export const AuthProvider = ({ children }) => {
       .from('profiles')
       .update({
         name: newUserData.name,
-        phone: newUserData.phone,
+        email: newUserData.email,
         address: newUserData.address,
         addresses: newUserData.addresses,
+        ai_chat:newUserData.ai_chat,
         updated_at: new Date(),
       })
       .eq('id', user.id)
@@ -226,13 +239,15 @@ export const AuthProvider = ({ children }) => {
       // Update profile state directly here as this is a profile update, not an auth state change
       setProfile(data);
       setIsAdmin(data.is_admin === true);
-      toast({ title: "Profile Updated", description: "Your information has been updated." });
+      setQueryCache('user_profile', data, 1440); // update cache
+      if(toasty)
+        toast({ title: "Profile Updated", description: "Your information has been updated." });
     }
     setLoading(false); // Set loading false after update completes (success or error)
   };
 
 
-  const combinedUser = user && profile ? { ...user, ...profile, email: user.email } : user;
+  const combinedUser = user && profile ? { ...user, ...profile } : user;
 
 
   return (

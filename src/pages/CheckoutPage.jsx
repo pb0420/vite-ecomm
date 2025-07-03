@@ -20,6 +20,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { formatCurrency } from '@/lib/utils';
 import { Link } from 'react-router-dom';
 import { CreditCard } from 'lucide-react';
+import { fetchPostcodes } from '@/lib/fetchPostcodes';
 
 const CheckoutPage = () => {
   const { cart, getCartTotal, clearCart } = useCart();
@@ -69,20 +70,15 @@ const CheckoutPage = () => {
       }
     };
 
-    const fetchPostcodes = async () => {
-      const { data, error } = await supabase
-        .from('postcodes')
-        .select('*')
-        .order('suburb');
-      
-      if (error) {
-        console.error('Error fetching postcodes:', error);
-        return;
-      }
-      
+  const loadPostcodes = async () => {
+    try {
+      const data = await fetchPostcodes();
       setPostcodes(data);
       setFilteredPostcodes(data);
-    };
+    } catch (error) {
+      console.error('Error fetching postcodes:', error);
+    }
+  };
 
     const checkIfAccountSet = () => {
       if (user) {
@@ -96,7 +92,7 @@ const CheckoutPage = () => {
     };
 
     fetchInitialFee();
-    fetchPostcodes();
+    loadPostcodes();
     checkIfAccountSet();
   }, [user]);
 

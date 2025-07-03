@@ -11,6 +11,8 @@ import { formatCurrency } from '@/lib/utils';
 import { supabase } from '@/lib/supabaseClient';
 import AddressManager from '@/components/account/AddressManager';
 import UpcomingOrders from '@/components/pickup/UpcomingOrders';
+import { toast } from '@/components/ui/use-toast';
+
 
 const AccountPage = () => {
   const { user, updateUserInfo, logout, loading: authLoading } = useAuth();
@@ -28,8 +30,8 @@ const AccountPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!authLoading && !user) {
-      navigate('/login');
+    if (!user) {
+      navigate('/');
     } else if (user) {
       setFormData({
         name: user.name || '',
@@ -131,7 +133,7 @@ const AccountPage = () => {
     const newErrors = {};
     if (!formData.name.trim()) newErrors.name = 'Name is required';
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
+      //newErrors.email = 'Email is required';  // do nothing
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Email is invalid';
     }

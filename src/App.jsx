@@ -12,7 +12,6 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import CartDrawer from '@/components/cart/CartDrawer';
 import { Toaster } from '@/components/ui/toaster';
-import StripeCheckoutForm from '@/components/checkout/StripeCheckoutForm';
 
 // Pages
 import HomePage from '@/pages/HomePage';

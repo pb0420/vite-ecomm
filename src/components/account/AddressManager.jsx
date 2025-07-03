@@ -9,6 +9,8 @@ import { toast } from '@/components/ui/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabaseClient';
 import AddressAutocomplete from '@/components/ui/address-autocomplete';
+import { fetchPostcodes } from '@/lib/fetchPostcodes';
+
 
 const AddressManager = () => {
   const { user, updateUserInfo } = useAuth();
@@ -24,22 +26,16 @@ const AddressManager = () => {
   const addresses = user?.addresses || [];
 
   useEffect(() => {
-    const fetchPostcodes = async () => {
-      const { data, error } = await supabase
-        .from('postcodes')
-        .select('*')
-        .order('suburb');
-      
-      if (error) {
+    const loadPostcodes = async () => {
+      try {
+        const data = await fetchPostcodes();
+        setPostcodes(data);
+        setFilteredPostcodes(data);
+      } catch (error) {
         console.error('Error fetching postcodes:', error);
-        return;
       }
-      
-      setPostcodes(data);
-      setFilteredPostcodes(data);
     };
-
-    fetchPostcodes();
+    loadPostcodes();
   }, []);
 
   useEffect(() => {
