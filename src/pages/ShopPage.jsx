@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Search, Filter, X } from 'lucide-react';
+import { Search, Filter, X, ArrowUpDown, Tag  } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -204,7 +204,7 @@ const ShopPage = () => {
       <section className="relative min-h-[280px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
         <div className="absolute inset-0">
           <img 
-            src="/outbanner.webp" 
+            src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/outbanner.webp" 
             alt="Grocery Delivery" 
             className="w-full h-full object-cover opacity-20"
           />
@@ -225,7 +225,7 @@ const ShopPage = () => {
                   {featuredParam === 'true' ? 'Featured Products' : 'Shop'}
                 </h1>
                 <p className="text-white/90 text-sm">
-                  Browse from our selection of groceries, household essentials and more.
+                  Browse from a selection of groceries, household essentials and more.
                 </p>
                 {/* {searchParam && (
                   <p className="text-white/80 text-xs mt-1">
@@ -267,7 +267,9 @@ const ShopPage = () => {
               >
                 {/* Category Filter and Sort Filter in same line, less wide */}
                 <div className="flex gap-2 w-full sm:w-auto justify-center">
-                  <div className="min-w-[120px] w-full">
+                  {/* Category Filter */}
+                  <div className="min-w-[120px] w-full flex items-center">
+                    <Filter className="w-5 h-5 text-white mr-2" />
                     <Select value={selectedCategory} onValueChange={handleCategoryChange}>
                       <SelectTrigger className="bg-white/95 backdrop-blur-sm border-0 shadow-lg h-8 text-sm">
                         <SelectValue placeholder="All Categories" />
@@ -282,7 +284,10 @@ const ShopPage = () => {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="min-w-[140px] w-[140px]">
+                  
+                  {/* Sort Filter */}
+                  <div className="min-w-[140px] w-[140px] flex items-center">
+                    <ArrowUpDown className="w-5 h-5 text-white mr-2" />
                     <Select value={sortBy} onValueChange={handleSortChange}>
                       <SelectTrigger className="bg-white/95 backdrop-blur-sm border-0 shadow-lg h-8 text-sm">
                         <SelectValue placeholder="Sort by" />

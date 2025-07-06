@@ -19,12 +19,12 @@ export default defineConfig({
         theme_color: '#2E8B57',
         icons: [
           {
-            src: '/favicon.webp',
+            src: 'https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/favicon.webp',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: '/favicon2.webp',
+            src: 'https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/favicon.webp',
             sizes: '512x512',
             type: 'image/png'
           }

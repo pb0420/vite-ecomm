@@ -407,6 +407,7 @@ const AdminPickupOrdersTab = () => {
                                     <p><strong>Phone:</strong> {selectedOrder.phone_number || 'N/A'}</p>
                                     <p><strong>Address:</strong> {selectedOrder.delivery_address}</p>
                                     <p><strong>Postcode:</strong> {selectedOrder.postcode}</p>
+                                    <p><strong>Notes:</strong> {selectedOrder.notes}</p>
                                   </div>
                                 </div>
                                 <div>

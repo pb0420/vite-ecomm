@@ -297,6 +297,7 @@ const AdminOrdersTab = () => {
                                   <p><strong>Email:</strong> {selectedOrder.customer_email}</p>
                                   <p><strong>Phone:</strong> {selectedOrder.customer_phone}</p>
                                   <p><strong>Address:</strong> {selectedOrder.customer_address}</p>
+                                  <p><strong>Notes:</strong> {selectedOrder.delivery_notes}</p>
                                 </div>
                               </div>
                               <div>

@@ -37,7 +37,7 @@ const ProductCard = ({ product }) => {
           <img  
             alt={product.name}
             className="w-full h-full object-cover"
-            src={product.image_url || "/product-placeholder.webp"} 
+            src={product.image_url || "https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/product-placeholder.webp"} 
           />
           
           {product.featured && (

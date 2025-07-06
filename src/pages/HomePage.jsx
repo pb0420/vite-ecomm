@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { color, motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, Clock, ShieldCheck, MessageCircle, Handshake, ShoppingCart, CupSoda, EggFried, Cookie, Hamburger, Croissant, Apple, Banana, Beef, Candy, Fish, Utensils, Car, MapPinCheckInside, Truck, Store, Search } from 'lucide-react';
+import { ArrowRight, Clock, ShieldCheck, MessageCircle, Handshake, ShoppingCart, CupSoda, EggFried, Cookie, Hamburger, Croissant, Apple, Banana, Beef, Candy, Fish, Utensils, Car, MapPinCheckInside, Truck, Store, Search, Locate } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import ProductCard from '@/components/products/ProductCard';
@@ -31,14 +31,14 @@ const AddToHomeScreenToast = ({ onClose, platform }) => (
     <button onClick={onClose} className="ml-1 mr-2 text-lg font-bold">×</button>
     <span>
       {platform === 'ios'
-        ? 'Install the app on your iOS device: tap Share, then "Add to Home Screen".'
-        : 'Install the app: tap the menu and "Add to Home screen".'}
+        ? 'Install the web-app on your iOS device: tap Share, then "Add to Home Screen".'
+        : 'Install the web-app: tap the menu and "Add to Home screen".'}
     </span>
   </div>
 );
 
 const HomePage = () => {
-  const { user } = useAuth();
+  const { user, userLocation, getUserLocation } = useAuth();
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [previouslyOrderedProducts, setPreviouslyOrderedProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -48,6 +48,8 @@ const HomePage = () => {
   const [showA2HS, setShowA2HS] = useState(false);
   const [platform, setPlatform] = useState(null);
   const [showLoginDialog, setShowLoginDialog] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
+  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -149,19 +151,12 @@ const HomePage = () => {
     }
   };
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
-    } else {
-      navigate('/shop');
-    }
-  };
-
   // Debounced search navigation
   useEffect(() => {
     if (!searchQuery) return;
+    setSearchLoading(true);
     const timer = setTimeout(() => {
+    setSearchLoading(false);
       // Search limit for logged out users
       if (!user) {
         const count = parseInt(localStorage.getItem('search_count') || '0', 10);
@@ -172,42 +167,10 @@ const HomePage = () => {
         localStorage.setItem('search_count', (count + 1).toString());
       }
       navigate(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
-    }, 500);
+    }, 650);
     return () => clearTimeout(timer);
   }, [searchQuery, user, navigate]);
 
-  const iconClass = "w-5 h-5 text-primary";
-  const getCatIcon = (cName) => {
-    switch (cName.toLowerCase()) {
-      case "beverages":
-      case "soda":
-      case "drinks":
-        return <CupSoda className={iconClass} />;
-      case "dairy & eggs":
-        return <EggFried className={iconClass} />;
-      case "cookies":
-      case "biscuits":
-        return <Cookie className={iconClass} />;
-      case "burgers":
-      case "fast food":
-        return <Hamburger className={iconClass} />;
-      case "bakery":
-        return <Croissant className={iconClass} />;
-      case "fruits":
-        return <Apple className={iconClass} />;
-      case "meat":
-        return <Beef className={iconClass} />;
-      case "confectionary":
-      case "candy": // Added candy case
-        return <Candy className={iconClass} />;
-      case "seafood":
-        return <Fish className={iconClass} />;
-      case "kitchen":
-        return <Utensils className={iconClass} />;
-      default:
-        return <Clock className={iconClass} />;
-    }
-  }
 
   useEffect(() => {
     if (window.innerWidth > 768) return; // Only show on small screens
@@ -230,50 +193,55 @@ const HomePage = () => {
   return (
     <div className="flex flex-col min-h-screen">
       {showA2HS && <AddToHomeScreenToast onClose={handleCloseA2HS} platform={platform} />}
-      {/* Hero Section - Made smaller */}
       <section className="relative min-h-[350px] h-[40vh] max-h-[500px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
         <div className="absolute inset-0">
           <img
-            src="/outbanner.webp"
+            src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/outbanner.webp"
             alt="Grocery delivery"
             className="w-full h-full object-cover opacity-30"
           />
           <div className="absolute inset-0 bg-gradient-to-br from-[#2E8B57]/90 via-[#3CB371]/80 to-[#98FB98]/70" />
         </div>
-
+      
         <div className="container relative h-full px-4 md:px-6">
-          <div className="flex flex-col justify-center h-full max-w-4xl mx-auto py-4 md:py-6">
+          <div className="flex flex-col justify-center h-full max-w-4xl mx-auto pb-6 md:pt-8 md:pb-6">
             <motion.div
               className="space-y-3 md:space-y-4"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              {/* Location and Delivery Time Pills */}
+              {/* Location Row */}
               <motion.div
-                className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2"
+                className="flex items-center justify-between mb-2"
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.1, duration: 0.2 }}
               >
-                {/* Location Pill - Left */}
-                <div className="inline-flex items-center bg-white/95 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg w-fit">
-                  <MapPinCheckInside className="w-3 h-3 text-[#fd7507] mr-1.5" />
-                  <span className="text-[#2E8B57] font-semibold text-xs">Adelaide &nbsp; </span>  <Clock className="w-3 h-3 text-[#2E8B57] mr-1.5" />
-                  <span className="text-[#2E8B57] font-small text-xs">
-                     {deliveryTime}m
-                  </span>
+                {/* Left: Orange marker and Adelaide */}
+                <div className="flex items-center gap-2 p-1">
+                  <MapPinCheckInside className="w-7 h-7 text-[#fd7507]" />
+                  <span className="text-white font-bold text-base">Adelaide</span>
                 </div>
-
-                {/* Delivery Time Pill - Right */}
-                {/* <div className="inline-flex items-center bg-white/95 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg w-fit sm:ml-auto">
-                  <Clock className="w-3 h-3 text-[#2E8B57] mr-1.5" />
-                  <span className="text-[#2E8B57] font-small text-xs">
-                    Delivering in: {deliveryTime}m
-                  </span>
-                </div> */}
+                {/* Right: Delivery time or Get Location */}
+                <div>
+                  {userLocation ? (
+                    <span className="inline-flex items-center gap-1 bg-[#fd7507] text-white text-sm font-semibold px-2 py-1 rounded-full shadow">
+                      <Clock className="w-3 h-3 text-white font-semibold text-base" />
+                      {deliveryTime} minutes
+                    </span>
+                  ) : (
+                    <Button
+                      size="sm"
+                      className="bg-[#fd7507] text-white font-semibold px-3 py-1 rounded-full shadow"
+                      onClick={getUserLocation}
+                    >
+                      <Locate />
+                    </Button>
+                  )}
+                </div>
               </motion.div>
-
+      
               {/* Search Bar */}
               <motion.form
                 onSubmit={e => e.preventDefault()}
@@ -288,8 +256,16 @@ const HomePage = () => {
                     placeholder="Search for groceries and more..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="h-10 md:h-12 pl-3 bg-white/95 backdrop-blur-sm border-0 shadow-lg text-gray-800 placeholder:text-gray-500 text-sm"
+                    className="h-12 md:h-12 pl-3 bg-white/95 backdrop-blur-sm border-0 shadow-lg text-gray-800 placeholder:text-gray-500 text-sm"
                   />
+                   {searchLoading && (
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2">
+                        <svg className="animate-spin h-5 w-5 text-gray-400" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+                        </svg>
+                      </span>
+                    )}
                 </div>
               </motion.form>
 
@@ -309,7 +285,7 @@ const HomePage = () => {
                 transition={{ delay: 0.2, duration: 0.3 }}
                 className="relative"
               >
-                <div className="flex overflow-x-auto pb-1 space-x-3 scrollbar-hide px-4 md:px-0 md:justify-center">
+                <div className="flex overflow-x-auto pb-1 space-x-3 scrollbar-hide px-2 md:px-0 md:justify-center">
                   {categories.map((category) => (
                     <Link
                       key={category.id}
@@ -326,9 +302,6 @@ const HomePage = () => {
                             e.target.nextSibling.style.display = 'flex';
                           }}
                         />
-                        <div className="w-12 h-12 md:w-14 md:h-14 hidden items-center justify-center">
-                          {getCatIcon(category.name)}
-                        </div>
                       </div>
                       <span className="text-xs font-medium text-white/90 group-hover:text-white transition-colors block truncate max-w-[60px] md:max-w-[75px]">
                         {category.name}
@@ -348,12 +321,12 @@ const HomePage = () => {
 
               {/* Grocery Run Button */}
               <motion.div
-                className="pt-2 flex justify-center md:max-w-[400px] lg:max-w-[400px] mx-auto gap-2"
+                className="md:pb-2 pt-2 flex justify-center md:max-w-[400px] lg:max-w-[400px] mx-auto gap-2"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.3 }}
               >
-                <Link to="/shop" className="block w-full max-w-[160px]">
+                <Link to="/shop" className="block w-full max-w-[120px]">
                   <Button
                     size="lg"
                     style={{ background: '#fd7507', color: 'white' }}

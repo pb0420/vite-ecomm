@@ -257,7 +257,7 @@ const PickupOrderDetailsPage = () => {
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <Package className="w-5 h-5 mr-2" />
-                  Order Summary
+                  Summary
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -304,6 +304,12 @@ const PickupOrderDetailsPage = () => {
                   <span className="text-sm text-muted-foreground">Delivery Fee:</span>
                   <span className="text-sm">{formatCurrency(order.fees_data?.deliveryFee || 0)}</span>
                 </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Notes:</span>
+                  <span className="text-sm">{order.notes}</span>
+                </div>
+
               </CardContent>
             </Card>
 
@@ -312,7 +318,7 @@ const PickupOrderDetailsPage = () => {
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <Store className="w-5 h-5 mr-2" />
-                  Store Orders
+                  Stores Selected
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">

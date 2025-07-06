@@ -49,7 +49,7 @@ const CategoriesPage = () => {
       <section className="relative h-[30vh] min-h-[200px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
         <div className="absolute inset-0">
           <img 
-            src="/outbanner.webp" 
+            src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/outbanner.webp" 
             alt="Fresh groceries" 
             className="w-full h-full object-cover opacity-20"
           />

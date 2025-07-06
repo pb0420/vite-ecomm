@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { User, Package, LogOut, Store } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,6 +21,13 @@ const AccountPage = () => {
   const [loadingOrders, setLoadingOrders] = useState(true);
   const navigate = useNavigate();
 
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tab = searchParams.get('tab') || 'profile';
+  const handleTabChange = (value) => {
+    console.log(value)
+    setSearchParams({ tab: value });
+  };
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -30,6 +37,7 @@ const AccountPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
+    if (authLoading) return;
     if (!user) {
       navigate('/');
     } else if (user) {
@@ -208,10 +216,10 @@ const AccountPage = () => {
         transition={{ duration: 0.3 }}
         className="text-3xl font-bold tracking-tight mb-6"
       >
-        My Account
+        My Account <User style={{display:'inline'}} />
       </motion.h1>
 
-      <Tabs defaultValue="profile" className="space-y-6">
+      <Tabs value={tab} onValueChange={handleTabChange} className="space-y-6">
         <TabsList className="grid w-full grid-cols-3 md:w-auto md:inline-flex">
           <TabsTrigger value="profile" className="flex items-center">
             <User className="w-4 h-4 mr-2" />Profile

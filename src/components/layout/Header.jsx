@@ -34,39 +34,14 @@ const Header = () => {
     open: { opacity: 1, x: 0, transition: { type: 'spring', stiffness: 300, damping: 30 } }
   };
 
-  const [userLocation, setUserLocation] = useState(() => {
-    const stored = localStorage.getItem('userLocation');
-    return stored ? JSON.parse(stored) : null;
-  });
-
-  useEffect(() => {
-    if (!userLocation) {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            const coords = {
-              lat: pos.coords.latitude,
-              lng: pos.coords.longitude,
-            };
-            setUserLocation(coords);
-            localStorage.setItem('userLocation', JSON.stringify(coords));
-          },
-          (err) => {
-            // User denied or error
-          }
-        );
-      }
-    }
-  }, [userLocation]);
-
   return (
     <header className="sticky top-0 z-40 w-full bg-gradient-to-r from-[#2E8B57] via-[#3CB371] to-[#98D598] border-b shadow-sm">
       <div className="container flex items-center justify-between h-16 px-4 mx-auto md:px-6">
         <Link to="/" className="flex items-center space-x-2">
-          {/* <img src="/logo.webp" alt="Groceroo Logo" style={{width:'180px',height:'60px'}} /> */}
+          {/* <img src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/logo.webp" alt="Groceroo Logo" style={{width:'180px',height:'60px'}} /> */}
            <div
             style={{
-              backgroundImage: 'url(/logo-plain.webp)',
+              backgroundImage: 'url(https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/logo-plain.webp)',
               backgroundSize: 'contain',
               backgroundRepeat: 'no-repeat',
               backgroundPosition: 'center',
@@ -78,7 +53,13 @@ const Header = () => {
            {isHome ? (
             <></>
       ) : (
-        <Home style={{marginLeft:'16px' ,color:"rgb(255, 255, 255)"}} className="w-5 h-5" aria-label="Home" />
+                <img
+          src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/home-icon.webp"
+          alt="Home"
+          style={{ marginLeft: '16px', width: '20px', height: '20px' }}
+          className="w-5 h-5"
+          aria-label="Home"
+        />
       )}
         </Link>
 

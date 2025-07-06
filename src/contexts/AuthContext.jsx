@@ -70,6 +70,11 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
+  const [userLocation, setUserLocation] = useState(() => {
+    const stored = localStorage.getItem('userLocation');
+    return stored ? JSON.parse(stored) : null;
+  });
+
   useEffect(() => {
     let isMounted = true;
 
@@ -77,7 +82,6 @@ export const AuthProvider = ({ children }) => {
     if (cachedProfile) {
       setProfile(cachedProfile);
       setIsAdmin(cachedProfile.is_admin === true);
-      setLoading(false);
     }
 
     // Function to handle setting user, profile, isAdmin, and loading state
@@ -88,10 +92,17 @@ export const AuthProvider = ({ children }) => {
 
       if (session?.user) {
         setUser(session.user);
-        // Fetch profile only if user is set
-        const userProfile = await fetchProfile(session.user.id);
-        // Ensure isAdmin is set based on the fetched profile
-        setIsAdmin(userProfile?.is_admin === true);
+        
+        // 1. Try cache first
+        const cachedProfile = getQueryCache('user_profile');
+        if (cachedProfile) {
+          setProfile(cachedProfile);
+          setIsAdmin(cachedProfile.is_admin === true);
+        }else{
+          const userProfile = await fetchProfile(session.user.id);
+          setIsAdmin(userProfile?.is_admin === true);
+        }
+        
       } else {
         setUser(null);
         setProfile(null);
@@ -140,6 +151,30 @@ export const AuthProvider = ({ children }) => {
       subscription?.unsubscribe();
     };
   }, [fetchProfile]); // Dependency array includes fetchProfile
+
+  
+  const getUserLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const coords = {
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+          };
+          setUserLocation(coords);
+          localStorage.setItem('userLocation', JSON.stringify(coords));
+        },
+        (err) => {
+          // User denied or error
+        }
+      );
+    }
+  }
+  useEffect(() => {
+    if (!userLocation) {
+      getUserLocation();
+    }
+  }, [userLocation]);
 
   const login = async (email, password) => {
     setLoading(true); // Set loading true when login starts
@@ -259,7 +294,9 @@ export const AuthProvider = ({ children }) => {
       login,
       register,
       logout,
-      updateUserInfo
+      updateUserInfo,
+      userLocation,
+      getUserLocation
     }}>
       {children}
     </AuthContext.Provider>

@@ -45,7 +45,7 @@ const NOTE_SUGGESTIONS = [
 ];
 
 const StorePickupPage = () => {
-  const { user } = useAuth();
+  const { user, userLocation } = useAuth();
   const [stores, setStores] = useState([]);
   const [filteredStores, setFilteredStores] = useState([]);
   const [storeSearchQuery, setStoreSearchQuery] = useState('');
@@ -75,10 +75,6 @@ const StorePickupPage = () => {
   const [showLoginForm, setShowLoginForm] = useState(false);
   const [reorderPreviousItems, setReorderPreviousItems] = useState(false);
   const [deliverySettings, setDeliverySettings] = useState({ convenience_fee_percent: 7, service_fee_percent: 3 });
-  const [userLocation, setUserLocation] = useState(() => {
-    const stored = localStorage.getItem('userLocation');
-    return stored ? JSON.parse(stored) : null;
-  });
   const [deliveryNotes, setDeliveryNotes] = useState('');
   
   const navigate = useNavigate();
@@ -550,7 +546,7 @@ const StorePickupPage = () => {
       <section className="relative h-[30vh] min-h-[240px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
         <div className="absolute inset-0">
           <img 
-            src="/outbanner.webp" 
+            src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/outbanner.webp" 
             alt="Grocery Delivery" 
             className="w-full h-full object-cover opacity-20"
           />

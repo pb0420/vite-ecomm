@@ -64,6 +64,20 @@ const TermsPage = () => {
               <li>Special handling fees</li>
             </ul>
           </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">5. Returns and Refunds</h2>
+            <ul className="list-disc pl-6 mb-4">
+              <li>Returns are accepted only for items that are damaged, defective, or incorrect at the time of delivery.</li>
+              <li>To request a return or refund, you must contact us within 24 hours of receiving your order.</li>
+              <li>Proof of purchase and photographic evidence of the issue may be required.</li>
+              <li>Perishable goods (such as fresh produce, dairy, and frozen items) are not eligible for return unless they are damaged or spoiled upon delivery.</li>
+              <li>Refunds will be processed to your original payment method within 5–7 business days after approval.</li>
+              <li>Delivery fees are non-refundable except in cases where the entire order is returned due to our error.</li>
+              <li>We reserve the right to refuse returns or refunds if the claim does not meet our policy criteria.</li>
+            </ul>
+          </section>
+
         </div>
 
         <div className="mt-8 flex justify-center">

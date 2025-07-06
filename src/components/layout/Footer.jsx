@@ -23,7 +23,7 @@ const Footer = () => {
           <div className="space-y-4">
             <div
             style={{
-              backgroundImage: 'url(/logo.webp)',
+              backgroundImage: 'url(https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/logo.webp)',
               backgroundSize: 'contain',
               backgroundRepeat: 'no-repeat',
               backgroundPosition: 'center',
@@ -71,21 +71,21 @@ const Footer = () => {
             <div className="space-y-4">
               <h4 className="text-sm font-semibold">Get in Touch</h4>
               <div className="flex items-center text-gray-600">
-                <Mail className="w-4 h-4 mr-2" />
+                <Mail className="w-3 h-3 mr-2" />
                 <a href="mailto:contact@groceroo.com.au" className="hover:text-primary underline">
                   contact@groceroo.com.au
                 </a>
               </div>
               <div className="flex items-center text-gray-600">
-                <Phone className="w-4 h-4 mr-2" />
+                <Phone className="w-3 h-3 mr-2" />
                 <a href="tel:+61478477036" className="hover:text-primary underline">
                   +61 478 477 036
                 </a>
               </div>
               <div className="flex items-center text-gray-600">
-                 <MessageCircle className="w-4 h-4 mr-2" />
+                 <MessageCircle className="w-3 h-3 mr-2" />
                 <a href="https://wa.me/61478477036" target="_blank" rel="noopener noreferrer" className="hover:text-primary underline">
-                  Chat on WhatsApp
+                  WhatsApp
                 </a>
               </div>
             </div>

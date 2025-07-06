@@ -117,7 +117,7 @@ const overlayVariants = {
                             <img 
                               alt={item.name} 
                               className="w-full h-full object-cover" 
-                              src={item.image_url || "/product-placeholder.webp"} 
+                              src={item.image_url || "https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/product-placeholder.webp"} 
                             />
                           </div>
                           
