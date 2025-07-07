@@ -2,6 +2,20 @@
 // Simple query cache using localStorage
 
 export function setQueryCache(key, data, ttlMinutes = 30) {
+
+  // Remove any cache keys that are substrings of the new key (except the new key itself)
+  for (let i = 0; i < localStorage.length; i++) {
+    const existingKey = localStorage.key(i);
+    if (
+      existingKey !== key &&
+      existingKey &&
+      key.startsWith(existingKey)
+    ) {
+      localStorage.removeItem(existingKey);
+      i--; // Adjust index after removal
+    }
+  }
+
   const expires = Date.now() + ttlMinutes * 60 * 1000;
   const value = { data, expires };
   localStorage.setItem(key, JSON.stringify(value));

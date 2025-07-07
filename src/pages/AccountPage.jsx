@@ -24,7 +24,6 @@ const AccountPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const tab = searchParams.get('tab') || 'profile';
   const handleTabChange = (value) => {
-    console.log(value)
     setSearchParams({ tab: value });
   };
 

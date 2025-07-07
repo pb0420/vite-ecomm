@@ -10,6 +10,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { setQueryCache, getQueryCache } from '@/lib/queryCache';
 import LoginDialog from '@/components/auth/LoginDialog';
 import { useAuth } from '@/contexts/AuthContext';
+import AiChatBot from '@/components/chat/AiChatBot'; 
 
 const PRODUCTS_PER_PAGE = 25;
 
@@ -93,7 +94,7 @@ const ShopPage = () => {
 
   const fetchProducts = async (reset = false) => {
     const pageToFetch = reset ? 0 : currentPage;
-    const cacheKey = `products_${featuredParam || 'all'}_${searchTerm || 'all'}_${selectedCategory}_${sortBy}_${pageToFetch}`;
+    const cacheKey = `products_${featuredParam || 'all'}_${selectedCategory}_${sortBy}_${pageToFetch}_${searchTerm || 'all'}`;
     if (reset) {
       setInitialLoading(true);
     } else {
@@ -242,11 +243,11 @@ const ShopPage = () => {
                 transition={{ delay: 0.2, duration: 0.5 }}
               >
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
+                  <Search style={{zIndex:'1'}} className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
                   <Input
                     type="search"
                     placeholder="Search for products..."
-                    className="h-9 pl-2 pr-4 bg-white/95 backdrop-blur-sm border-0 shadow-lg text-gray-800 placeholder:text-gray-500"
+                    className="h-11 pl-10 pr-4 bg-white/95 backdrop-blur-sm border-0 shadow-lg text-gray-800 placeholder:text-gray-500"
                     value={searchInput}
                     onChange={(e) => handleSearchInputChange(e.target.value)}
                   />
@@ -268,7 +269,7 @@ const ShopPage = () => {
                 {/* Category Filter and Sort Filter in same line, less wide */}
                 <div className="flex gap-2 w-full sm:w-auto justify-center">
                   {/* Category Filter */}
-                  <div className="min-w-[120px] w-full flex items-center">
+                  <div className="min-w-[120px] w-[200px] flex items-center">
                     <Filter className="w-5 h-5 text-white mr-2" />
                     <Select value={selectedCategory} onValueChange={handleCategoryChange}>
                       <SelectTrigger className="bg-white/95 backdrop-blur-sm border-0 shadow-lg h-8 text-sm">
@@ -286,7 +287,7 @@ const ShopPage = () => {
                   </div>
                   
                   {/* Sort Filter */}
-                  <div className="min-w-[140px] w-[140px] flex items-center">
+                  <div className="min-w-[140px] w-[160px] flex items-center">
                     <ArrowUpDown className="w-5 h-5 text-white mr-2" />
                     <Select value={sortBy} onValueChange={handleSortChange}>
                       <SelectTrigger className="bg-white/95 backdrop-blur-sm border-0 shadow-lg h-8 text-sm">
@@ -305,8 +306,8 @@ const ShopPage = () => {
                 {hasActiveFilters && (
                   <Button 
                     variant="outline" 
-                    size="sm"
-                    className="bg-white/95 backdrop-blur-sm border-0 shadow-lg hover:bg-white text-gray-800 h-8 text-xs"
+                    size="lg"
+                    className="bg-[#ff9800]/95 backdrop-blur-sm border-0 shadow-lg hover:bg-white text-gray-800 h-8 text-xs"
                     onClick={handleResetFilters}
                   >
                     <X className="w-3 h-3 mr-1" />
@@ -407,6 +408,8 @@ const ShopPage = () => {
           </>
         )}
       </div>
+      
+       <AiChatBot />
 
       {showLoginDialog && (
         <LoginDialog open={showLoginDialog} onOpenChange={setShowLoginDialog} />

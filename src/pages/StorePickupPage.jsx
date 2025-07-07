@@ -45,7 +45,7 @@ const NOTE_SUGGESTIONS = [
 ];
 
 const StorePickupPage = () => {
-  const { user, userLocation } = useAuth();
+  const { user, userLocation, updateUserInfo } = useAuth();
   const [stores, setStores] = useState([]);
   const [filteredStores, setFilteredStores] = useState([]);
   const [storeSearchQuery, setStoreSearchQuery] = useState('');
@@ -138,8 +138,34 @@ const StorePickupPage = () => {
     fetchDeliverySettings();
   }, []);
 
+  useEffect(()=> {
+
+    if(user && postcodes){
+      setUserAddressSuburb();
+    }
+
+  },[user,postcodes])
+
   // Check if user needs to sign in (after store/date/time selection)
   const shouldShowLogin = !user && selectedStores.length > 0 && selectedDate && selectedTimeSlot;
+
+  const setUserAddressSuburb = async() => {
+      if(user.addresses && user.addresses?.length > 0){
+        setAddress(user.addresses[0].address);
+        if(postcodes && postcodes.length){
+          const found = postcodes.find(pc =>
+            user.addresses[0].address.toUpperCase().includes(pc.suburb.toUpperCase())
+          );
+          
+          if (found) {
+            setPostcode(user.addresses[0].postcode);
+            setPostcodeSearch(`${found.suburb}, ${found.postcode}`);
+          } else {
+            setPostcodeSearch('');
+          }
+        }
+      }
+  }
 
   const fetchTimezone = async () => {
     try {
@@ -242,9 +268,13 @@ const StorePickupPage = () => {
       setAddress(savedAddress.address);
       setPostcode(savedAddress.postcode);
       // Find and set the postcode search
-      const postcodeData = postcodes.find(pc => pc.postcode === savedAddress.postcode);
-      if (postcodeData) {
-        setPostcodeSearch(`${postcodeData.suburb}, ${postcodeData.postcode}`);
+      const found = postcodes.find(pc =>
+          savedAddress.address.toUpperCase().includes(pc.suburb.toUpperCase())
+      );
+      if (found) {
+        setPostcodeSearch(`${found.suburb}, ${found.postcode}`);
+      } else {
+        setPostcodeSearch('');
       }
     }
     setShowAddressSelector(false);
@@ -376,6 +406,18 @@ const StorePickupPage = () => {
       // if (appliedPromo) {
       //   await supabase.rpc('increment_promo_usage', { promo_code: appliedPromo.code });
       // }
+
+      //Update user address if not set already
+
+      if(!user.addresses || user.addresses.length === 0){
+        const newAddresses = [{
+          id: Math.random().toString(36).substr(2, 9),
+          label: 'default',
+          address,
+          postcode
+        }];
+        updateUserInfo({ addresses: newAddresses });
+      }
 
       // Navigate to payment page
       navigate('/pickup-payment', {
@@ -622,17 +664,20 @@ const StorePickupPage = () => {
                 <CardHeader>
                   <CardTitle>New Grocery Run ...<Truck style={{display:'inline'}}/></CardTitle>
                   <CardDescription>
-                    Add one or more stores, provide your lists/notes/photos before your slot. We will shop for you and deliver everything in one trip.
+                    Add one or more stores, provide your lists/notes/photos and confirm. We will shop for you and deliver everything in one trip.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Store Search */}
                     <div className="space-y-4">
+                      <h3 className="text-lg font-semibold">Add Stores</h3>
+                       <div className="text-xs text-muted-foreground mt-1">
+                          <span className="font-medium text-primary-600">Note:</span> You can provide your order lists/photos later after scheduling too. 
+                        </div>
+                      {/* Store Search */}
                       <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-semibold">Select Stores</h3>
-                        <div className="relative w-64">
-                          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <div className="relative w-full">
+                          <Search className="absolute left-2.5 top-3.5 h-4 w-4 text-muted-foreground" />
                           <Input
                             type="search"
                             placeholder="Search stores..."
@@ -778,7 +823,7 @@ const StorePickupPage = () => {
                         </div>
 
                         {/* Reorder previous items checkbox */}
-                        <div className="flex items-center space-x-2">
+                        {/* <div className="flex items-center space-x-2 mt-6">
                           <Checkbox 
                             id="reorder" 
                             checked={reorderPreviousItems}
@@ -787,7 +832,7 @@ const StorePickupPage = () => {
                           <Label htmlFor="reorder" className="text-sm">
                             Reorder my previous items (we'll add them to this order)
                           </Label>
-                        </div>
+                        </div> */}
 
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">

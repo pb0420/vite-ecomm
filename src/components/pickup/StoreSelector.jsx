@@ -98,7 +98,7 @@ const StoreSelector = ({
     const selectedStore = selectedStores.find(s => s.id === storeId);
     let notes = selectedStore?.notes || '';
     const itemLine = `${item.name} x${quantity}`;
-    const regex = new RegExp(`${item.name} x\\d+`, 'g');
+const regex = new RegExp(`${item.name} x(\\d+)`, 'g');  
     if (checked) {
       // Add or update
       if (regex.test(notes)) {
@@ -188,7 +188,7 @@ const StoreSelector = ({
                         <Label className="block mb-1">Suggested Items</Label>
                         <div className="flex flex-wrap gap-2">
                           {suggestedItems.map((item, idx) => {
-                            const regex = new RegExp(`${item.name} x(\\d+)`, 'g');
+                            const regex = new RegExp(`${item.name} x(\\d+)`, 'g');  
                             const match = selectedStore?.notes?.match(regex);
                             const selectedQty = match ? parseInt(match[0].split('x')[1], 10) : 1;
                             const checked = !!match;

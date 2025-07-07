@@ -125,10 +125,13 @@ const AddressManager = () => {
         postcode: address.postcode
       });
       // Find and set the postcode search
-      const postcodeData = postcodes.find(pc => pc.postcode === address.postcode);
-      if (postcodeData) {
-        setPostcodeSearch(`${postcodeData.suburb}, ${postcodeData.postcode}`);
-      }
+      const found = postcodes.find(pc =>
+            address.address.toUpperCase().includes(pc.suburb.toUpperCase())
+          );
+          
+          if (found) {
+            setPostcodeSearch(`${found.suburb}, ${found.postcode}`);
+          }
     } else {
       setFormData({ label: '', address: '', postcode: '' });
       setPostcodeSearch('');

@@ -43,8 +43,8 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
         name: user.name || '',
         email: user.email || '',
         phone: user.phone || '',
-        address: '',
-        postcode: '',
+        address: user.addresses[0]?.address || '',
+        postcode: user.addresses[0]?.postcode ||'',
         deliveryNotes: '',
       });
     }
@@ -95,10 +95,13 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
         postcode: selectedAddress.postcode.toString()
       }));
       // Find and set the postcode search
-      const postcodeData = postcodes.find(pc => pc.postcode === selectedAddress.postcode);
-      if (postcodeData) {
-        setPostcodeSearch(`${postcodeData.suburb}, ${postcodeData.postcode}`);
-      }
+     const found = postcodes.find(pc =>
+            selectedAddress.address.toUpperCase().includes(pc.suburb.toUpperCase())
+          );
+          
+          if (found) {
+            setPostcodeSearch(`${found.suburb}, ${found.postcode}`);
+          }
     }
     setShowAddressSelector(false);
   };
@@ -117,6 +120,30 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
     setPostcodeSearch(`${postcode.suburb}, ${postcode.postcode}`);
     setShowPostcodeDropdown(false);
   };
+
+    const setUserAddressSuburb = async() => {
+      if(user.addresses && user.addresses?.length > 0){
+        if(postcodes && postcodes.length){
+          const found = postcodes.find(pc =>
+            user.addresses[0].address.toUpperCase().includes(pc.suburb.toUpperCase())
+          );
+          
+          if (found) {
+            setPostcodeSearch(`${found.suburb}, ${found.postcode}`);
+          } else {
+            setPostcodeSearch('');
+          }
+        }
+      }
+  }
+
+    useEffect(()=> {
+  
+      if(user && postcodes){
+        setUserAddressSuburb();
+      }
+  
+    },[user,postcodes])
 
   return (
     <div className="p-6 border rounded-lg">

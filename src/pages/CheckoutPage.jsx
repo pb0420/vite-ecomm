@@ -19,7 +19,7 @@ import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/supabaseClient';
 import { formatCurrency } from '@/lib/utils';
 import { Link } from 'react-router-dom';
-import { CreditCard } from 'lucide-react';
+import { CreditCard, ShoppingCart } from 'lucide-react';
 import { fetchPostcodes } from '@/lib/fetchPostcodes';
 
 const CheckoutPage = () => {
@@ -221,7 +221,17 @@ const CheckoutPage = () => {
         animate={{ opacity: 1, y: 0 }} 
         transition={{ duration: 0.3 }}
       >
-        <h1 className="text-3xl font-bold tracking-tight mb-8">Checkout</h1>
+        <h1 className="text-3xl font-bold tracking-tight mb-8">Checkout &nbsp;<ShoppingCart style={{display:'inline'}} /></h1>
+
+         <div>
+              <Link
+          to="/shop"
+          className="text-primary font-medium hover:underline text-sm flex items-center gap-1 mb-4"
+          style={{ textDecoration: 'none' }}
+        >
+          Forgot something? <span className="underline">Continue Shopping</span>
+        </Link>
+          </div>
 
         <div className="grid gap-8 lg:grid-cols-[1fr_350px]">
           <div className="space-y-6">
@@ -307,16 +317,6 @@ const CheckoutPage = () => {
                 </>
               )}
             </motion.div>
-          </div>
-
-          <div>
-              <Link
-          to="/shop"
-          className="text-primary font-medium hover:underline text-sm flex items-center gap-1 mb-4"
-          style={{ textDecoration: 'none' }}
-        >
-          Forgot something? <span className="underline">Continue Shopping</span>
-        </Link>
           </div>
 
           <motion.div 

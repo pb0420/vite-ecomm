@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -12,6 +12,8 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import CartDrawer from '@/components/cart/CartDrawer';
 import { Toaster } from '@/components/ui/toaster';
+import ScrollToTopButton from '@/components/ui/scroll-to-top-btn';
+
 
 // Pages
 import HomePage from '@/pages/HomePage';
@@ -34,6 +36,12 @@ import TermsPage from '@/pages/TermsPage';
 import StripePaymentPage from '@/pages/StripePaymentPage';
 import ContactPage from '@/pages/ContactPage';
 import WorkPage from '@/pages/WorkPage';
+
+import { purgeQueryCache } from '@/lib/queryCache';
+
+useEffect(() => {
+  purgeQueryCache();
+},[])
 
 const App = () => {
   return (
@@ -70,6 +78,7 @@ const App = () => {
                   </Routes>
                 </AnimatePresence>
               </main>
+              <ScrollToTopButton />
               <Footer />
               <CartDrawer />
               <Toaster />

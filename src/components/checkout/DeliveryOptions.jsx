@@ -127,7 +127,7 @@ const DeliveryOptions = ({ onDeliveryChange }) => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 mt-4">
       <h3 className="text-lg font-medium">Delivery Options</h3>
       <RadioGroup value={deliveryType} onValueChange={setDeliveryType}>
         <div className="flex items-center space-x-2 p-4 border rounded-md has-[:checked]:border-primary">

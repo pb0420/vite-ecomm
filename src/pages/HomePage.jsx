@@ -9,7 +9,7 @@ import ProductCard from '@/components/products/ProductCard';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/contexts/AuthContext';
 // Import the AiChatBot component
-import AiChatBot from '@/components/chat/AiChatBot'; // Assuming this path is correct
+import AiChatBot from '@/components/chat/AiChatBot'; 
 import { setQueryCache, getQueryCache } from '@/lib/queryCache';
 import LoginDialog from '@/components/auth/LoginDialog';
 
