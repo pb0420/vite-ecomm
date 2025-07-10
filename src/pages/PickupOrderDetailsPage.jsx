@@ -15,6 +15,7 @@ import { toast } from '@/components/ui/use-toast';
 import { formatCurrency } from '@/lib/utils';
 import { format } from 'date-fns';
 import CancelOrderDialog from '@/components/common/CancelOrderDialog';
+import OrderMessaging from '@/components/common/OrderMessaging';
 
 const PickupOrderDetailsPage = () => {
   const { id } = useParams();
@@ -480,69 +481,25 @@ const PickupOrderDetailsPage = () => {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Messages */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <MessageCircle className="w-5 h-5 mr-2" />
-                  Conversation
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2 max-h-60 overflow-y-auto">
-                  {order.admin_messages && order.admin_messages.length > 0 ? (
-                    order.admin_messages.map((message, index) => (
-                      <div
-                        key={index}
-                        className={`p-3 rounded text-sm ${
-                          message.from === 'admin' 
-                            ? 'bg-blue-50 border-l-4 border-blue-400 ml-4' 
-                            : 'bg-gray-50 border-l-4 border-gray-400 mr-4'
-                        }`}
-                      >
-                        <div className="flex justify-between items-start mb-1">
-                          <span className="font-medium">
-                            {message.from === 'admin' ? 'Support Team' : 'You'}
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            {format(new Date(message.timestamp), 'MMM d, HH:mm')}
-                          </span>
-                        </div>
-                        <p>{message.message}</p>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-sm text-muted-foreground text-center py-4">
-                      No messages yet. Send a message to our team if you have any questions.
-                    </p>
-                  )}
-                </div>
-                
-                <div className="space-y-2">
-                  <Label>Send a message:</Label>
-                  <div className="flex space-x-2">
-                    <Textarea
-                      value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
-                      placeholder="Type your message..."
-                      rows={2}
-                      className="flex-1"
-                    />
-                    <Button
-                      onClick={handleSendMessage}
-                      disabled={!newMessage.trim() || sendingMessage}
-                      size="sm"
-                    >
-                      {sendingMessage ? (
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      ) : (
-                        <Send className="w-4 h-4" />
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <OrderMessaging
+              orderId={order.id}
+              initialMessages={order.admin_messages || []}
+              fetchMessages={async () => {
+                const { data } = await supabase.from('pickup_orders').select('admin_messages').eq('id', order.id).single();
+                return data?.admin_messages || [];
+              }}
+              sendMessage={async (msg) => {
+                const currentMessages = order.admin_messages || [];
+                await supabase.from('pickup_orders').update({
+                  admin_messages: [...currentMessages, {
+                    from: 'customer',
+                    message: msg,
+                    timestamp: new Date().toISOString()
+                  }]
+                }).eq('id', order.id);
+              }}
+              disabled={order.status === 'cancelled' || order.status === 'completed'}
+            />
 
             {/* Cancel Order Button at the bottom */}
             {order.status !== 'cancelled' && order.status !== 'completed' && (

@@ -7,10 +7,15 @@ import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Badge } from '@/components/ui/badge';
 import LoginDialog from '@/components/auth/LoginDialog';
+import { Bell } from 'lucide-react';
+import NotificationDrawer from '@/components/notifications/NotificationDrawer';
+import { getQueryCache } from '@/lib/queryCache';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [notifCount, setNotifCount] = useState(0);
   const { getCartCount, toggleCart } = useCart();
   const { user, isAdmin, logout, loading } = useAuth();
   const navigate = useNavigate();
@@ -34,6 +39,29 @@ const Header = () => {
     open: { opacity: 1, x: 0, transition: { type: 'spring', stiffness: 300, damping: 30 } }
   };
 
+  // Fetch unread notification count
+  useEffect(() => {
+    if (!user) {
+      setNotifCount(0);
+      return;
+    }
+    const cached = getQueryCache(`notifications_${user.id}`) || [];
+    const readIds = (() => {
+      try {
+        return JSON.parse(localStorage.getItem("notifications_read_" + user.id)) || [];
+      } catch {
+        return [];
+      }
+    })();
+    const unread = cached.filter(n => !readIds.includes(`${n.type}_${n.id}`));
+    setNotifCount(unread.length);
+  }, [user, isNotifOpen]);
+
+  // Callback to update notif count after marking as read
+  const handleNotifRead = () => {
+    setNotifCount(0);
+  };
+
   return (
     <header className="sticky top-0 z-40 w-full bg-gradient-to-r from-[#2E8B57] via-[#3CB371] to-[#98D598] border-b shadow-sm">
       <div className="container flex items-center justify-between h-16 px-4 mx-auto md:px-6">
@@ -45,8 +73,8 @@ const Header = () => {
               backgroundSize: 'contain',
               backgroundRepeat: 'no-repeat',
               backgroundPosition: 'center',
-              width: '180px',
-              height: '60px',
+              width: '160px',
+              height: '50px',
             }}
             aria-label="Groceroo Logo" // Add aria-label for accessibility
           ></div>
@@ -56,8 +84,8 @@ const Header = () => {
                 <img
           src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/home-icon.webp"
           alt="Home"
-          style={{ marginLeft: '16px', width: '20px', height: '20px' }}
-          className="w-5 h-5"
+          style={{ marginLeft: '4px', marginBottom:'2px', width: '15px', height: '15px' }}
+          className="w-3 h-3"
           aria-label="Home"
         />
       )}
@@ -72,7 +100,14 @@ const Header = () => {
           )}
         </nav>
 
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-1">
+          <Button variant="ghost" size="icon" className="relative hover:bg-white/20" onClick={() => setIsNotifOpen(true)}>
+            <Bell className="w-5 h-5 text-white" />
+            {notifCount > 0 && (
+              <span className="absolute -top-2 -right-2 flex items-center justify-center w-4 h-4 rounded-full bg-[#fd7507] text-white text-xs font-bold border-2 border-white">{notifCount}</span>
+            )}
+          </Button>
+          <NotificationDrawer open={isNotifOpen} onClose={() => setIsNotifOpen(false)} onRead={handleNotifRead} />
           <Button variant="ghost" size="icon" className="relative hover:bg-white/20" onClick={toggleCart}>
             <ShoppingCart className="w-5 h-5 text-white" />
             {cartCount > 0 && (

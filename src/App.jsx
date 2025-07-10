@@ -79,7 +79,6 @@ const App = () => {
                   </Routes>
                 </AnimatePresence>
               </main>
-              {/* Do not show AI chatbot on certain pages (urls) */}
               <AiChatBot />
               <ScrollToTopButton />
               <Footer />
