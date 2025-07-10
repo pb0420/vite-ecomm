@@ -10,6 +10,7 @@ import LoginDialog from '@/components/auth/LoginDialog';
 import { Bell } from 'lucide-react';
 import NotificationDrawer from '@/components/notifications/NotificationDrawer';
 import { getQueryCache } from '@/lib/queryCache';
+import { fetchUserNotifications } from '@/lib/fetchNotifications';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -39,23 +40,29 @@ const Header = () => {
     open: { opacity: 1, x: 0, transition: { type: 'spring', stiffness: 300, damping: 30 } }
   };
 
-  // Fetch unread notification count
+  // Fetch unread notification count (and poll every 7s)
   useEffect(() => {
-    if (!user) {
-      setNotifCount(0);
-      return;
-    }
-    const cached = getQueryCache(`notifications_${user.id}`) || [];
-    const readIds = (() => {
-      try {
-        return JSON.parse(localStorage.getItem("notifications_read_" + user.id)) || [];
-      } catch {
-        return [];
+    let interval;
+    const fetchNotifCount = async () => {
+      if (!user) {
+        setNotifCount(0);
+        return;
       }
-    })();
-    const unread = cached.filter(n => !readIds.includes(`${n.type}_${n.id}`));
-    setNotifCount(unread.length);
-  }, [user, isNotifOpen]);
+      const notifs = await fetchUserNotifications(user.id);
+      const readIds = (() => {
+        try {
+          return JSON.parse(localStorage.getItem("notifications_read_" + user.id)).data || [];
+        } catch {
+          return [];
+        }
+      })();
+      const unread = notifs.filter(n => !readIds.includes(`${n.type}_${n.id}`));
+      setNotifCount(unread.length);
+    };
+    fetchNotifCount();
+    interval = setInterval(fetchNotifCount, 45000);
+    return () => clearInterval(interval);
+  }, [user]);
 
   // Callback to update notif count after marking as read
   const handleNotifRead = () => {
@@ -78,7 +85,7 @@ const Header = () => {
             }}
             aria-label="Groceroo Logo" // Add aria-label for accessibility
           ></div>
-           {isHome ? (
+           {/* {isHome ? (
             <></>
       ) : (
                 <img
@@ -88,7 +95,7 @@ const Header = () => {
           className="w-3 h-3"
           aria-label="Home"
         />
-      )}
+      )} */}
         </Link>
 
         <nav className="hidden md:flex md:items-center md:space-x-6">
@@ -104,7 +111,7 @@ const Header = () => {
           <Button variant="ghost" size="icon" className="relative hover:bg-white/20" onClick={() => setIsNotifOpen(true)}>
             <Bell className="w-5 h-5 text-white" />
             {notifCount > 0 && (
-              <span className="absolute -top-2 -right-2 flex items-center justify-center w-4 h-4 rounded-full bg-[#fd7507] text-white text-xs font-bold border-2 border-white">{notifCount}</span>
+             <Badge variant="default" className="absolute -top-2 -right-2 px-1.5 py-0.5 min-w-[1.25rem] text-xs bg-[#fd7507] hover:bg-[#fd7507]/90 text-white border-0">{notifCount}</Badge>
             )}
           </Button>
           <NotificationDrawer open={isNotifOpen} onClose={() => setIsNotifOpen(false)} onRead={handleNotifRead} />
@@ -122,7 +129,7 @@ const Header = () => {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="flex items-center space-x-1 text-white"
+                    className="flex items-center space-x-2 text-white"
                   >
                     <UserRound className="w-4 h-4" />
                     <span>

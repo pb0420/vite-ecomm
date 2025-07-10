@@ -136,14 +136,19 @@ const matchProductFtsStrict = (ftsString, aiName, product) => {
   useEffect(() => {
     let timeout;
     if (isOpen && pendingMessages.length > 0) {
-      // Wait for animation to finish (adjust delay as needed)
       timeout = setTimeout(() => {
         setMessages(prev => [...pendingMessages, ...prev]);
         setPendingMessages([]);
-      }, 1800); // 400ms matches your animation duration
+      }, 2800);
     }
     return () => clearTimeout(timeout);
   }, [isOpen, pendingMessages]);
+
+  useEffect(() => {
+  if (isOpen) {
+    scrollToBottom();
+  }
+}, [messages, isOpen]);
 
 useEffect(() => {
   if(updateUserChatHistoryFlag){

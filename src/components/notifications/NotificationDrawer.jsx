@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatDateForTimezone, DEFAULT_TIMEZONE } from '@/lib/timezone';
+import { fetchUserNotifications } from '@/lib/fetchNotifications';
 
 const READ_KEY_PREFIX = "notifications_read_";
 
@@ -22,7 +23,7 @@ const NotificationDrawer = ({ open, onClose, onRead }) => {
   const getReadIds = () => {
     if (!user) return [];
     try {
-      return JSON.parse(localStorage.getItem(READ_KEY_PREFIX + user.id)) || [];
+      return JSON.parse(localStorage.getItem(READ_KEY_PREFIX + user.id)).data || [];
     } catch {
       return [];
     }
@@ -31,69 +32,21 @@ const NotificationDrawer = ({ open, onClose, onRead }) => {
   // Set read notification IDs in localStorage
   const setReadIds = (ids) => {
     if (!user) return;
-    localStorage.setItem(READ_KEY_PREFIX + user.id, JSON.stringify(ids));
+    setQueryCache(READ_KEY_PREFIX + `${user.id}`, ids, 100); // Cache for 100 minute
   };
 
   // Fetch notifications (upcoming orders and grocery runs)
   const fetchNotifications = async () => {
     if (!user) return;
     setLoading(true);
-
-    // Try cache first
-    let cached = getQueryCache(`notifications_${user.id}`);
     let readIds = getReadIds();
-    if (cached) {
-      setNotifications(
-        cached.map(n => ({
-          ...n,
-          unread: !readIds.includes(`${n.type}_${n.id}`)
-        }))
-      );
-      setLoading(false);
-    }
-
-    // Fetch upcoming orders
-    const { data: orders } = await supabase
-      .from("orders")
-      .select("*")
-      .eq("user_id", user.id)
-      .in("status", ["pending", "processing"])
-      .order("expected_delivery_at", { ascending: true })
-      .limit(3);
-
-    // Fetch upcoming grocery runs
-    const { data: pickups } = await supabase
-      .from("pickup_orders")
-      .select("*")
-      .eq("user_id", user.id)
-      .in("status", ["pending", "processing", "ready"])
-      .order("pickup_date", { ascending: true })
-      .limit(3);
-
-    const notifs = [
-      ...(orders || []).map(order => ({
-        type: "order",
-        id: order.id,
-        title: "Upcoming Delivery",
-        time: order.expected_delivery_at,
-        admin_messages: order.admin_messages || [],
-      })),
-      ...(pickups || []).map(pickup => ({
-        type: "pickup",
-        id: pickup.id,
-        title: "Upcoming Grocery Run",
-        time: pickup.time_slot ? `${pickup.pickup_date} . ${pickup.time_slot}` : pickup.pickup_date,
-        admin_messages: pickup.admin_messages || [],
-      })),
-    ];
-    console.log("Fetched notifications:", notifs);
+    const notifs = await fetchUserNotifications(user.id);
     setNotifications(
       notifs.map(n => ({
         ...n,
         unread: !readIds.includes(`${n.type}_${n.id}`)
       }))
     );
-    setQueryCache(`notifications_${user.id}`, notifs, 5); // cache for 5 min
     setLoading(false);
   };
 

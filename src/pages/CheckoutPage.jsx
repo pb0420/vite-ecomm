@@ -200,7 +200,7 @@ const CheckoutPage = () => {
     customer_address: customerDetails.address,
     customer_postcode: customerDetails.postcode,
     customer_city: customerDetails.city,
-    delivery_notes: notes,
+    delivery_notes: customerDetails.deliveryNotes,
     delivery_type: deliveryDetails.type,
     scheduled_delivery_time: deliveryDetails.scheduledTime,
     timeslot_id: deliveryDetails.timeslot_id,

@@ -180,7 +180,7 @@ const OrderConfirmationPage = () => {
     <div className="container px-4 py-8 mx-auto md:px-6">
       <div>
           <Link to="/account">
-            <Button variant="ghost" className="mb-4">
+            <Button variant="ghost" className="mb-4 text-sm text-muted-foreground hover:text-foreground">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Return to Account
             </Button>
