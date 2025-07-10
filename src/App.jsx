@@ -36,14 +36,15 @@ import TermsPage from '@/pages/TermsPage';
 import StripePaymentPage from '@/pages/StripePaymentPage';
 import ContactPage from '@/pages/ContactPage';
 import WorkPage from '@/pages/WorkPage';
+import AiChatBot from '@/components/chat/AiChatBot'; 
+
 
 import { purgeQueryCache } from '@/lib/queryCache';
 
-useEffect(() => {
-  purgeQueryCache();
-},[])
-
 const App = () => {
+  useEffect(() => {
+    purgeQueryCache();
+  },[])
   return (
     <AuthProvider>
       <OrderProvider>
@@ -78,6 +79,8 @@ const App = () => {
                   </Routes>
                 </AnimatePresence>
               </main>
+              {/* Do not show AI chatbot on certain pages (urls) */}
+              <AiChatBot />
               <ScrollToTopButton />
               <Footer />
               <CartDrawer />

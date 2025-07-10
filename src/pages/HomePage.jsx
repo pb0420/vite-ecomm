@@ -8,8 +8,6 @@ import { Input } from '@/components/ui/input';
 import ProductCard from '@/components/products/ProductCard';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/contexts/AuthContext';
-// Import the AiChatBot component
-import AiChatBot from '@/components/chat/AiChatBot'; 
 import { setQueryCache, getQueryCache } from '@/lib/queryCache';
 import LoginDialog from '@/components/auth/LoginDialog';
 
@@ -137,7 +135,7 @@ const HomePage = () => {
               .from('products')
               .select(`*, categories ( id, name )`)
               .in('id', Array.from(productIds))
-              .limit(12);
+              .limit(20);
             if (!error && data) {
               previousProducts = data;
               setQueryCache(`previouslyOrderedProducts_${user.id}`, previousProducts);
@@ -413,10 +411,6 @@ const HomePage = () => {
           </motion.div>
         </div>
       </section>
-
-      {/* Integrate the AiChatBot component */}
-      <AiChatBot />
-
 
       {showLoginDialog && (
         <LoginDialog open={showLoginDialog} onOpenChange={setShowLoginDialog} />

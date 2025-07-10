@@ -81,7 +81,7 @@ const OrderConfirmationPage = () => {
         bgColor: 'bg-blue-100',
         icon: Package,
         title: 'Order Processing',
-        description: 'Your order is being prepared'
+        description: 'Your order is being processed. ' + (deliveryTime ? `Estimated delivery by ${formatDate(deliveryTime)}`:'')
       },
       delivered: {
         color: 'text-green-500',

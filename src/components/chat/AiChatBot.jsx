@@ -1,7 +1,7 @@
 // File: groceroo/src/components/chat/AiChatBot.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, Send, X, ShoppingCart, Bot, MessageSquare as MessageSquareMore } from 'lucide-react';
+import { MessageCircle, Send, X, ShoppingCart, Bot, MessageSquare as MessageSquareMore, Plus,Minus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useCart } from '@/contexts/CartContext';
@@ -16,7 +16,7 @@ const AiChatBot = () => {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
   const chatBoxRef = useRef(null);
-  const { addToCart } = useCart();
+  const { addToCart, cart, updateQuantity } = useCart();
   const { user,updateUserInfo } = useAuth();
   const [updateUserChatHistoryFlag,setUpdateUserChatHistoryFlag] = useState(false);
   const [fetchedUserChatHistoryFlag,setFetchedUserChatHistoryFlag] = useState(false);
@@ -123,8 +123,8 @@ const matchProductFtsStrict = (ftsString, aiName, product) => {
   const getUserAiChat = async () => {
     if (user.ai_chat && Array.isArray(user.ai_chat) && fetchedUserChatHistoryFlag === false){
       if (user.ai_chat.length > 1) {
-        setMessages(user.ai_chat.slice(-1));
-        setPendingMessages(user.ai_chat.slice(0, -1));
+        setMessages(user.ai_chat.slice(-4));
+        setPendingMessages(user.ai_chat.slice(0, -4));
       } else {
         setMessages(user.ai_chat);
         setPendingMessages([]);
@@ -409,20 +409,58 @@ const updateUserChatHistory = async () => {
                                           key={product.id}
                                           className="flex items-center justify-between bg-[#e6f7f1] rounded px-3 py-2 border"
                                         >
-                                          <span className="text-sm max-w-[60%] font-medium text-[#2E8B57]">{formatName(product.name)}</span>
+                                          <span className="text-sm max-w-[55%] font-medium text-[#2E8B57]">{formatName(product.name)}</span>
                                           <div className="flex items-center gap-2 min-w-[90px] justify-end">
                                             {product.price && (
                                               <span className="text-xs text-gray-700 font-semibold">
                                                 ${Number(product.price).toFixed(2)}
                                               </span>
                                             )}
-                                            <Button
-                                              size="sm"
-                                              className="bg-[#2E8B57] hover:bg-[#27694a] text-white px-3 py-1 rounded"
-                                              onClick={() => addToCart(product, 1)}
-                                            >
-                                              <ShoppingCart className="h-4 w-4 mr-1" />
-                                            </Button>
+                                            {/* Cart quantity controls */}
+                                            {(() => {
+                                              const cartItem = cart.find(item => item.id === product.id);
+                                              const quantity = cartItem ? cartItem.quantity : 0;
+                                              if (quantity > 0) {
+                                                return (
+                                                  <div className="flex items-center space-x-1" onClick={e => e.preventDefault()}>
+                                                    <Button
+                                                      size="icon"
+                                                      variant="outline"
+                                                      className="h-6 w-6"
+                                                      onClick={e => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        updateQuantity(product.id, quantity - 1);
+                                                      }}
+                                                    >
+                                                      <Minus className="h-3 w-3" />
+                                                    </Button>
+                                                    <span className="text-xs font-medium w-4 text-center">{quantity}</span>
+                                                    <Button
+                                                      size="icon"
+                                                      className="h-6 w-6"
+                                                      onClick={e => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        updateQuantity(product.id, quantity + 1);
+                                                      }}
+                                                    >
+                                                      <Plus className="h-3 w-3" />
+                                                    </Button>
+                                                  </div>
+                                                );
+                                              } else {
+                                                return (
+                                                  <Button
+                                                    size="sm"
+                                                    className="bg-[#34d399] hover:bg-[#27694a] text-white px-3 py-1 rounded"
+                                                    onClick={() => addToCart(product, 1)}
+                                                  >
+                                                    <ShoppingCart className="h-4 w-4 mr-1" />
+                                                  </Button>
+                                                );
+                                              }
+                                            })()}
                                           </div>
                                         </div>
                                       ))}
@@ -462,11 +500,11 @@ const updateUserChatHistory = async () => {
                        <Input
                           value={input}
                           onChange={(e) => setInput(e.target.value)}
-                          placeholder="I want to cook some Pasta for dinner"
+                          placeholder="I want to make pesto pasta"
                           disabled={isLoading}
                           className="h-14 text-base"
                         />
-                        <Button type="submit" size="icon" disabled={isLoading}>
+                        <Button style={{width:'80px'}} type="submit" size="icon" disabled={isLoading}>
                           <Send className="h-4 w-4" />
                         </Button>
                       </div>

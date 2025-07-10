@@ -10,7 +10,6 @@ import { supabase } from '@/lib/supabaseClient';
 import { setQueryCache, getQueryCache } from '@/lib/queryCache';
 import LoginDialog from '@/components/auth/LoginDialog';
 import { useAuth } from '@/contexts/AuthContext';
-import AiChatBot from '@/components/chat/AiChatBot'; 
 
 const PRODUCTS_PER_PAGE = 25;
 
@@ -408,8 +407,6 @@ const ShopPage = () => {
           </>
         )}
       </div>
-      
-       <AiChatBot />
 
       {showLoginDialog && (
         <LoginDialog open={showLoginDialog} onOpenChange={setShowLoginDialog} />

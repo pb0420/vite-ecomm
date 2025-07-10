@@ -127,6 +127,11 @@ const Footer = () => {
                 Terms of Service
               </Link>
             </div>
+             <div className="flex items-center space-x-4 text-xs text-gray-600">
+                <p className="text-md text-[#ff9800]">
+                  SARITA
+                </p>
+              </div>
           </div>
         </div>
       </div>

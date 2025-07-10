@@ -672,7 +672,7 @@ const StorePickupPage = () => {
                     <div className="space-y-4">
                       <h3 className="text-lg font-semibold">Add Stores</h3>
                        <div className="text-xs text-muted-foreground mt-1">
-                          <span className="font-medium text-primary-600">Note:</span> You can provide your order lists/photos later after scheduling too. 
+                          <span className="font-medium text-green-600">Note:</span> You can provide your order lists/photos later after scheduling too. 
                         </div>
                       {/* Store Search */}
                       <div className="flex items-center justify-between">
@@ -788,7 +788,7 @@ const StorePickupPage = () => {
                               </div>
                               <div className="flex items-center space-x-2">
                                 <RadioGroupItem value="inapp" id="inapp" />
-                                <Label htmlFor="inapp">In-App</Label>
+                                <Label htmlFor="inapp">On this site</Label>
                               </div>
                             </RadioGroup>
                           </div>
@@ -961,7 +961,7 @@ const StorePickupPage = () => {
                         {/* Delivery Notes with Suggestions */}
                         <div className="space-y-2">
                           <Label htmlFor="delivery-notes">Delivery Notes</Label>
-                          <div className="flex flex-wrap gap-2 mb-2">
+                          <div className="flex flex-wrap gap-2 mb-2 mt-2 pb-4">
                             {NOTE_SUGGESTIONS.map(suggestion => (
                               <button
                                 type="button"
@@ -977,13 +977,13 @@ const StorePickupPage = () => {
                             id="delivery-notes"
                             value={deliveryNotes}
                             onChange={e => setDeliveryNotes(e.target.value)}
-                            placeholder="Add any delivery instructions (optional)"
+                            placeholder="Add instructions (optional)"
                             className={formErrors.deliveryNotes ? 'border-destructive' : ''}
-                            rows={2}
+                            rows={3}
                           />
                           {formErrors.deliveryNotes && <p className="text-xs text-destructive">{formErrors.deliveryNotes}</p>}
                           <div className="text-xs text-muted-foreground mt-1">
-                            <span className="font-medium text-orange-600">Note:</span> The final amount may change after shopping. If it is higher, you will need to pay the difference before delivery.
+                            <span className="font-medium text-red-600">Note:</span> The final amount may change after shopping, and you may be required to pay the difference before delivery.
                           </div>
                         </div>
 
