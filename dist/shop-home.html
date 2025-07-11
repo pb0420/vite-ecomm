@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- ✅ SEO Basics -->
+  <meta charset="UTF-8">
+  <title>Shop | Groceroo - Online Grocery Delivery in Adelaide</title>
+  <meta name="description" content="Groceroo delivers fresh groceries online in Adelaide. Shop from a wide range of categories and get them delivered straight to you.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- ✅ Open Graph / Social Tags -->
+  <meta property="og:title" content="Groceroo - Online Grocery Delivery in Adelaide">
+  <meta property="og:description" content="Groceries delivered to you in Adelaide. Shop online with Groceroo!">
+  <meta property="og:image" content="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/logo.webp">
+  <meta property="og:type" content="website">
+
+  <!-- ✅ Favicon -->
+  <link rel="icon" href="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/favicon.webp">
+
+  <!-- ✅ Styles -->
+  <style>
+    body, html {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+    .hero {
+      position: relative;
+      background: url('https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/outbanner.webp') center center / cover no-repeat;
+      color: #fff;
+      text-align: center;
+      padding: 100px 20px;
+    }
+    .overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(60, 179, 113, 0.7);
+    }
+    .content {
+      position: relative;
+      z-index: 1;
+    }
+    .search-box {
+      margin: 20px 0;
+    }
+    .search-box input {
+      padding: 12px;
+      font-size: 16px;
+      width: 300px;
+      border-radius: 4px;
+      border: none;
+    }
+    .enter-button {
+      padding: 14px 30px;
+      font-size: 18px;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+      background-color: #df6f32;
+      color: #ffffff;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    .categories {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      padding: 40px 20px;
+      background-color: #fafafa;
+    }
+    .category {
+      text-align: center;
+      flex: 1 1 120px;
+      margin: 20px;
+    }
+    .category img {
+      max-width: 64px;
+      height: auto;
+    }
+    .category p {
+      margin: 10px 0 0;
+      font-size: 16px;
+      font-weight: bold;
+      color: #333;
+    }
+  </style>
+</head>
+<body style="background-color: rgb(68, 148, 103)">
+  <!-- ✅ Header with Logo and Nav -->
+<header style="position:relative; z-index:2; padding:10px 20px; display:flex; align-items:center; justify-content:space-between; background:transparent;">
+  <!-- Logo on the left -->
+  <a href="/">
+    <img src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/logo-plain.webp" alt="Groceroo Logo" class="logo" style="height:30px;" />
+  </a>
+
+  <!-- Navigation links aligned to the right -->
+  <nav style="display:flex; gap:20px; align-items:center;">
+    <a href="/" style="color:white; text-decoration:none;">Home</a>
+    <a href="/shop" style="color:white; text-decoration:none;">Shop</a>
+    <a href="/grocery-run" style="color:white; text-decoration:none;">Grocery Run</a>
+  </nav>
+</header>
+
+  <!-- ✅ Hero Section -->
+  <div class="hero">
+    <div class="overlay"></div>
+    <div class="content">
+      <h1>Groceroo – Online Grocery Shopping and Delivery in Adelaide</h1>
+      <p>Shop Groceries easily and get it delivered straight to you</p>
+      <div class="search-box">
+        <input id="search-box" type="text" placeholder="Search for groceries...">
+      </div>
+      <a onclick="searchShop()" class="enter-button">Shop in App</a>
+    </div>
+  </div>
+
+  <!-- ✅ Categories Section -->
+  <!-- ✅ Updated Categories Section -->
+<div class="categories">
+  <div class="category">
+    <img src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/category_icons/kitchenSupplies.webp" alt="Kitchen Supplies">
+    <p>Kitchen Supplies</p>
+  </div>
+  <div class="category">
+    <img src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/category_icons/eggs.webp" alt="Eggs">
+    <p>Eggs</p>
+  </div>
+  <div class="category">
+    <img src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/category_icons/pantrystaples.webp" alt="Pantry Staples">
+    <p>Pantry Staples</p>
+  </div>
+  <div class="category">
+    <img src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/category_icons/milkdairy.webp" alt="Milk & Dairy">
+    <p>Milk & Dairy</p>
+  </div>
+  <div class="category">
+    <img src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/category_icons/fruitnveg.webp" alt="Fruits & Vegetables">
+    <p>Fruits & Vegetables</p>
+  </div>
+  <div class="category">
+    <img src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/category_icons/meat.webp" alt="Meats">
+    <p>Meats</p>
+  </div>
+  <div class="category">
+    <img src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/category_icons/snacks.webp" alt="Snacks">
+    <p>Snacks</p>
+  </div>
+  <div class="category">
+    <img src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/category_icons/confec.webp" alt="Confectionary">
+    <p>Confectionary</p>
+  </div>
+  <div class="category">
+    <img src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/category_icons/healthhygiene.webp" alt="Health & Hygiene">
+    <p>Health & Hygiene</p>
+  </div>
+  <div class="category">
+    <img src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/category_icons/brekky.webp" alt="Breakfast">
+    <p>Breakfast</p>
+  </div>
+  <div class="category">
+    <img src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/category_icons/beverages.webp" alt="Beverages">
+    <p>Beverages</p>
+  </div>
+  <div class="category">
+    <img src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/category_icons/toiletbathroom.webp" alt="Toilet and Bathroom">
+    <p>Toilet and Bathroom</p>
+  </div>
+  <div class="category">
+    <img src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/category_icons/seafood.webp" alt="Seafood">
+    <p>Seafood</p>
+  </div>
+  <div class="category">
+    <img src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/category_icons/pets.webp" alt="Pets">
+    <p>Pets</p>
+  </div>
+  <div class="category">
+    <img src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/category_icons/miscle.webp" alt="Miscellenious">
+    <p>Miscellenious</p>
+  </div>
+  <div class="category">
+    <img src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/category_icons/chicken.webp" alt="Chicken">
+    <p>Chicken</p>
+  </div>
+  <div class="category">
+    <img src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/category_icons/bakery.webp" alt="Bakery">
+    <p>Bakery</p>
+  </div>
+</div>
+
+<div style="max-width: 800px; margin: 0 auto; padding: 24px 10px; color: white; line-height: 1.7; font-size: 1.08rem;">
+  <h2 style="padding:10px 0 0 0; color:white; font-size:2rem;">Shop at Groceroo</h2>
+  
+  <p>
+    Welcome to Groceroo, Adelaide’s new platform for fast and affordable online grocery delivery. Say goodbye to traffic, long checkout lines, and time-consuming supermarket visits.
+  </p>
+  <p>
+    With Groceroo, you can shop for all your grocery needs from the comfort of your home and have them delivered straight to your doorstep — quickly, safely, and reliably.
+  </p>
+  <p>
+    We offer a wide range of grocery categories tailored to suit every household. Browse through fresh fruits and vegetables, dairy and eggs, meat and seafood, bakery items, snacks, beverages, pantry staples, and cleaning and household essentials. Whether you’re looking for everyday basics or special ingredients for a recipe, Groceroo has you covered.
+  </p>
+  <p>
+    Our platform is designed for simplicity and speed. With intuitive search, smart recommendations, and category browsing, it’s easy to find exactly what you need. Plus, we offer regular discounts and bundle offers, ensuring you get the best value for your money. Enjoy competitive prices, bulk savings, and daily deals across all categories.
+  </p>
+  <p>
+    Use our AI chat to help you find products or talk to a human instead. We offer great customer support to help with all your needs.
+  </p>
+  <p>
+    We partner with trusted local suppliers to ensure that everything — from leafy greens to fresh meat — is of the highest quality. Orders are packed with care and delivered on-time across Adelaide, including nearby suburbs.
+  </p>
+  <p>
+    Groceroo supports busy families, students, professionals, and seniors with a reliable and convenient service. Whether you need a quick top-up or a full grocery restock, our app and website make it simple to schedule and track your delivery.
+  </p>
+  <p>
+    Try Groceroo today — Adelaide’s easiest way to shop for groceries online. <strong>Freshness guaranteed. Convenience unmatched.</strong>
+  </p>
+</div>
+    
+<footer style="background:#f8f8f8; padding:20px; text-align:center; margin-top:50px;">
+  <div style="margin-bottom:10px;">
+    <a href="/" style="margin:0 10px; color:#444; text-decoration:none;">Home</a>
+    <a href="/grocery-run" style="margin:0 10px; color:#444; text-decoration:none;">Grocery Run</a>
+    <a href="/shop" style="margin:0 10px; color:#444; text-decoration:none;">Shop</a>
+    <a href="/privacy" style="margin:0 10px; color:#444; text-decoration:none;">Privacy</a>
+    <a href="/terms" style="margin:0 10px; color:#444; text-decoration:none;">Terms</a>
+  </div>
+  <div style="margin-bottom:10px; color:#444; font-size:15px;">
+    <div>Email: <a href="mailto:contact@groceroo.com.au" style="color:#2E8B57;">contact@groceroo.com.au</a></div>
+    <div>Phone: <a href="tel:+61478477036" style="color:#2E8B57;">+61 478 477 036</a></div>
+    <div>
+      <a href="https://wa.me/61478477036" target="_blank" rel="noopener" style="margin-right:10px; color:#25D366; text-decoration:none;">
+        WhatsApp
+      </a>
+      <a href="https://www.instagram.com/groceroo_adl?igsh=bXFmN2J2cHp3cHQ=" target="_blank" rel="noopener" style="color:#E4405F; text-decoration:none;">
+        Instagram
+      </a>
+    </div>
+  </div>
+  <p style="color:#888; font-size:13px;">© 2025 Groceroo. All rights reserved.</p>
+</footer>
+</body>
+<script>
+  function searchShop() {
+    const query = document.getElementById('search-box').value;
+    if (query) {
+      window.location.href = `/shop?search=${encodeURIComponent(query)}`;
+    }else{
+        window.location.href = '/shop';
+    }
+   
+}
+</script>
+</html>

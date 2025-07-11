@@ -37,6 +37,8 @@ import StripePaymentPage from '@/pages/StripePaymentPage';
 import ContactPage from '@/pages/ContactPage';
 import WorkPage from '@/pages/WorkPage';
 import AiChatBot from '@/components/chat/AiChatBot'; 
+import PwaUpdateBanner from '@/components/pwa/PwaUpdateBanner';
+
 
 
 import { purgeQueryCache } from '@/lib/queryCache';
@@ -84,6 +86,7 @@ const App = () => {
               <Footer />
               <CartDrawer />
               <Toaster />
+              <PwaUpdateBanner />
             </div>
           </Router>
         </CartProvider>
