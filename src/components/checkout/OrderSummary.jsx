@@ -12,7 +12,7 @@ const OrderSummary = ({ deliveryFee = 0, appliedPromo = null, discountAmount = 0
     <div className="sticky top-20 p-6 border rounded-lg bg-muted/20">
       <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
 
-      <div className="space-y-3 max-h-60 overflow-y-auto pr-2 mb-4 custom-scrollbar">
+      <div className="space-y-3 max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-rounded pr-2 mb-4 custom-scrollbar">
         {cart.length > 0 ? cart.map(item => (
           <div key={item.id} className="flex justify-between items-start">
             <div className="flex-1 mr-2">

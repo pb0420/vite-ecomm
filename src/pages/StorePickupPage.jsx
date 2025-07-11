@@ -670,37 +670,7 @@ const StorePickupPage = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Ask for user name if not set */}
-                    {user && !user.name && (
-                      <div className="space-y-2">
-                        <Label htmlFor="user-name">Your Name</Label>
-                        <Input
-                          id="user-name"
-                          value={userName}
-                          onChange={e => setUserName(e.target.value)}
-                          placeholder="Enter your name"
-                          className={nameError ? 'border-destructive' : ''}
-                        />
-                        {nameError && <p className="text-xs text-destructive">{nameError}</p>}
-                        <Button
-                          type="button"
-                          className="mt-2"
-                          onClick={async () => {
-                            if (!userName.trim()) {
-                              setNameError('Please enter your name');
-                              return;
-                            }
-                            setNameError('');
-                            await updateUserInfo({ name: userName.trim() });
-                            toast({ title: 'Name updated', description: 'Your name has been saved.' });
-                          }}
-                        >
-                          Save Name
-                        </Button>
-                      </div>
-                    )}
-
+                  <form onSubmit={handleSubmit} className="mb-4 space-y-6">
                     <div className="space-y-4">
                       <h3 className="text-lg font-semibold">Add Stores</h3>
                        <div className="text-xs text-muted-foreground mt-1">
@@ -788,19 +758,34 @@ const StorePickupPage = () => {
                       </div>
                     </div>
 
-                    {/* Show login form if user needs to sign in */}
-                    {shouldShowLogin && (
-                      <Card className="border-primary/20 bg-primary/5">
-                        <CardHeader>
-                          <CardTitle>Sign in to Continue</CardTitle>
-                          <CardDescription>Please sign in to complete your grocery run order</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="max-w-lg mx-auto">
-                            <PhoneLoginForm onSuccess={handleLoginSuccess} />
-                          </div>
-                        </CardContent>
-                      </Card>
+                    {/* Ask for user name if not set */}
+                    {user && !user.name && (
+                      <div className="space-y-2">
+                        <Label htmlFor="user-name">Your Name</Label>
+                        <Input
+                          id="user-name"
+                          value={userName}
+                          onChange={e => setUserName(e.target.value)}
+                          placeholder="Enter your name"
+                          className={nameError ? 'border-destructive' : ''}
+                        />
+                        {nameError && <p className="text-xs text-destructive">{nameError}</p>}
+                        <Button
+                          type="button"
+                          className="mt-2"
+                          onClick={async () => {
+                            if (!userName.trim()) {
+                              setNameError('Please enter your name');
+                              return;
+                            }
+                            setNameError('');
+                            await updateUserInfo({ name: userName.trim() });
+                            toast({ title: 'Name updated', description: 'Your name has been saved.' });
+                          }}
+                        >
+                          Save Name
+                        </Button>
+                      </div>
                     )}
 
                     {/* Contact preferences - only show if user is logged in */}
@@ -1038,6 +1023,20 @@ const StorePickupPage = () => {
                       </>
                     )}
                   </form>
+                    {/* Show login form if user needs to sign in */}
+                    {shouldShowLogin && (
+                      <Card className="border-primary/20 bg-primary/5">
+                        <CardHeader>
+                          <CardTitle>Sign in to Continue</CardTitle>
+                          <CardDescription>Please sign in to complete your grocery run order</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="max-w-lg mx-auto">
+                            <PhoneLoginForm onSuccess={handleLoginSuccess} />
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
                 </CardContent>
               </Card>
             </TabsContent>

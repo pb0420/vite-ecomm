@@ -108,6 +108,7 @@ const matchProductFtsStrict = (ftsString, aiName, product) => {
   useEffect(() => {
     
     if (isOpen) {
+       console.log('opn');
       document.body.style.overflow = 'hidden';
       scrollToBottom();
     } else {
@@ -115,6 +116,7 @@ const matchProductFtsStrict = (ftsString, aiName, product) => {
     }
     // Cleanup on unmount
     return () => {
+      console.log('clenup');
       document.body.style.overflow = '';
     };
 
@@ -326,7 +328,7 @@ const updateUserChatHistory = async () => {
           <>
             {/* Overlay */}
             <motion.div
-              className="fixed inset-0 z-40 bg-black/50"
+              className="fixed inset-0 z-50 bg-black/50"
               initial="closed"
               animate="open"
               exit="closed"
@@ -387,7 +389,7 @@ const updateUserChatHistory = async () => {
               <div className="flex-1 flex flex-col h-0">
                 {user ? (
                   <>
-                    <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                    <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-rounded p-4 space-y-4">
                       {messages.map((message, index) => (
                         <div
                           key={index}
@@ -404,12 +406,12 @@ const updateUserChatHistory = async () => {
                             {message.groupedProducts && message.groupedProducts.length > 0 && (
                               <div className="mt-2 space-y-4">
                                 {message.groupedProducts.map((group, idx) => (
-                                  <div key={idx} className="mb-4 bg-white/80 rounded-lg shadow border p-3">
+                                  <div key={`${group.aiName}_`+idx} className="mb-4 bg-white/80 rounded-lg shadow border p-3">
                                     <div className="font-semibold text-[#2E8B57] mb-2 text-base">
                                       - {formatName(group.aiName)}
                                     </div>
                                     <div className="flex flex-col gap-2">
-                                      {(expandedSuggestions[idx] ? group.suggestions : group.suggestions.slice(0, 2)).map(product => (
+                                      {(expandedSuggestions[`${group.aiName}_`+idx] ? group.suggestions : group.suggestions.slice(0, 2)).map(product => (
                                         <div
                                           key={product.id}
                                           className="flex items-center justify-between bg-[#e6f7f1] rounded px-3 py-2 border"
@@ -475,9 +477,9 @@ const updateUserChatHistory = async () => {
                                         variant="link"
                                         size="xs"
                                         className="mt-1 text-xs text-primary"
-                                        onClick={() => toggleSuggestions(idx)}
+                                        onClick={() => toggleSuggestions(`${group.aiName}_`+idx)}
                                       >
-                                        {expandedSuggestions[idx] ? 'Show less' : 'Show more'}
+                                        {expandedSuggestions[`${group.aiName}_`+idx] ? 'Show less' : 'Show more'}
                                       </Button>
                                     )}
                                   </div>

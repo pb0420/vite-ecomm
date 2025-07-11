@@ -216,7 +216,7 @@ const PickupOrderDetailsPage = () => {
   }
 
   return (
-    <div className="container py-8">
+    <div className="container py-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -227,19 +227,22 @@ const PickupOrderDetailsPage = () => {
         <div className="mb-6">
           {/* Link to go back */}
           <Link to="/account">
-            <Button variant="ghost" className="mb-4">
+            <Button variant="ghost" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-4">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Return to Account
             </Button>
           </Link>
-          <div className="flex items-center justify-between">
-            <div style={{ flex: 1 }}>
-              <h1 className="text-2xl font-bold">Grocery Run #{order.id.slice(0, 6).toUpperCase()}</h1>
-              <p className="text-muted-foreground">
-                {order.pickup_date ? format(new Date(order.pickup_date), 'PPP') : 'N/A'} • {order.time_slot}
-              </p>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <div className="flex flex-col gap-1 sm:gap-0 sm:flex-row sm:items-center sm:space-x-4 flex-1">
+              <h1 className="text-xl sm:text-2xl font-bold text-wrap break-words">Grocery Run #{order.id.slice(0, 6).toUpperCase()}</h1>
+              <span className="text-muted-foreground text-sm sm:text-base flex items-center gap-2">
+                <Calendar className="w-4 h-4 mr-1 text-muted-foreground" />
+                {order.pickup_date ? format(new Date(order.pickup_date), 'PPP') : 'N/A'}
+                <Clock className="w-4 h-4 ml-2 mr-1 text-muted-foreground" />
+                {order.time_slot}
+              </span>
             </div>
-            <div className="flex items-center space-x-4 ">
+            <div className="flex flex-row flex-wrap gap-2 sm:gap-4 items-center justify-end">
               <Badge className={getPaymentStatusColor(order.payment_status)}>
                 <CreditCard />&nbsp; {order.payment_status.charAt(0).toUpperCase() + order.payment_status.slice(1)}
               </Badge>
@@ -256,13 +259,13 @@ const PickupOrderDetailsPage = () => {
             {/* Order Summary */}
             <Card className="bg-gray-50">
               <CardHeader>
-                <CardTitle className="flex items-center">
+                <CardTitle className="flex items-center text-base sm:text-lg">
                   <Package className="w-5 h-5 mr-2" />
                   Summary
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                   <div className="flex items-center">
                     <Calendar className="w-4 h-4 mr-2 text-muted-foreground" />
                     {order.pickup_date ? format(new Date(order.pickup_date), 'PPP') : 'N/A'}
@@ -273,42 +276,42 @@ const PickupOrderDetailsPage = () => {
                   </div>
                   <div className="flex items-center">
                     <MapPin className="w-4 h-4 mr-2 text-muted-foreground" />
-                    {order.delivery_address}
+                    <span className="break-words">{order.delivery_address}</span>
                   </div>
                   <div className="flex items-center">
                     <Phone className="w-4 h-4 mr-2 text-muted-foreground" />
                     {order.whatsapp_number || order.phone_number}
                   </div>
                 </div>
-                <div className="flex justify-between items-center pt-4 border-t">
+                <div className="flex flex-col sm:flex-row justify-between items-center pt-4 border-t gap-2">
                   <span className="font-medium">Total Amount:</span>
                   <span className="text-lg font-bold">
                     {order.actual_total ? formatCurrency(order.actual_total) : '(Est.)' + formatCurrency(order.estimated_total)}
                   </span>
                 </div>
                 {order.actual_total && (
-                  <div className="flex justify-between items-center pt-2">
+                  <div className="flex flex-col sm:flex-row justify-between items-center pt-2 gap-2">
                     <span className="font-medium">Actual Total:</span>
                     <span className="text-base font-semibold">{formatCurrency(order.actual_total)}</span>
                   </div>
                 )}
                 {/* Show convenience, service, and delivery fees */}
-                <div className="flex justify-between items-center pt-2">
-                  <span className="text-sm text-muted-foreground">Convenience Fee ({order.fees_data?.convenience_fee_percent}) :</span>
+                <div className="flex flex-col sm:flex-row justify-between items-center pt-2 gap-2">
+                  <span className="text-sm text-muted-foreground">Convenience Fee ({order.fees_data?.convenience_fee_percent+'%'}) :</span>
                   <span className="text-sm">{formatCurrency(order.fees_data?.convenienceFee || 0)}</span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Service Fee ({order.fees_data?.service_fee_percent}) :</span>
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-2">
+                  <span className="text-sm text-muted-foreground">Service Fee ({order.fees_data?.service_fee_percent+'%'}) :</span>
                   <span className="text-sm">{formatCurrency(order.fees_data?.serviceFee || 0)}</span>
                 </div>
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-2">
                   <span className="text-sm text-muted-foreground">Delivery Fee:</span>
                   <span className="text-sm">{formatCurrency(order.fees_data?.deliveryFee || 0)}</span>
                 </div>
 
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-2">
                   <span className="text-sm text-muted-foreground">Notes:</span>
-                  <span className="text-sm">{order.notes}</span>
+                  <span className="text-sm break-words">{order.notes}</span>
                 </div>
 
               </CardContent>

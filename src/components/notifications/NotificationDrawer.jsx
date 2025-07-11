@@ -7,7 +7,6 @@ import { supabase } from "@/lib/supabaseClient";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
-import { formatDateForTimezone, DEFAULT_TIMEZONE } from '@/lib/timezone';
 import { fetchUserNotifications } from '@/lib/fetchNotifications';
 
 const READ_KEY_PREFIX = "notifications_read_";
@@ -15,7 +14,7 @@ const READ_KEY_PREFIX = "notifications_read_";
 const NotificationDrawer = ({ open, onClose, onRead }) => {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const intervalRef = useRef();
   const navigate = useNavigate();
 
@@ -103,7 +102,7 @@ const NotificationDrawer = ({ open, onClose, onRead }) => {
                 <X className="w-5 h-5" />
               </Button>
             </div>
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-rounded p-4 space-y-4">
               {loading ? (
                 <div className="text-center text-muted-foreground">Loading...</div>
               ) : notifications.length === 0 ? (

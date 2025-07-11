@@ -101,7 +101,7 @@ const overlayVariants = {
               </div>
             ) : (
               <>
-                <div className="flex-1 p-4 overflow-y-auto">
+                <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-rounded p-4">
                   <ul className="space-y-4">
                     <AnimatePresence>
                       {cart.map(item => (
@@ -117,6 +117,7 @@ const overlayVariants = {
                             <img 
                               alt={item.name} 
                               className="w-full h-full object-cover" 
+                              onClick={() => {closeCart();navigate(`/product/${item.id}`)}}
                               src={item.image_url || "https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/product-placeholder.webp"} 
                             />
                           </div>

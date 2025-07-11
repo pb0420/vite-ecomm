@@ -1,5 +1,7 @@
 import { getQueryCache, setQueryCache, clearQueryCache } from '@/lib/queryCache';
 import { supabase } from '@/lib/supabaseClient';
+import { formatDateForTimezone, DEFAULT_TIMEZONE } from '@/lib/timezone';
+
 
 /**
  * Fetch notifications (upcoming orders and grocery runs) for a user
@@ -44,7 +46,7 @@ export const fetchUserNotifications = async (userId) => {
       type: 'order',
       id: order.id,
       title: 'Upcoming Delivery',
-      time: order.expected_delivery_at,
+      time: `${new Date(order.expected_delivery_at)}`,
       admin_messages: order.admin_messages || [],
       status: order.status,
     })),
@@ -52,7 +54,7 @@ export const fetchUserNotifications = async (userId) => {
       type: 'pickup',
       id: pickup.id,
       title: 'Upcoming Grocery Run',
-      time: pickup.time_slot ? `${pickup.pickup_date} . ${pickup.time_slot}` : pickup.pickup_date,
+      time: pickup.time_slot ? `${new Date(pickup.pickup_date)} - ${pickup.time_slot}` : pickup.pickup_date,
       admin_messages: pickup.admin_messages || [],
       status: pickup.status,
     })),
