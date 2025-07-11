@@ -250,11 +250,6 @@ const ShopPage = () => {
                     value={searchInput}
                     onChange={(e) => handleSearchInputChange(e.target.value)}
                   />
-                  {searchInput.length > 0 && searchInput.length < 2 && (
-                    <p className="p-1 -bottom-4 left-0 text-xs text-white/80">
-                      Enter at least 2 characters to search
-                    </p>
-                  )}
                 </div>
               </motion.div>
 

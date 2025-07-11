@@ -76,6 +76,8 @@ const StorePickupPage = () => {
   const [reorderPreviousItems, setReorderPreviousItems] = useState(false);
   const [deliverySettings, setDeliverySettings] = useState({ convenience_fee_percent: 7, service_fee_percent: 3 });
   const [deliveryNotes, setDeliveryNotes] = useState('');
+  const [userName, setUserName] = useState(user?.name || '');
+  const [nameError, setNameError] = useState('');
   
   const navigate = useNavigate();
 
@@ -669,6 +671,36 @@ const StorePickupPage = () => {
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* Ask for user name if not set */}
+                    {user && !user.name && (
+                      <div className="space-y-2">
+                        <Label htmlFor="user-name">Your Name</Label>
+                        <Input
+                          id="user-name"
+                          value={userName}
+                          onChange={e => setUserName(e.target.value)}
+                          placeholder="Enter your name"
+                          className={nameError ? 'border-destructive' : ''}
+                        />
+                        {nameError && <p className="text-xs text-destructive">{nameError}</p>}
+                        <Button
+                          type="button"
+                          className="mt-2"
+                          onClick={async () => {
+                            if (!userName.trim()) {
+                              setNameError('Please enter your name');
+                              return;
+                            }
+                            setNameError('');
+                            await updateUserInfo({ name: userName.trim() });
+                            toast({ title: 'Name updated', description: 'Your name has been saved.' });
+                          }}
+                        >
+                          Save Name
+                        </Button>
+                      </div>
+                    )}
+
                     <div className="space-y-4">
                       <h3 className="text-lg font-semibold">Add Stores</h3>
                        <div className="text-xs text-muted-foreground mt-1">
