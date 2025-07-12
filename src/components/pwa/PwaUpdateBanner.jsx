@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabaseClient';
 
 const PwaUpdateBanner = () => {
   const [updateAvailable, setUpdateAvailable] = useState(false);
-  const [version, setVersion] = useState(localStorage.getItem('pwa_version') || '1.0.0');
+  const [version, setVersion] = useState(null);
   const [updateMessage, setUpdateMessage] = useState('A new version is available!');
 
   useEffect(() => {

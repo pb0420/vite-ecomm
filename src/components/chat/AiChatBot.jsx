@@ -109,6 +109,7 @@ const matchProductFtsStrict = (ftsString, aiName, product) => {
     
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      messagesEndRef.current?.click();
       scrollToBottom();
       messagesEndRef.current?.click();
     } else {
@@ -333,6 +334,7 @@ const updateUserChatHistory = async () => {
               exit="closed"
               variants={overlayVariants}
               onClick={() => setIsOpen(false)}
+              style={{ touchAction: 'none' }} // Prevent background scroll/touch
             />
 
             {/* Chat Drawer */}
@@ -343,7 +345,7 @@ const updateUserChatHistory = async () => {
               exit="closed"
               variants={drawerVariants}
               className="fixed top-0 right-0 z-50 w-full max-w-md h-full bg-[#e6f7f1] border-l rounded-l-lg shadow-xl flex flex-col"
-              style={{ maxHeight: '100vh' }}
+              style={{ maxHeight: '100vh', overflow: 'hidden' }}
             >
               {/* WhatsApp Chat Row */}
               <div className="flex items-center justify-between gap-2 p-4 border-b bg-background">
@@ -385,7 +387,7 @@ const updateUserChatHistory = async () => {
               </div>
 
               {/* Chat Area */}
-              <div className="flex-1 flex flex-col h-0">
+              <div className="flex-1 flex flex-col h-0 overflow-y-auto">
                 {user ? (
                   <>
                     <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-rounded p-4 space-y-4">

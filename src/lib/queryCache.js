@@ -56,8 +56,8 @@ export function purgeQueryCache({ maxBytes = 5 * 1024 * 1024 } = {}) {
         i--; // Adjust index after removal
       }
     } catch {
-      localStorage.removeItem(key);
-      i--;
+      // localStorage.removeItem(key);
+      // i--;
     }
   }
 
