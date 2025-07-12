@@ -8,6 +8,7 @@ const PwaUpdateBanner = () => {
   const [updateMessage, setUpdateMessage] = useState('A new version is available!');
 
   useEffect(() => {
+    let intervalId;
     const checkPwaVersion = async () => {
       const { data, error } = await supabase
         .from('general_settings')
@@ -16,18 +17,20 @@ const PwaUpdateBanner = () => {
         .single();
       if (error || !data) return;
       const currentVersion = localStorage.getItem('pwa_version');
-        if (!currentVersion) {
-            // If no version is set, assume this is the first load
-            setVersion(data.pwa_version);
-            localStorage.setItem('pwa_version', data.pwa_version);
-            setUpdateAvailable(false);
-        }else if (currentVersion !== data.pwa_version) {
-            setVersion(data.pwa_version);
-            setUpdateAvailable(true);
-            setUpdateMessage(data.pwa_update_message || 'A new version is available!');
-        }
+      if (!currentVersion) {
+        // If no version is set, assume this is the first load
+        setVersion(data.pwa_version);
+        localStorage.setItem('pwa_version', data.pwa_version);
+        setUpdateAvailable(false);
+      } else if (currentVersion !== data.pwa_version) {
+        setVersion(data.pwa_version);
+        setUpdateAvailable(true);
+        setUpdateMessage(data.pwa_update_message || 'A new version is available!');
+      }
     };
-    checkPwaVersion();
+    checkPwaVersion(); // Initial check
+    intervalId = setInterval(checkPwaVersion, 1800000); // Check every 30 mins
+    return () => clearInterval(intervalId);
   }, []);
 
   const handleUpdate = () => {

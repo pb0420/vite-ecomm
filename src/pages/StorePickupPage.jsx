@@ -761,7 +761,7 @@ const StorePickupPage = () => {
                     {/* Ask for user name if not set */}
                     {user && !user.name && (
                       <div className="space-y-2">
-                        <Label htmlFor="user-name">Your Name</Label>
+                        <Label htmlFor="user-name">Your Full Name</Label>
                         <Input
                           id="user-name"
                           value={userName}

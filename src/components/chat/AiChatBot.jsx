@@ -108,15 +108,14 @@ const matchProductFtsStrict = (ftsString, aiName, product) => {
   useEffect(() => {
     
     if (isOpen) {
-       console.log('opn');
       document.body.style.overflow = 'hidden';
       scrollToBottom();
+      messagesEndRef.current?.click();
     } else {
       document.body.style.overflow = '';
     }
     // Cleanup on unmount
     return () => {
-      console.log('clenup');
       document.body.style.overflow = '';
     };
 
@@ -343,7 +342,7 @@ const updateUserChatHistory = async () => {
               animate="open"
               exit="closed"
               variants={drawerVariants}
-              className="fixed top-0 right-0 z-50 w-full max-w-md h-full bg-[#e6f7f1] border-l rounded-l-lg shadow-xl flex flex-col overflow-hidden"
+              className="fixed top-0 right-0 z-50 w-full max-w-md h-full bg-[#e6f7f1] border-l rounded-l-lg shadow-xl flex flex-col"
               style={{ maxHeight: '100vh' }}
             >
               {/* WhatsApp Chat Row */}
