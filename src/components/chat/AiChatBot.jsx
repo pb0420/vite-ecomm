@@ -267,7 +267,7 @@ const updateUserChatHistory = async () => {
   };
 
   const openWhatsApp = () => {
-    window.open('https://wa.me/1234567890', '_blank'); // Replace with actual WhatsApp number
+    window.open('https://wa.me/61478477036', '_blank'); // Replace with actual WhatsApp number
   };
 
   const LoginPrompt = () => (
