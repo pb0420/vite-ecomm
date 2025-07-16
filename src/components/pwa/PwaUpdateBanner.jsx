@@ -28,6 +28,11 @@ const PwaUpdateBanner = () => {
         setUpdateMessage(data.pwa_update_message || 'A new version is available!');
       }
     };
+    let checkIfSecondRefreshRequired = localStorage.getItem('updateSecondTime');
+    if (checkIfSecondRefreshRequired == 1) {
+      window.location.reload(true); // Force reload to get new files
+      localStorage.removeItem('updateSecondTime'); // Clear the flag after reload
+    }
     checkPwaVersion(); // Initial check
     intervalId = setInterval(checkPwaVersion, 1800000); // Check every 30 mins
     return () => clearInterval(intervalId);
@@ -36,13 +41,14 @@ const PwaUpdateBanner = () => {
   const handleUpdate = () => {
     // Update local version and reload PWA
     localStorage.setItem('pwa_version', version); // You may want to set the actual version here
+    localStorage.setItem('updateSecondTime',1);
     window.location.reload(true); // Force reload to get new files
   };
 
   if (!updateAvailable) return null;
 
   return (
-    <div className="fixed top-4 left-1/2 z-50 -translate-x-1/2 bg-primary text-primary-foreground px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 animate-fade-in-up max-w-xs w-full">
+    <div className="fixed top-4 left-1/2 z-50 -translate-x-1/2 bg-[#ff9800]/95 text-primary-foreground px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 animate-fade-in-up max-w-xs w-full">
       <span>{updateMessage}</span>
       <Button size="sm" className="ml-2" onClick={handleUpdate}>
         Update Now

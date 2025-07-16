@@ -48,6 +48,8 @@ const matchProductFtsStrict = (ftsString, aiName, product) => {
     garlic: ['chips', 'bread'],
     coffee: ['cake'],
     'olive oil': ['tuna', 'sardines'],
+    honey: ['tea', 'bread' , 'chips', 'lozenges'],
+    milk: ['cake']
     // Add more as needed
   };
 
@@ -97,6 +99,7 @@ const matchProductFtsStrict = (ftsString, aiName, product) => {
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
+    messagesEndRef.current?.click();
   };
 
   // Fetch chat history on mount
@@ -141,6 +144,7 @@ const matchProductFtsStrict = (ftsString, aiName, product) => {
       timeout = setTimeout(() => {
         setMessages(prev => [...pendingMessages, ...prev]);
         setPendingMessages([]);
+        messagesEndRef.current?.click();
       }, 2800);
     }
     return () => clearTimeout(timeout);

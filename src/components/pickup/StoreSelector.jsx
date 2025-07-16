@@ -1,13 +1,13 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Store, Plus, Minus, MapPin, Clock } from 'lucide-react';
+import { Store, Plus, Minus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import { formatCurrency } from '@/lib/utils';
+import { Label } from '@/components/ui/label';
+import StoreNotes from '@/components/common/StoreNotes';
+import { Input } from '@/components/ui/input';
 
 
 // Helper: Haversine formula for distance in km
@@ -93,26 +93,6 @@ const StoreSelector = ({
     onEstimatedTotalChange(storeId, total);
   };
 
-  // Suggested items logic
-  const handleSuggestedItemChange = (storeId, item, checked, quantity) => {
-    const selectedStore = selectedStores.find(s => s.id === storeId);
-    let notes = selectedStore?.notes || '';
-    const itemLine = `${item.name} x${quantity}`;
-const regex = new RegExp(`${item.name} x(\\d+)`, 'g');  
-    if (checked) {
-      // Add or update
-      if (regex.test(notes)) {
-        notes = notes.replace(regex, itemLine);
-      } else {
-        notes = notes ? `${notes}\n${itemLine}` : itemLine;
-      }
-    } else {
-      // Remove
-      notes = notes.replace(regex, '').replace(/^\s*[\r\n]/gm, '').trim();
-    }
-    handleNotesChange(storeId, notes);
-  };
-
   return (
     <div className="space-y-6">
       <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2">
@@ -125,10 +105,6 @@ const regex = new RegExp(`${item.name} x(\\d+)`, 'g');
             userLocation && store.lat && store.lng
               ? getDistance(userLocation.lat, userLocation.lng, store.lat, store.lng)
               : null;
-          // Suggested items
-          const suggestedItems = Array.isArray(store.store_suggested_items)
-            ? store.store_suggested_items
-            : [];
         
           return (
             <motion.div
@@ -157,7 +133,7 @@ const regex = new RegExp(`${item.name} x(\\d+)`, 'g');
                         <CardTitle className="text-base leading-tight">{store.name}</CardTitle>
                         <Badge className="bg-primary/10 text-primary font-semibold px-2 py-0.5 text-xs">Min ${minimumOrder}</Badge>
                       </div>
-                      <div className="text-xs text-muted-foreground leading-tight">{store.address}</div>
+                      <div className="text-xs text-muted-foreground leading-tight">{store.address.slice(0,20)}</div>
                       <div className="flex items-center gap-2 mt-1">
                         <span className="text-xs">
                           {formatAMPM(store.opening_time)} - {formatAMPM(store.closing_time)}
@@ -183,45 +159,14 @@ const regex = new RegExp(`${item.name} x(\\d+)`, 'g');
                 {isSelected && (
                   <CardContent className="space-y-4 border-t pt-4 bg-gray-50 rounded-b-lg">
                     {/* Suggested Items */}
-                    {suggestedItems.length > 0 && (
-                      <div>
-                        <Label className="block mb-1 text-sm font-medium">Suggested Items</Label>
-                        <div className="flex flex-wrap gap-2 overflow-x-auto pb-1">
-                          {suggestedItems.map((item, idx) => {
-                            const regex = new RegExp(`${item.name} x(\\d+)`, 'g');  
-                            const match = selectedStore?.notes?.match(regex);
-                            const selectedQty = match ? parseInt(match[0].split('x')[1], 10) : 1;
-                            const checked = !!match;
-                            return (
-                              <div key={item.name} className="flex items-center gap-1 bg-white border rounded px-2 py-1 shadow-sm min-w-[120px]">
-                                <label className="flex items-center gap-1 cursor-pointer w-full">
-                                  <input
-                                    type="checkbox"
-                                    checked={checked}
-                                    onChange={e =>
-                                      handleSuggestedItemChange(store.id, item, e.target.checked, selectedQty)
-                                    }
-                                    className="w-4 h-4 accent-primary"
-                                  />
-                                  <span className="text-xs whitespace-nowrap">{item.name}:</span>
-                                  <input
-                                    type="number"
-                                    min={1}
-                                    value={selectedQty}
-                                    onChange={e =>
-                                      handleSuggestedItemChange(store.id, item, true, Math.max(1, parseInt(e.target.value) || 1))
-                                    }
-                                    className="w-10 text-xs ml-1 border rounded px-1 py-0.5 focus:outline-primary"
-                                    disabled={!checked}
-                                  />
-                                </label>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
-                    <hr className="my-2" />
+                    <StoreNotes
+                      storeId={store.id}
+                      notes={selectedStore?.notes || ''}
+                      onNotesChange={handleNotesChange}
+                      suggestedItems={Array.isArray(store.store_suggested_items) ? store.store_suggested_items : []}
+                      maxItems={10}
+                      showQtyButtons={true}
+                    />
                     {/* Estimated Total */}
                     <div className="space-y-1">
                       <Label htmlFor={`estimated-${store.id}`} className="text-sm font-medium">Estimated Total ($)</Label>
@@ -245,18 +190,6 @@ const regex = new RegExp(`${item.name} x(\\d+)`, 'g');
                           handleEstimatedTotalChange(store.id, val);
                         }}
                         placeholder={`Minimum $${minimumOrder}`}
-                        className="mt-1 text-base px-2 py-1 rounded border focus:outline-primary"
-                      />
-                    </div>
-                    {/* Notes */}
-                    <div className="space-y-1">
-                      <Label htmlFor={`notes-${store.id}`} className="text-sm font-medium">Shopping List / Notes</Label>
-                      <Textarea
-                        id={`notes-${store.id}`}
-                        value={selectedStore?.notes || ''}
-                        onChange={(e) => handleNotesChange(store.id, e.target.value)}
-                        placeholder="Add your shopping list or special instructions..."
-                        rows={2}
                         className="mt-1 text-base px-2 py-1 rounded border focus:outline-primary"
                       />
                     </div>

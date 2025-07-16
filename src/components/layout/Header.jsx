@@ -80,22 +80,22 @@ const Header = () => {
               backgroundSize: 'contain',
               backgroundRepeat: 'no-repeat',
               backgroundPosition: 'center',
-              width: '160px',
-              height: '50px',
+              width: '130px',
+              height: '40px',
             }}
             aria-label="Groceroo Logo" // Add aria-label for accessibility
           ></div>
-           {/* {isHome ? (
+           {isHome ? (
             <></>
       ) : (
                 <img
           src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/home-icon.webp"
           alt="Home"
-          style={{ marginLeft: '4px', marginBottom:'2px', width: '15px', height: '15px' }}
+          style={{ marginLeft: '5px', marginBottom:'2px', width: '15px', height: '15px' }}
           className="w-3 h-3"
           aria-label="Home"
         />
-      )} */}
+      )}
         </Link>
 
         <nav className="hidden md:flex md:items-center md:space-x-6">
@@ -129,7 +129,7 @@ const Header = () => {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="flex items-center space-x-2 text-white"
+                    className="flex items-center space-x-2 text-white hover:bg-transparent hover:text-accent-white"
                   >
                     <UserRound className="w-4 h-4" />
                     <span>

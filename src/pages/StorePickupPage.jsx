@@ -27,6 +27,7 @@ import AddressSelector from '@/components/checkout/AddressSelector';
 import { formatCurrency } from '@/lib/utils';
 import { Calendar as CalendarPicker } from '@/components/ui/calendar';
 import { fetchPostcodes } from '@/lib/fetchPostcodes';
+import { addDays } from 'date-fns';
 
 import { 
   formatDateForTimezone, 
@@ -664,7 +665,7 @@ const StorePickupPage = () => {
             <TabsContent value="new-order" className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>New Grocery Run ...<Truck style={{display:'inline'}}/></CardTitle>
+                  <CardTitle> Grocery Run ...<Truck style={{display:'inline'}}/></CardTitle>
                   <CardDescription>
                     Add one or more stores, provide your lists/notes/photos and confirm. We will shop for you and deliver everything in one trip.
                   </CardDescription>
@@ -719,13 +720,20 @@ const StorePickupPage = () => {
                             </Button>
                           </PopoverTrigger>
                           <PopoverContent className="w-auto p-0" align="start">
-                            <CalendarPicker
-                              mode="single"
-                              selected={selectedDate}
-                              onSelect={setSelectedDate}
-                              disabled={isDateDisabled}
-                              initialFocus
-                            />
+                            <div className="p-4">
+                              {/* Calendar quick select buttons for today/tomorrow */}
+                              <div className="flex gap-2 mb-2">
+                                <Button type="button" size="sm" onClick={() => setSelectedDate(new Date())}>Today</Button>
+                                <Button type="button" size="sm" onClick={() => setSelectedDate(addDays(new Date(), 1))}>Tomorrow</Button>
+                              </div>
+                              <CalendarPicker
+                                mode="single"
+                                selected={selectedDate}
+                                onSelect={setSelectedDate}
+                                disabled={isDateDisabled}
+                                initialFocus
+                              />
+                            </div>
                           </PopoverContent>
                         </Popover>
                       </div>

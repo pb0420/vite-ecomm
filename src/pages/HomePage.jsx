@@ -330,7 +330,7 @@ const HomePage = () => {
                     style={{ background: '#fd7507', color: 'white' }}
                     className="w-full h-10 md:h-12 font-bold text-sm mx-auto backdrop-blur-sm transition-all duration-300 hover:scale-105"
                   >
-                   <Store className="w-4 h-4 mr-2" /> Shop
+                   <Store className="w-3 h-4 mr-2" /> Shop
                   </Button>
                 </Link>
                 <Link to="/grocery-run" className="block w-full">

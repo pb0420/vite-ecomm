@@ -123,30 +123,6 @@ const OrderConfirmationPage = () => {
     }
   };
 
-  const handleSendMessage = async () => {
-    if (!newMessage.trim() || sendingMessage) return;
-    setSendingMessage(true);
-    try {
-      const currentMessages = order.admin_messages || [];
-      const message = {
-        from: 'customer',
-        message: newMessage.trim(),
-        timestamp: new Date().toISOString()
-      };
-      const { error } = await supabase
-        .from('orders')
-        .update({ admin_messages: [...currentMessages, message] })
-        .eq('id', order.id);
-      if (error) throw error;
-      setOrder(prev => ({ ...prev, admin_messages: [...currentMessages, message] }));
-      setNewMessage('');
-    } catch (error) {
-      setCancelError('Could not send message.');
-    } finally {
-      setSendingMessage(false);
-    }
-  };
-
   if (loading) {
     return (
       <div className="container px-4 py-8 mx-auto md:px-6">

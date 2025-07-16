@@ -29,6 +29,10 @@ export default defineConfig({
             type: 'image/png'
           }
         ]
+      },
+       workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp}'],
+        cleanupOutdatedCaches: true
       }
     })],
 	server: {

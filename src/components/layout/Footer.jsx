@@ -128,8 +128,8 @@ const Footer = () => {
               </Link>
             </div>
              <div className="flex items-center space-x-4 text-xs text-gray-600">
-                <p className="text-md text-[#ff9800]">
-                  SARITA
+                <p className="text-md text-[#25D366] font-semibold">
+                  SARITA ❤️
                 </p>
               </div>
           </div>

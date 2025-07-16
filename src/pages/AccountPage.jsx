@@ -221,13 +221,13 @@ const AccountPage = () => {
       <Tabs value={tab} onValueChange={handleTabChange} className="space-y-6">
         <TabsList className="grid w-full grid-cols-3 md:w-auto md:inline-flex">
           <TabsTrigger value="profile" className="flex items-center">
-            <User className="w-4 h-4 mr-2" />Profile
+            <User className="w-3 h-5 mr-2" />Profile
           </TabsTrigger>
           <TabsTrigger value="orders" className="flex items-center">
-            <Package className="w-4 h-4 mr-2" />Orders
+            <Package className="w-3 h-3 mr-2" />Orders
           </TabsTrigger>
           <TabsTrigger value="grocery-runs" className="flex items-center">
-            <Store className="w-4 h-4 mr-2" />Grocery Runs
+            <Store className="w-3 h-5 mr-2" />Grocery Runs
           </TabsTrigger>
         </TabsList>
 
@@ -278,7 +278,7 @@ const AccountPage = () => {
                 />
                 <p className="text-xs text-muted-foreground">Phone number cannot be changed.</p>
               </div>
-              <div className="flex justify-end space-x-2">
+              <div className="flex justify-start space-x-2">
                 <Button type="submit" disabled={isSubmitting}>
                   {isSubmitting ? 'Saving...' : 'Save Changes'}
                 </Button>
@@ -363,7 +363,7 @@ const AccountPage = () => {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold">Your Grocery Runs</h2>
                 <Link to="/grocery-run">
-                  <Button>Schedule New</Button>
+                  <Button>+ New</Button>
                 </Link>
               </div>
               {loadingOrders ? (

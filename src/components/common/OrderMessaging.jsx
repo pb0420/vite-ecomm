@@ -14,6 +14,7 @@ const OrderMessaging = ({
   const [newMessage, setNewMessage] = useState("");
   const [sending, setSending] = useState(false);
   const intervalRef = useRef();
+  const messagesScrollRef = useRef(null);
 
   // Poll for messages every 30s
   useEffect(() => {
@@ -38,11 +39,11 @@ const OrderMessaging = ({
   };
 
   return (
-    <div className="p-4 border rounded bg-white shadow-sm">
+    <div className="p-4 mt-8 border rounded bg-white shadow-sm">
         <h1 className="text-lg font-semibold mb-4">
           Order Messages
         </h1>
-      <div className="space-y-2 max-h-60 overflow-y-auto mb-2">
+      <div className="space-y-2 max-h-60 overflow-y-auto mb-2 relative" ref={messagesScrollRef}>
         {messages.length > 0 ? (
           messages.map((message, idx) => (
             <div
@@ -69,6 +70,32 @@ const OrderMessaging = ({
             No messages yet. Send a message to our team if you have any questions.
           </p>
         )}
+        {/* Scroll buttons */}
+        {/* <div className="absolute bottom-2 right-2 flex flex-col gap-2 z-10">
+          <Button
+            size="icon"
+            className="bg-white/80 border shadow h-7 w-7 p-0 flex items-center justify-center"
+            onClick={() => {
+              
+                messagesScrollRef.current.scrollBy({ top: -100, behavior: 'smooth' });
+              
+            }}
+            aria-label="Scroll up"
+          >
+            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg>
+          </Button>
+          <Button
+            size="icon"
+            className="bg-white/80 border shadow h-7 w-7 p-0 flex items-center justify-center"
+            onClick={() => {
+                messagesScrollRef.current.scrollBy({ top: 100, behavior: 'smooth' });
+              
+            }}
+            aria-label="Scroll down"
+          >
+            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M18 9l-6 6-6-6"/></svg>
+          </Button>
+        </div> */}
       </div>
       {!disabled && (
         <div className="space-y-2">

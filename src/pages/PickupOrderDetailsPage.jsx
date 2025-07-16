@@ -16,6 +16,7 @@ import { formatCurrency } from '@/lib/utils';
 import { format } from 'date-fns';
 import CancelOrderDialog from '@/components/common/CancelOrderDialog';
 import OrderMessaging from '@/components/common/OrderMessaging';
+import StoreNotes from '@/components/common/StoreNotes';
 
 const PickupOrderDetailsPage = () => {
   const { id } = useParams();

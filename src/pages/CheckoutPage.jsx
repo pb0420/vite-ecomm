@@ -21,6 +21,7 @@ import { formatCurrency } from '@/lib/utils';
 import { Link } from 'react-router-dom';
 import { CreditCard, ShoppingCart } from 'lucide-react';
 import { fetchPostcodes } from '@/lib/fetchPostcodes';
+import { addDays } from 'date-fns';
 
 const CheckoutPage = () => {
   const { cart, getCartTotal, clearCart } = useCart();
