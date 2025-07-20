@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { color, motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, Clock, ShieldCheck, MessageCircle, Handshake, ShoppingCart, CupSoda, EggFried, Cookie, Hamburger, Croissant, Apple, Banana, Beef, Candy, Fish, Utensils, Car, MapPinCheckInside, Truck, Store, Search, Locate } from 'lucide-react';
+import { ArrowRight, Clock, ShieldCheck, MessageCircle, Handshake, ShoppingCart, CupSoda, EggFried, Cookie, Hamburger, Croissant, Apple, Banana, Beef, Candy, Fish, Utensils, Car, MapPin, Truck, Store, Search, Locate } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import ProductCard from '@/components/products/ProductCard';
@@ -191,7 +191,7 @@ const HomePage = () => {
   return (
     <div className="flex flex-col min-h-screen">
       {showA2HS && <AddToHomeScreenToast onClose={handleCloseA2HS} platform={platform} />}
-      <section className="relative min-h-[350px] h-[40vh] max-h-[500px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
+      <section className="relative min-h-[120px] h-[16vh] max-h-[160px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
         <div className="absolute inset-0">
           <img
             src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/outbanner.webp"
@@ -200,25 +200,24 @@ const HomePage = () => {
           />
           <div className="absolute inset-0 bg-gradient-to-br from-[#2E8B57]/90 via-[#3CB371]/80 to-[#98FB98]/70" />
         </div>
-      
         <div className="container relative h-full px-4 md:px-6">
-          <div className="flex flex-col justify-center h-full max-w-4xl mx-auto pb-6 md:pt-8 md:pb-6">
+          <div className="flex flex-col justify-center h-full max-w-4xl mx-auto pb-2 md:pt-4 md:pb-2">
             <motion.div
-              className="space-y-3 md:space-y-4"
+              className="space-y-2 md:space-y-3"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
               {/* Location Row */}
               <motion.div
-                className="flex items-center justify-between mb-2"
+                className="flex items-center justify-between mb-1"
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.1, duration: 0.2 }}
               >
                 {/* Left: Orange marker and Adelaide */}
                 <div className="flex items-center gap-2 p-1">
-                  <MapPinCheckInside className="w-7 h-7 text-[#fd7507]" />
+                  <MapPin className="w-5 h-5 text-[#fd7507]" />
                   <span className="text-white font-bold text-base">Adelaide</span>
                 </div>
                 {/* Right: Delivery time or Get Location */}
@@ -239,7 +238,6 @@ const HomePage = () => {
                   )}
                 </div>
               </motion.div>
-      
               {/* Search Bar */}
               <motion.form
                 onSubmit={e => e.preventDefault()}
@@ -248,13 +246,13 @@ const HomePage = () => {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.3 }}
               >
-                <div className="flex-1 relative">
+                <div className="flex-1 relative pb-2">
                   <Input
                     type="text"
                     placeholder="Search for groceries and more..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="h-12 md:h-12 pl-3 bg-white/95 backdrop-blur-sm border-0 shadow-lg text-gray-800 placeholder:text-gray-500 text-sm"
+                    className="h-10 md:h-10 pl-3 bg-white/95 backdrop-blur-sm border-0 shadow-lg text-gray-800 placeholder:text-gray-500 text-sm"
                   />
                    {searchLoading && (
                       <span className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -266,93 +264,87 @@ const HomePage = () => {
                     )}
                 </div>
               </motion.form>
-
-              {/* Grocery Run and Shop Buttons */}
-              <motion.div
-                className="pt-2 flex justify-center gap-2"
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.2, duration: 0.3 }}
-              >
-              </motion.div>
-
-              {/* Categories Scroller */}
-              <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.2, duration: 0.3 }}
-                className="relative"
-              >
-                <div className="flex overflow-x-auto pb-1 space-x-3 scrollbar-hide px-2 md:px-0 md:justify-center">
-                  {categories.map((category) => (
-                    <Link
-                      key={category.id}
-                      to={`/category/${category.id}`}
-                      className="flex-none group text-center"
-                    >
-                      <div className="w-16 h-16 md:w-20 md:h-20 mx-auto mb-1 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:bg-white/30 transition-all duration-300 shadow-lg">
-                        <img
-                          src={category.icon_url}
-                          alt={category.name}
-                          className="w-12 h-12 md:w-14 md:h-14 object-cover rounded-full"
-                          onError={(e) => {
-                            e.target.style.display = 'none';
-                            e.target.nextSibling.style.display = 'flex';
-                          }}
-                        />
-                      </div>
-                      <span className="text-xs font-medium text-white/90 group-hover:text-white transition-colors block truncate max-w-[60px] md:max-w-[75px]">
-                        {category.name}
-                      </span>
-                    </Link>
-                  ))}
-                  <Link to="/categories" className="flex-none group text-center">
-                    <div className="w-16 h-16 md:w-20 md:h-20 mx-auto mb-1 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:bg-white/30 transition-all duration-300 shadow-lg">
-                      <div className="flex flex-col items-center">
-                        <ArrowRight className="h-6 w-6 md:h-8 md:w-8 text-white" />
-                      </div>
-                    </div>
-                    <span className="text-xs font-medium text-white/90 group-hover:text-white transition-colors block truncate max-w-[60px] md:max-w-[75px]">View All</span>
-                  </Link>
-                </div>
-              </motion.div>
-
-              {/* Grocery Run Button */}
-              <motion.div
-                className="md:pb-2 pt-2 flex justify-center md:max-w-[400px] lg:max-w-[400px] mx-auto gap-2"
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.2, duration: 0.3 }}
-              >
-                <Link to="/shop" className="block w-full max-w-[120px]">
-                  <Button
-                    size="lg"
-                    style={{ background: '#fd7507', color: 'white' }}
-                    className="w-full h-10 md:h-12 font-bold text-sm mx-auto backdrop-blur-sm transition-all duration-300 hover:scale-105"
-                  >
-                   <Store className="w-3 h-4 mr-2" /> Shop
-                  </Button>
-                </Link>
-                <Link to="/grocery-run" className="block w-full">
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="w-full h-10 md:h-12 bg-white/95 hover:bg-white border-2 border-white/50 shadow-lg text-[#2E8B57] hover:text-[#2E8B57] font-bold text-sm mx-auto backdrop-blur-sm transition-all duration-300 hover:scale-105"
-                  >
-                  ...<Truck className="w-4 h-4 mr-2" />
-                    Grocery Run
-                  </Button>
-                </Link>
-                
-              </motion.div>
             </motion.div>
           </div>
         </div>
       </section>
 
+      {/* Categories and Buttons Section */}
+      <section className="py-6 bg-white">
+        <div className="container px-4 md:px-6">
+          {/* Categories Scroller */}
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.3 }}
+            className="relative mb-6"
+          >
+            <div className="flex overflow-x-auto pb-1 space-x-4 scrollbar-hide px-2 md:px-0 md:justify-center">
+              {categories.map((category) => (
+                <Link
+                  key={category.id}
+                  to={`/category/${category.id}`}
+                  className="flex-none group text-center"
+                >
+                  <div className="w-20 h-20 md:w-24 md:h-24 mx-auto mb-1 bg-white flex items-center justify-center group-hover:bg-gray-100 transition-all duration-300 shadow-none border-none">
+                    <img
+                      src={category.icon_url}
+                      alt={category.name}
+                      className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-full"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.nextSibling.style.display = 'flex';
+                      }}
+                    />
+                  </div>
+                  <span className="text-xs font-medium text-gray-800 group-hover:text-primary transition-colors block truncate max-w-[75px] md:max-w-[90px]">
+                    {category.name}
+                  </span>
+                </Link>
+              ))}
+              <Link to="/categories" className="flex-none group text-center">
+                <div className="w-20 h-20 md:w-24 md:h-24 mx-auto mb-1 bg-white flex items-center justify-center group-hover:bg-gray-100 transition-all duration-300 shadow-none border-none">
+                  <div className="flex flex-col items-center">
+                    <ArrowRight className="h-8 w-8 md:h-10 md:w-10 text-primary" />
+                  </div>
+                </div>
+                <span className="text-xs font-medium text-gray-800 group-hover:text-primary transition-colors block truncate max-w-[75px] md:max-w-[90px]">View All</span>
+              </Link>
+            </div>
+          </motion.div>
+
+          {/* Shop & Grocery Run Buttons */}
+          <motion.div
+            className="flex justify-center gap-2 md:max-w-[500px] lg:max-w-[500px] mx-auto"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.3 }}
+          >
+            <Link to="/shop" className="block w-[70%] max-w-[140px]">
+              <Button
+                size="sm"
+                style={{ background: '#fd7507', color: 'white' }}
+                className="w-full h-12 font-bold text-base mx-auto backdrop-blur-sm transition-all duration-300 hover:scale-105"
+              >
+                <Store className="w-4 h-5 mr-2" /> Shop
+              </Button>
+            </Link>
+            <Link to="/grocery-run" className="block w-full">
+              <Button
+                size="sm"
+                style={{ background: '#3bc371', color: 'white' }}
+                className="w-full h-12 font-bold text-base mx-auto rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-105 border-0"
+              >
+                ...<Truck className="w-5 h-5 mr-2" /> Grocery Run
+              </Button>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Previously Ordered Products Section - Only show if user is logged in */}
       {user && previouslyOrderedProducts.length > 0 && (
-        <section className="py-8 bg-gray-50">
+        <section className="py-6 bg-gray-50">
           <div className="container px-4 md:px-6">
             <motion.h2
               className="text-xl font-bold mb-4"

@@ -10,6 +10,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabaseClient';
 import AddressAutocomplete from '@/components/ui/address-autocomplete';
 import { fetchPostcodes } from '@/lib/fetchPostcodes';
+import { DialogDescription } from '@radix-ui/react-dialog';
 
 
 const AddressManager = () => {
@@ -154,6 +155,9 @@ const AddressManager = () => {
             <DialogHeader>
               <DialogTitle>{editingAddress ? 'Edit Address' : 'Add New Address'}</DialogTitle>
             </DialogHeader>
+            <DialogDescription>
+              
+            </DialogDescription>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="label">Label</Label>

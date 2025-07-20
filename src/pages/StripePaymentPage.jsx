@@ -66,6 +66,18 @@ const StripePaymentPage = () => {
     createPaymentIntent();
   }, [cart, navigate, location.state, user.id]);
 
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      e.preventDefault();
+      e.returnValue = 'Leaving this page may interrupt your payment. Are you sure you want to leave?';
+      return e.returnValue;
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
+
   const handlePaymentSuccess = async (data) => {
     try {
       // const orderData = data.orderData;

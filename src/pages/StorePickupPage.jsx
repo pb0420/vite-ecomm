@@ -28,6 +28,9 @@ import { formatCurrency } from '@/lib/utils';
 import { Calendar as CalendarPicker } from '@/components/ui/calendar';
 import { fetchPostcodes } from '@/lib/fetchPostcodes';
 import { addDays } from 'date-fns';
+import { Info } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+
 
 import { 
   formatDateForTimezone, 
@@ -37,12 +40,10 @@ import {
 } from '@/lib/timezone';
 
 const NOTE_SUGGESTIONS = [
-  "Don't ring doorbell, leave at door\n",
   "Call on arrival\n",
   "Leave with reception\n",
   "Knock softly, baby sleeping\n",
   "Text me before delivery\n",
-  "Hand to me only\n"
 ];
 
 const StorePickupPage = () => {
@@ -79,6 +80,7 @@ const StorePickupPage = () => {
   const [deliveryNotes, setDeliveryNotes] = useState('');
   const [userName, setUserName] = useState(user?.name || '');
   const [nameError, setNameError] = useState('');
+  const [showInfoModal, setShowInfoModal] = useState(false);
   
   const navigate = useNavigate();
 
@@ -598,7 +600,7 @@ const StorePickupPage = () => {
           <div className="absolute inset-0 bg-gradient-to-br from-[#2E8B57]/90 via-[#3CB371]/80 to-[#98FB98]/70" />
         </div>
         
-        <div className="container relative h-full px-4 md:px-6">
+        <div className="container relative h-full px-4 md:px-2">
           <div className="flex flex-col justify-center h-full py-2">
             <motion.div 
               className="space-y-2"
@@ -606,10 +608,11 @@ const StorePickupPage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <div className="text-center mb-2">
-                <h1 className="text-lg md:text-xl font-bold text-white mb-1">Grocery Run</h1>
-                <p className="text-white/90 text-xs">Let us do the shopping for you at multiple stores!</p>
-              </div>
+                <div>
+                  <h1 className="text-lg md:text-xl font-bold text-white mb-1 text-left">Grocery Run ...<Truck className="inline w-5 h-5 md:w-6 md:h-6 ml-1" /></h1>
+                  <p className="text-white/90 text-xs text-left">Let us do the shopping for you at multiple stores!</p>
+                </div>
+                
 
               {/* How it works steps - Made smaller */}
               <div className="grid gap-1 grid-cols-2 md:grid-cols-4 max-w-2xl mx-auto">
@@ -645,6 +648,28 @@ const StorePickupPage = () => {
             </motion.div>
           </div>
         </div>
+         <Dialog open={showInfoModal} onOpenChange={setShowInfoModal}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>How Grocery Run Works</DialogTitle>
+                <DialogDescription>
+                  
+                </DialogDescription>
+                <span>
+                  <ul className="list-disc pl-4 space-y-2 text-sm text-align-left">
+                    <li>Select one or more stores and set your budget.</li>
+                    <li>Add your shopping lists, notes, or provide photos of products or past bills.</li>
+                    <li>We shop at all selected stores for you.</li>
+                    <li>All items are delivered in to the address provided.</li>
+                    <li>You can provide delivery instructions and contact preferences.</li>
+                    <li>We send you the bill from the stores.</li>
+                    <li>The final amount may change after shopping, and you may be required to pay the difference before delivery</li>
+                  </ul>
+                </span>
+            
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
       </section>
 
       <div className="container px-4 py-6 mx-auto md:px-6">
@@ -663,11 +688,24 @@ const StorePickupPage = () => {
             </TabsList>
 
             <TabsContent value="new-order" className="space-y-6">
-              <Card>
+             <Card>
                 <CardHeader>
-                  <CardTitle> Grocery Run ...<Truck style={{display:'inline'}}/></CardTitle>
+                  <CardTitle>Schedule Grocery Run 
+                  
+                <button
+                  style={{display:'inline'}}
+                  type="button"
+                  className="ml-2 p-1 rounded-full bg-grey/20 hover:bg-white/30"
+                  onClick={() => setShowInfoModal(true)}
+                  aria-label="Info"
+                >
+                  <Info className="w-5 h-5 text-grey" />
+                </button>
+                  <p className="text-white/90 text-xs text-left">Let us do the shopping for you at multiple stores!</p>
+
+                
+                  </CardTitle>
                   <CardDescription>
-                    Add one or more stores, provide your lists/notes/photos and confirm. We will shop for you and deliver everything in one trip.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -754,11 +792,27 @@ const StorePickupPage = () => {
                               <SelectValue placeholder="Choose a time slot" />
                             </SelectTrigger>
                             <SelectContent>
-                              {availableTimeSlots.map(slot => (
-                                <SelectItem key={slot.id} value={slot.id}>
-                                  {formatTimeToAMPM(slot.start_time)} - {formatTimeToAMPM(slot.end_time)}
-                                </SelectItem>
-                              ))}
+                              {availableTimeSlots.map(slot => {
+                                // Disable slot if today and start time has passed
+                                let disabled = false;
+                                if (selectedDate) {
+                                  const today = getCurrentDateInTimezone(timezone);
+                                  const todayStr = formatDateForTimezone(today, timezone);
+                                  const selectedStr = formatDateForTimezone(selectedDate, timezone);
+                                  if (selectedStr === todayStr) {
+                                    const now = new Date();
+                                    const [slotHour, slotMin] = slot.start_time.split(':').map(Number);
+                                    const slotStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), slotHour, slotMin);
+                                    if (now > slotStart) disabled = true;
+                                  }
+                                }
+                                return (
+                                  <SelectItem key={slot.id} value={slot.id} disabled={disabled}>
+                                    {formatTimeToAMPM(slot.start_time)} - {formatTimeToAMPM(slot.end_time)}
+                                    {disabled && <span className="text-xs text-red-500 ml-2">(Unavailable)</span>}
+                                  </SelectItem>
+                                );
+                              })}
                             </SelectContent>
                           </Select>
                         )}

@@ -22,21 +22,21 @@ const TermsPage = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">1. Acceptance of Terms</h2>
             <p className="mb-4">
-              By accessing and using Groceroo's services, you agree to be bound by these Terms and Conditions.
-              These terms govern your use of our website, mobile application, and delivery services.
+              By accessing and using this website and it's services (groceroo.com.au), you agree to be bound by these Terms and Conditions.
+              These terms govern your use of the website, mobile application, and delivery services.
             </p>
           </section>
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">2. Service Description</h2>
             <p className="mb-4">
-              Groceroo provides an online grocery shopping and delivery service. We:
+              This website (groceroo.com.au) provides an online grocery shopping and delivery service. We:
             </p>
             <ul className="list-disc pl-6 mb-4">
               <li>Accept orders for grocery items</li>
               <li>Process payments securely</li>
               <li>Deliver orders to specified addresses</li>
-              <li>Offer store pickup services</li>
+              <li>Offer grocery delivery services from stores</li>
             </ul>
           </section>
 
@@ -49,7 +49,8 @@ const TermsPage = () => {
               <li>You must provide accurate delivery information</li>
               <li>Orders are subject to product availability</li>
               <li>Delivery times are estimates and not guaranteed</li>
-              <li>Minimum order values may apply</li>
+              <li>Product images may not be completely accurate.</li>
+              <li>Additional charges may apply</li>
             </ul>
           </section>
 
@@ -74,7 +75,7 @@ const TermsPage = () => {
               <li>Perishable goods (such as fresh produce, dairy, and frozen items) are not eligible for return unless they are damaged or spoiled upon delivery.</li>
               <li>Refunds will be processed to your original payment method within 5–7 business days after approval.</li>
               <li>Delivery fees are non-refundable except in cases where the entire order is returned due to our error.</li>
-              <li>We reserve the right to refuse returns or refunds if the claim does not meet our policy criteria.</li>
+              <li>We reserve the right to refuse returns or refunds if the claim does not seem justified.</li>
             </ul>
           </section>
 

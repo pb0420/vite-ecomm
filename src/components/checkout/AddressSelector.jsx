@@ -19,7 +19,7 @@ const AddressSelector = ({ onSelect }) => {
           <MapPin className="w-4 h-4 mr-2" />
           <div className="flex flex-col items-start">
             <span className="font-medium">{addr.label}</span>
-            <span className="text-xs text-muted-foreground truncate">{addr.address}</span>
+            <span className="text-xs text-muted-foreground truncate line-clamp-2">{addr.address.length > 30 ? addr.address.slice(0,30)+'...' : addr.address}</span>
           </div>
         </Button>
       ))}

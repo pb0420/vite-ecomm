@@ -201,7 +201,7 @@ const ShopPage = () => {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Enhanced Hero Section with Filters - Made smaller */}
-      <section className="relative min-h-[280px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
+      <section className="relative min-h-[180px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
         <div className="absolute inset-0">
           <img 
             src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/outbanner.webp" 
@@ -210,7 +210,6 @@ const ShopPage = () => {
           />
           <div className="absolute inset-0 bg-gradient-to-br from-[#2E8B57]/90 via-[#3CB371]/80 to-[#98FB98]/70" />
         </div>
-        
         <div className="container relative h-full px-4 md:px-6">
           <div className="flex flex-col justify-center h-full py-5">
             <motion.div 
@@ -219,24 +218,19 @@ const ShopPage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              {/* Title and Description */}
-              <div className="text-center">
+              {/* Title and Description - left aligned */}
+              <div className="text-left">
                 <h1 className="text-xl md:text-2xl font-bold text-white mb-1">
                   {featuredParam === 'true' ? 'Featured Products' : 'Shop'}
                 </h1>
                 <p className="text-white/90 text-sm">
                   Browse from a selection of groceries, household essentials and more.
                 </p>
-                {/* {searchParam && (
-                  <p className="text-white/80 text-xs mt-1">
-                    Showing results for: "{searchParam}"
-                  </p>
-                )} */}
               </div>
 
               {/* Search Bar */}
               <motion.div
-                className="relative max-w-xl mx-auto"
+                className="relative max-w-xl w-full"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.5 }}
@@ -253,21 +247,20 @@ const ShopPage = () => {
                 </div>
               </motion.div>
 
-              {/* Filters Row */}
+              {/* Filters Row - left aligned, icons on right */}
               <motion.div
-                className="flex flex-col sm:flex-row gap-2 items-center justify-center max-w-3xl mx-auto"
+                className="flex flex-col sm:flex-row gap-2 items-center justify-start max-w-3xl w-full"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4, duration: 0.5 }}
               >
-                {/* Category Filter and Sort Filter in same line, less wide */}
-                <div className="flex gap-2 w-full sm:w-auto justify-center">
+                <div className="flex gap-2 w-full sm:w-auto justify-start">
                   {/* Category Filter */}
                   <div className="min-w-[120px] w-[200px] flex items-center">
-                    <Filter className="w-5 h-5 text-white mr-2" />
                     <Select value={selectedCategory} onValueChange={handleCategoryChange}>
-                      <SelectTrigger className="bg-white/95 backdrop-blur-sm border-0 shadow-lg h-8 text-sm">
+                      <SelectTrigger className="bg-white/95 backdrop-blur-sm border-0 shadow-lg h-8 text-sm text-left pr-8">
                         <SelectValue placeholder="All Categories" />
+                        <Filter className="absolute right-2 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">All Categories</SelectItem>
@@ -279,13 +272,12 @@ const ShopPage = () => {
                       </SelectContent>
                     </Select>
                   </div>
-                  
                   {/* Sort Filter */}
                   <div className="min-w-[140px] w-[160px] flex items-center">
-                    <ArrowUpDown className="w-5 h-5 text-white mr-2" />
                     <Select value={sortBy} onValueChange={handleSortChange}>
-                      <SelectTrigger className="bg-white/95 backdrop-blur-sm border-0 shadow-lg h-8 text-sm">
+                      <SelectTrigger className="bg-white/95 backdrop-blur-sm border-0 shadow-lg h-8 text-sm text-left pr-8">
                         <SelectValue placeholder="Sort by" />
+                        <ArrowUpDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="name-asc">Name (A-Z)</SelectItem>

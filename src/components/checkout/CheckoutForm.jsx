@@ -28,12 +28,10 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
   const [showPostcodeDropdown, setShowPostcodeDropdown] = useState(false);
 
   const NOTE_SUGGESTIONS = [
-    "Don't ring doorbell, leave at door,\n",
     "Call on arrival,\n",
     "Leave with reception,\n",
     "Knock softly, baby sleeping,\n",
     "Text me before delivery,\n",
-    "Hand to me only,\n"
     ];
 
   // Pre-fill form if user is logged in
@@ -266,7 +264,7 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
             name="deliveryNotes"
             value={formData.deliveryNotes}
             onChange={handleChange}
-            placeholder="E.g., Leave at the door, call upon arrival, etc."
+            placeholder="Any special notes instructions."
             rows={3}
           />
         </div>

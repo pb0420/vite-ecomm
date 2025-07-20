@@ -93,6 +93,13 @@ const StoreSelector = ({
     onEstimatedTotalChange(storeId, total);
   };
 
+  const handleStoreNotesEstimatedTotal = (storeId, total) => {
+    const updatedStores = selectedStores.map(store => 
+      store.id === storeId ? { ...store, estimatedTotal: total } : store
+    );
+    onStoreToggle(updatedStores);
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2">
@@ -114,9 +121,9 @@ const StoreSelector = ({
               transition={{ duration: 0.3 }}
               className="w-full"
             >
-              <Card className={`transition-all ${isSelected ? 'ring-2 ring-primary shadow-lg' : 'hover:shadow-md'} p-2 sm:p-4`}> {/* Add padding for mobile */}
-                <CardHeader className="pb-3 flex flex-row items-center justify-between border-b gap-2 sm:gap-4"> {/* Add gap for mobile */}
-                  <div className="flex items-center space-x-2 sm:space-x-3">
+              <Card className={`transition-all ${isSelected ? 'ring-2 ring-primary shadow-lg' : 'hover:shadow-md'} p-2 sm:p-2`}> {/* Add padding for mobile */}
+                <CardHeader className="pb-3 flex flex-row items-center justify-between border-b gap-2 sm:gap-2 p-2"> {/* Add gap for mobile */}
+                  <div className="flex items-center space-x-2 sm:space-x-1">
                     <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-muted flex items-center justify-center overflow-hidden">
                       {store.image ? (
                         <img
@@ -157,16 +164,7 @@ const StoreSelector = ({
                   </Button>
                 </CardHeader>
                 {isSelected && (
-                  <CardContent className="space-y-4 border-t pt-4 bg-gray-50 rounded-b-lg">
-                    {/* Suggested Items */}
-                    <StoreNotes
-                      storeId={store.id}
-                      notes={selectedStore?.notes || ''}
-                      onNotesChange={handleNotesChange}
-                      suggestedItems={Array.isArray(store.store_suggested_items) ? store.store_suggested_items : []}
-                      maxItems={10}
-                      showQtyButtons={true}
-                    />
+                  <CardContent className="space-y-4 border-t pt-4 bg-gray-50 rounded-b-lg p-2">
                     {/* Estimated Total */}
                     <div className="space-y-1">
                       <Label htmlFor={`estimated-${store.id}`} className="text-sm font-medium">Estimated Total ($)</Label>
@@ -190,9 +188,24 @@ const StoreSelector = ({
                           handleEstimatedTotalChange(store.id, val);
                         }}
                         placeholder={`Minimum $${minimumOrder}`}
-                        className="mt-1 text-base px-2 py-1 rounded border focus:outline-primary"
+                        className={`mt-1 text-base px-2 py-1 rounded border focus:outline-primary ${selectedStore?.estimatedTotal < minimumOrder ? 'border-red-500 bg-red-50' : 'border-green-500 bg-green-50'}`}
                       />
+                      {selectedStore?.estimatedTotal < minimumOrder && (
+                        <span className="text-xs text-red-500">Minimum order: ${minimumOrder}</span>
+                      )}
                     </div>
+                    {/* Suggested Items */}
+                    <StoreNotes
+                      storeId={store.id}
+                      notes={selectedStore?.notes || ''}
+                      onNotesChange={handleNotesChange}
+                      suggestedItems={Array.isArray(store.store_suggested_items) ? store.store_suggested_items : []}
+                      maxItems={10}
+                      showQtyButtons={true}
+                      minimumOrder={minimumOrder}
+                      estimatedTotal={selectedStore?.estimatedTotal || 0}
+                      onEstimatedTotalChange={handleStoreNotesEstimatedTotal}
+                    />
                   </CardContent>
                 )}
               </Card>

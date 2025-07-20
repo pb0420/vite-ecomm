@@ -70,7 +70,7 @@ const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-gradient-to-r from-[#2E8B57] via-[#3CB371] to-[#98D598] border-b shadow-sm">
+    <header className="sticky top-0 z-40 w-full bg-gradient-to-r from-[#2E8B57] via-[#3CB371] to-[#98D598] shadow-sm">
       <div className="container flex items-center justify-between h-16 px-4 mx-auto md:px-6">
         <Link to="/" className="flex items-center space-x-2">
           {/* <img src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/logo.webp" alt="Groceroo Logo" style={{width:'180px',height:'60px'}} /> */}

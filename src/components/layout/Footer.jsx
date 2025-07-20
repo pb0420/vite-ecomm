@@ -35,7 +35,7 @@ const Footer = () => {
           ></div>
             <div className="text-xs text-gray-500">ABN 257 558 402 06</div>
             <p className="text-sm text-gray-600">
-              Express grocery shopping and delivery service in Adelaide. Groceries and more delivered to your door.
+              Express grocery shopping and delivery service in Adelaide..
             </p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-500 hover:text-primary">
