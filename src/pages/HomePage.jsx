@@ -191,14 +191,14 @@ const HomePage = () => {
   return (
     <div className="flex flex-col min-h-screen">
       {showA2HS && <AddToHomeScreenToast onClose={handleCloseA2HS} platform={platform} />}
-      <section className="relative min-h-[120px] h-[16vh] max-h-[160px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
+      <section className="relative min-h-[140px] h-[18vh] max-h-[180px] bg-gradient-to-b from-[#2E8B57] via-[#3CB371] to-white overflow-hidden">
         <div className="absolute inset-0">
           <img
             src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/outbanner.webp"
             alt="Grocery delivery"
             className="w-full h-full object-cover opacity-30"
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-[#2E8B57]/90 via-[#3CB371]/80 to-[#98FB98]/70" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#2E8B57]/90 via-[#3CB371]/80 to-white/90" />
         </div>
         <div className="container relative h-full px-4 md:px-6">
           <div className="flex flex-col justify-center h-full max-w-4xl mx-auto pb-2 md:pt-4 md:pb-2">
@@ -252,7 +252,7 @@ const HomePage = () => {
                     placeholder="Search for groceries and more..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="h-10 md:h-10 pl-3 bg-white/95 backdrop-blur-sm border-0 shadow-lg text-gray-800 placeholder:text-gray-500 text-sm"
+                    className="h-11 md:h-11 pl-3 bg-white/95 backdrop-blur-sm border-0 shadow-lg text-gray-800 placeholder:text-gray-500 text-sm"
                   />
                    {searchLoading && (
                       <span className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -270,7 +270,7 @@ const HomePage = () => {
       </section>
 
       {/* Categories and Buttons Section */}
-      <section className="py-6 bg-white">
+      <section className="py-2 bg-white">
         <div className="container px-4 md:px-6">
           {/* Categories Scroller */}
           <motion.div

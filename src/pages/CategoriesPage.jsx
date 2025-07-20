@@ -46,14 +46,14 @@ const CategoriesPage = () => {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Banner Section */}
-      <section className="relative h-[30vh] min-h-[200px] bg-gradient-to-br from-[#2E8B57] via-[#3CB371] to-[#98FB98] overflow-hidden">
+      <section className="relative h-[30vh] min-h-[200px] bg-gradient-to-b from-[#2E8B57] via-[#3CB371] to-white overflow-hidden">
         <div className="absolute inset-0">
           <img 
             src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/outbanner.webp" 
             alt="Fresh groceries" 
             className="w-full h-full object-cover opacity-20"
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-[#2E8B57]/90 via-[#3CB371]/80 to-[#98FB98]/70" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#2E8B57]/90 via-[#3CB371]/80 to-white/90" />
         </div>
         
         <div className="container relative h-full px-4 md:px-6">

@@ -19,6 +19,16 @@ const StripePaymentPage = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    const unloadCallback = (event) => {
+      event.preventDefault();
+      event.returnValue = "";
+      return "";
+    };
+    window.addEventListener("beforeunload", unloadCallback);
+    return () => window.removeEventListener("beforeunload", unloadCallback);
+  }, []);
+
+  useEffect(() => {
     if (!cart.length) {
       navigate('/checkout');
       return;
@@ -65,18 +75,6 @@ const StripePaymentPage = () => {
 
     createPaymentIntent();
   }, [cart, navigate, location.state, user.id]);
-
-  useEffect(() => {
-    const handleBeforeUnload = (e) => {
-      e.preventDefault();
-      e.returnValue = 'Leaving this page may interrupt your payment. Are you sure you want to leave?';
-      return e.returnValue;
-    };
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, []);
 
   const handlePaymentSuccess = async (data) => {
     try {

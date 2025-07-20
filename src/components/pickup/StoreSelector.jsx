@@ -63,8 +63,14 @@ const StoreSelector = ({
 
   const handleStoreSelect = (store) => {
     const isSelected = selectedStores.some(s => s.id === store.id);
-    
     if (isSelected) {
+      const selectedStore = selectedStores.find(s => s.id === store.id);
+      const hasInfo = selectedStore && (selectedStore.notes || selectedStore.estimatedTotal !== store.minimum_order_amount);
+      if (hasInfo) {
+        if (!window.confirm('Remove this store?')) {
+          return;
+        }
+      }
       onStoreToggle(selectedStores.filter(s => s.id !== store.id));
     } else {
       const newSelectedStores = [...selectedStores, {

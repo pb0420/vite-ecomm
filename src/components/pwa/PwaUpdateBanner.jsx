@@ -42,7 +42,15 @@ const PwaUpdateBanner = () => {
     // Update local version and reload PWA
     localStorage.setItem('pwa_version', version); // You may want to set the actual version here
     localStorage.setItem('updateSecondTime',1);
-    window.location.reload(true); // Force reload to get new files
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function (registrations) {
+        for (let registration of registrations) {
+          // registration.update();  does not work!
+          registration.unregister();
+        }
+        window.location.reload(true);
+      });
+    }
   };
 
   if (!updateAvailable) return null;

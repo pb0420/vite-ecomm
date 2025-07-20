@@ -142,13 +142,13 @@ const StoreNotes = ({
       <Label className="block mb-1 text-sm font-medium flex items-center gap-1">
         Suggested Items
       </Label>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-1">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-2">
         {itemsToShow.map(item => {
           const qty = getItemQty(item.name);
           const price = item.price ? Number(item.price) : DEFAULT_PRICE;
           return (
-            <div key={item.name} className="flex items-center justify-between bg-white border rounded px-1 py-1 shadow-sm min-w-[140px] max-w-full overflow-hidden">
-              <div className="flex items-center gap-1">
+            <div key={item.name} className="flex items-center justify-between bg-white border rounded px-2 py-2 shadow-sm min-w-[160px] max-w-full overflow-hidden">
+              <div className="flex items-center gap-2">
                 <span className="text-xs line-clamp-2">{item.name}:</span>
                 {item.image_url || item.description ? (
                   <span className="ml-1 cursor-pointer group relative">
@@ -162,7 +162,7 @@ const StoreNotes = ({
                   </span>
                 ) : null}
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
                 <span className="text-xs font-semibold text-right min-w-[40px]">A${price}</span>
                 <div className="flex items-center gap-1">
                   <button
@@ -178,8 +178,8 @@ const StoreNotes = ({
                     min={0}
                     value={qty}
                     onChange={e => handleItemQtyChange(item, Math.max(0, parseInt(e.target.value) || 0))}
-                    className="w-6 text-xs border rounded px-1 py-0.5 focus:outline-primary text-center"
-                    style={{ WebkitAppearance: 'auto' }}
+                    className="w-8 text-xs border rounded px-1 py-0.5 focus:outline-primary text-center appearance-none"
+                    style={{ WebkitAppearance: 'none', MozAppearance: 'textfield' }}
                   />
                   <button
                     type="button"
