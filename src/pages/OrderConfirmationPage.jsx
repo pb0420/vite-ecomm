@@ -84,6 +84,13 @@ const OrderConfirmationPage = () => {
         title: 'Order Processing',
         description: 'Your order is being processed. ' + (deliveryTime ? `Estimated delivery by ${formatDate(deliveryTime)}`:'')
       },
+      out_for_delivery: {
+        color: 'text-orange-500',
+        bgColor: 'bg-orange-100',
+        icon: Truck,
+        title: 'Out for Delivery',
+        description: 'Your order is out for delivery.'
+      },
       delivered: {
         color: 'text-green-500',
         bgColor: 'bg-green-100',
@@ -191,8 +198,9 @@ const OrderConfirmationPage = () => {
             <div className="absolute left-0 top-1/2 w-full h-1 bg-muted transform -translate-y-1/2">
               <div 
                 className={`h-full bg-primary transition-all duration-500 ${
-                  order.status === 'pending' ? 'w-1/3' :
-                  order.status === 'processing' ? 'w-2/3' :
+                  order.status === 'pending' ? 'w-1/4' :
+                  order.status === 'processing' ? 'w-2/4' :
+                  order.status === 'out_for_delivery' ? 'w-3/4' :
                   order.status === 'delivered' ? 'w-full' : 'w-0'
                 }`}
               />
@@ -200,7 +208,7 @@ const OrderConfirmationPage = () => {
             <div className="relative flex justify-between">
               <div className="flex flex-col items-center">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                  ['pending', 'processing', 'delivered'].includes(order.status) ? 'bg-primary text-primary-foreground' : 'bg-muted'
+                  ['pending', 'processing', 'out_for_delivery', 'delivered'].includes(order.status) ? 'bg-primary text-primary-foreground' : 'bg-muted'
                 }`}>
                   <CheckCircle className="w-4 h-4" />
                 </div>
@@ -208,7 +216,7 @@ const OrderConfirmationPage = () => {
               </div>
               <div className="flex flex-col items-center">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                  ['processing', 'delivered'].includes(order.status) ? 'bg-primary text-primary-foreground' : 'bg-muted'
+                  ['processing', 'out_for_delivery', 'delivered'].includes(order.status) ? 'bg-primary text-primary-foreground' : 'bg-muted'
                 }`}>
                   <Package className="w-4 h-4" />
                 </div>
@@ -216,9 +224,17 @@ const OrderConfirmationPage = () => {
               </div>
               <div className="flex flex-col items-center">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                  order.status === 'delivered' ? 'bg-primary text-primary-foreground' : 'bg-muted'
+                  ['out_for_delivery', 'delivered'].includes(order.status) ? 'bg-primary text-primary-foreground' : 'bg-muted'
                 }`}>
                   <Truck className="w-4 h-4" />
+                </div>
+                <span className="mt-2 text-sm">Out for Delivery</span>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                  order.status === 'delivered' ? 'bg-primary text-primary-foreground' : 'bg-muted'
+                }`}>
+                  <CheckCircle className="w-4 h-4" />
                 </div>
                 <span className="mt-2 text-sm">Delivered</span>
               </div>

@@ -245,6 +245,7 @@ const AdminOrdersTab = () => {
             <SelectContent>
               <SelectItem value="pending">Pending</SelectItem>
               <SelectItem value="processing">Processing</SelectItem>
+              <SelectItem value="out_for_delivery">Out for Delivery</SelectItem>
               <SelectItem value="delivered">Delivered</SelectItem>
               <SelectItem value="cancelled">Cancelled</SelectItem>
             </SelectContent>
@@ -335,6 +336,7 @@ const AdminOrdersTab = () => {
                                 <SelectContent>
                                   <SelectItem value="pending">Pending</SelectItem>
                                   <SelectItem value="processing">Processing</SelectItem>
+                                  <SelectItem value="out_for_delivery">Out for Delivery</SelectItem>
                                   <SelectItem value="delivered">Delivered</SelectItem>
                                   <SelectItem value="cancelled">Cancelled</SelectItem>
                                 </SelectContent>
@@ -462,6 +464,7 @@ const AdminOrdersTab = () => {
                     <SelectContent>
                       <SelectItem value="pending">Pending</SelectItem>
                       <SelectItem value="processing">Processing</SelectItem>
+                      <SelectItem value="out_for_delivery">Out for Delivery</SelectItem>
                       <SelectItem value="delivered">Delivered</SelectItem>
                       <SelectItem value="cancelled">Cancelled</SelectItem>
                     </SelectContent>

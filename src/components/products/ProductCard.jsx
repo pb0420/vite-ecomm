@@ -33,10 +33,10 @@ const ProductCard = ({ product }) => {
       className={`product-card overflow-hidden rounded-lg border bg-card ${!product.in_stock ? 'opacity-60' : ''}`}
     >
       <Link to={`/product/${product.id}`} className="block">
-        <div className="relative aspect-square w-full max-h-48 bg-muted">
+        <div className="relative aspect-square w-full max-h-48 bg-white flex items-center justify-center">
           <img  
             alt={product.name}
-            className="w-full h-full object-cover"
+            className="w-4/5 h-4/5 object-contain mx-auto"
             src={product.image_url || "https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/product-placeholder.webp"} 
           />
           

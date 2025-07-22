@@ -43,6 +43,10 @@ const ProductPage = () => {
     fetchProduct();
   }, [id]);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
   // Get quantity from cart
   const cartItem = cart.find(item => item?.id === product?.id);
   const quantity = cartItem ? cartItem.quantity : 0;
@@ -99,16 +103,16 @@ const ProductPage = () => {
         </Button>
       </div>
       
-      <div className="grid gap-8 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2 items-start">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.3 }}
-          className="overflow-hidden rounded-lg bg-muted aspect-square"
+          className="overflow-hidden rounded-lg bg-white aspect-square flex items-center justify-center min-h-[180px] max-h-[220px]"
         >
           <img  
             alt={product.name} 
-            className="w-full h-full object-cover" 
+            className="w-3/5 h-3/5 object-contain mx-auto"
             src={product.image_url || "https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/product-placeholder.webp"} 
           />
         </motion.div>

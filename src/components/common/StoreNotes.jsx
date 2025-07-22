@@ -109,7 +109,11 @@ const StoreNotes = ({
                 type="button"
                 className="border rounded px-2 py-1 text-xs bg-gray-50 hover:bg-primary/10 text-left"
                 onClick={() => {
-                  onNotesChange(storeId, n.notes);
+                  if (notes) {
+                    onNotesChange(storeId, notes + '\n' + n.notes);
+                  } else {
+                    onNotesChange(storeId, n.notes);
+                  }
                   setShowOldNotes(false);
                 }}
               >
@@ -119,15 +123,25 @@ const StoreNotes = ({
           </div>
         </div>
       )}
-      {oldNotes.length > 0 && !showOldNotes && (
-        <button
-          type="button"
-          className="text-xs text-primary underline mb-2"
-          onClick={() => setShowOldNotes(true)}
-        >
-          Show previous grocery run notes
-        </button>
-      )}
+      {/* Quick options for notes */}
+      <div className="flex flex-wrap gap-2 mb-2">
+        {["Find cheaper options", "Replace out of stock items", "Call if unavailable", "Add organic options", "No plastic bags"].map((opt, idx) => (
+          <button
+            key={idx}
+            type="button"
+            className="border rounded px-2 py-1 text-xs bg-gray-50 hover:bg-primary/10"
+            onClick={() => {
+              if (notes && !notes.includes(opt)) {
+                onNotesChange(storeId, notes + '\n' + opt);
+              } else if (!notes) {
+                onNotesChange(storeId, opt);
+              }
+            }}
+          >
+            {opt}
+          </button>
+        ))}
+      </div>
       {suggestedItems.length > maxItems && (
         <div className="mb-2">
           <input

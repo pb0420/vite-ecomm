@@ -21,7 +21,46 @@ const AiChatBot = () => {
   const [updateUserChatHistoryFlag,setUpdateUserChatHistoryFlag] = useState(false);
   const [fetchedUserChatHistoryFlag,setFetchedUserChatHistoryFlag] = useState(false);
   const [pendingMessages, setPendingMessages] = useState([]);
+  const [exclusionMap, setExclusionMap] = useState({}); 
 
+const EXCLUSION_MAP_CACHE_KEY = 'ai_exclusion_map';
+const EXCLUSION_MAP_CACHE_TTL_MINUTES = 24 * 60; // 24 hours
+
+const fetchExclusionMap = async () => {
+  // Try cache first
+  const cached = window.localStorage.getItem(EXCLUSION_MAP_CACHE_KEY);
+  if (cached) {
+    try {
+      const parsed = JSON.parse(cached);
+      if (parsed.expires > Date.now()) {;
+        setExclusionMap(parsed.data);
+        return;
+      } else {
+        window.localStorage.removeItem(EXCLUSION_MAP_CACHE_KEY);
+      }
+    } catch {
+      window.localStorage.removeItem(EXCLUSION_MAP_CACHE_KEY);
+    }
+  }
+  // Fetch from DB
+  const { data, error } = await supabase
+    .from('general_settings')
+    .select('ai_exclusion_map')
+    .eq('id', 1)
+    .single();
+  if (!error && data && data.ai_exclusion_map) {
+    try {
+      let exclusionMapData = typeof data.ai_exclusion_map === 'string'
+        ? JSON.parse(data.ai_exclusion_map)
+        : data.ai_exclusion_map;
+      setExclusionMap(exclusionMapData);
+      window.localStorage.setItem(EXCLUSION_MAP_CACHE_KEY, JSON.stringify({
+        data: exclusionMapData,
+        expires: Date.now() + EXCLUSION_MAP_CACHE_TTL_MINUTES * 60 * 1000
+      }));
+    } catch {}
+  }
+};
 
 // Capitalize each word and replace + with space
 const formatName = str =>
@@ -42,17 +81,7 @@ const matchProductFtsStrict = (ftsString, aiName, product) => {
     (product.name && product.name.toLowerCase().includes(token)) ||
     (product.description && product.description.toLowerCase().includes(token));
 
-  // Exclusion map for ambiguous terms (single and multi-word)
-  const exclusionMap = {
-    ginger: ['beer'],
-    garlic: ['chips', 'bread'],
-    coffee: ['cake'],
-    'olive oil': ['tuna', 'sardines'],
-    honey: ['tea', 'bread' , 'chips', 'lozenges'],
-    milk: ['cake']
-    // Add more as needed
-  };
-
+  // Use exclusionMap loaded on mount
   // For single-word AI names
   if (aiTokens.length === 1) {
     const token = aiTokens[0];
@@ -106,10 +135,10 @@ const matchProductFtsStrict = (ftsString, aiName, product) => {
   useEffect(() => {
   if (!user) return;
     getUserAiChat();
+    fetchExclusionMap();
   }, [user]);
 
   useEffect(() => {
-    
     if (isOpen) {
       document.body.style.overflow = 'hidden';
       messagesEndRef.current?.click();

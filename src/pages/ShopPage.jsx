@@ -240,7 +240,7 @@ const ShopPage = () => {
                   <Input
                     type="search"
                     placeholder="Search for products..."
-                    className="h-11 pl-10 pr-4 bg-white/95 backdrop-blur-sm border-0 shadow-lg text-gray-800 placeholder:text-gray-500"
+                    className="h-11 pl-10 pr-4 bg-white/95 backdrop-blur-lg border-0 shadow-lg text-gray-800 placeholder:text-gray-500"
                     value={searchInput}
                     onChange={(e) => handleSearchInputChange(e.target.value)}
                   />
@@ -311,17 +311,17 @@ const ShopPage = () => {
                   transition={{ delay: 0.6, duration: 0.5 }}
                 >
                   {searchInput && (
-                    <div className="bg-white/20 backdrop-blur-sm rounded-full px-2 py-0.5 text-white text-xs">
+                    <div className="bg-white/20 backdrop-blur-lg rounded-full px-2 py-0.5 text-green text-xs">
                       Search: "{searchInput}"
                     </div>
                   )}
                   {selectedCategory !== 'all' && (
-                    <div className="bg-white/20 backdrop-blur-sm rounded-full px-2 py-0.5 text-white text-xs">
+                    <div className="bg-white/20 backdrop-blur-lg rounded-full px-2 py-0.5 text-green text-xs">
                       Category: {categories.find(c => c.id.toString() === selectedCategory)?.name}
                     </div>
                   )}
                   {sortBy !== 'name-asc' && (
-                    <div className="bg-white/20 backdrop-blur-sm rounded-full px-2 py-0.5 text-white text-xs">
+                    <div className="bg-white/20 backdrop-blur-lg rounded-full px-2 py-0.5 text-green text-xs">
                       Sort: {sortBy.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                     </div>
                   )}

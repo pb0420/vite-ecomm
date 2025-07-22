@@ -597,7 +597,7 @@ const StorePickupPage = () => {
             alt="Grocery delivery"
             className="w-full h-full object-cover opacity-30"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#2E8B57]/90 via-[#3CB371]/80 to-white/90" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#2E8B57]/90 via-[#3CB371]/80 to-white/60" />
         </div>
         
         <div className="container relative h-full px-4 md:px-2">
@@ -651,17 +651,17 @@ const StorePickupPage = () => {
          <Dialog open={showInfoModal} onOpenChange={setShowInfoModal}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>How Grocery Run Works</DialogTitle>
+              <DialogTitle>How it Works?</DialogTitle>
                 <DialogDescription>
-                  
+                  Grocery Run is your convenient way to get groceries from multiple stores without the hassle:
                 </DialogDescription>
                 <span>
-                  <ul className="list-disc pl-4 space-y-2 text-sm text-align-left">
-                    <li>Select one or more stores and set your budget.</li>
+                  <ul className="list-disc pl-4 pb-4 space-y-2 text-sm text-align-left">
+                    <li>Select one or more stores and set your budget for each.</li>
                     <li>Add your shopping lists, notes, or provide photos of products or past bills.</li>
                     <li>We shop at all selected stores for you.</li>
                     <li>All items are delivered in to the address provided.</li>
-                    <li>You can provide delivery instructions and contact preferences.</li>
+                    <li>Provide delivery instructions and contact preferences.</li>
                     <li>We send you the bill from the stores.</li>
                     <li>The final amount may change after shopping, and you may be required to pay the difference before delivery</li>
                   </ul>
@@ -701,11 +701,10 @@ const StorePickupPage = () => {
                 >
                   <Info className="w-5 h-5 text-grey" />
                 </button>
-                  <p className="text-white/90 text-xs text-left">Let us do the shopping for you at multiple stores!</p>
-
-                
+                  <p className="text-grey/20 text-xs text-left">Order groceries from multiple stores around town!</p>
                   </CardTitle>
                   <CardDescription>
+                    Schedule your grocery run by selecting stores, setting a date and time, and providing any special instructions.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
