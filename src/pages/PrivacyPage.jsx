@@ -26,9 +26,10 @@ const PrivacyPage = () => {
             </p>
             <ul className="list-disc pl-6 mb-4">
               <li>Name and contact information</li>
-              <li>Delivery address</li>
+              <li>Delivery address and location data</li>
               <li>Order history and preferences</li>
               <li>Payment information</li>
+              <li>We do not store your credit card or any other payment related information</li>
             </ul>
           </section>
 

@@ -1,32 +1,36 @@
 
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<link rel="icon" type="image/svg+xml" href="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/favicon.webp" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1, minimum-scale=1">
-		<title>Groceroo - Grocery Delivery Adelaide | Online Grocery Shopping</title>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/favicon.webp" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1, minimum-scale=1">
+    <title>Groceroo - Grocery Delivery Adelaide | Online Grocery Shopping</title>
 
-		<!-- General SEO -->
-		<meta name="description" content="Groceroo delivers groceries online in Adelaide. Order now for quick delivery of quality produce.">
-		<meta name="keywords" content="grocery delivery, online groceries, Adelaide, fruit, vegetables, shop online">
-		<meta name="robots" content="index, follow">
+    <!-- General SEO -->
+    <meta name="description" content="Groceroo delivers groceries online in Adelaide. Order now for quick delivery of quality produce.">
+    <meta name="keywords" content="grocery delivery, online groceries, Adelaide, fruit, vegetables, shop online">
+    <meta name="robots" content="index, follow">
 
-		<!-- Open Graph / Social Media -->
-		<meta property="og:type" content="website">
-		<meta property="og:url" content="https://www.groceroo.com.au">
-		<meta property="og:title" content="Groceroo - Online Grocery Delivery in Adelaide">
-		<meta property="og:description" content="Groceries delivered straight to you in Adelaide.">
-		<meta property="og:image" content="https://www.groceroo.com.auhttps://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/logo.webp">
-		<meta name="twitter:card" content="summary_large_image">
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.groceroo.com.au">
+    <meta property="og:title" content="Groceroo - Online Grocery Delivery in Adelaide">
+    <meta property="og:description" content="Groceries delivered straight to you in Adelaide.">
+    <meta property="og:image" content="https://www.groceroo.com.auhttps://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/logo.webp">
+    <meta name="twitter:card" content="summary_large_image">
 
-	</head>
-	<body style="background-color: rgb(68, 148, 103);">
-		<h1 style="color: rgb(72, 158, 109);" class="visually-hidden">Shop for Groceries Online | Grocery Delivery in Adelaide</h1>
-		<div id="root"></div>
-		<script type="module" src="/src/main.jsx"></script>
-		<p style="color: rgb(72, 158, 109);" class="visually-hidden">
-			
+  </head>
+  <body style="background-color: rgb(68, 148, 103);">
+    <h1 style="color: rgb(72, 158, 109);" class="visually-hidden">Shop for Groceries Online | Grocery Delivery in Adelaide</h1>
+    <div class="visually-hidden" id="center-spinner">
+      <div class="spinner"></div>
+    </div>
+  <!-- Spinner End -->
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+    <p style="color: rgb(72, 158, 109); font-size: 0.92em; line-height: 1.5;" class="visually-hidden">
+    	
         Welcome to Groceroo, Adelaide’s new platform for fast and affordable online grocery delivery. Say goodbye to traffic, long checkout lines, and time-consuming supermarket visits. With Groceroo, you can shop for all your grocery needs from the comfort of your home and have them delivered — quickly, safely, and reliably.
 
     We offer a wide range of grocery categories tailored to suit every household. Browse through fresh fruits and vegetables, dairy and eggs, meat and seafood, bakery items, snacks, beverages, pantry staples, and cleaning and household essentials. Whether you’re looking for everyday basics or special ingredients for a recipe, Groceroo has you covered.
@@ -39,13 +43,58 @@
 
     Groceroo supports busy families, students, professionals, and seniors with a reliable and convenient service. Whether you need a quick top-up or a full grocery restock, our app and website make it simple to schedule and track your delivery.
 
-    Try Groceroo today — Adelaide’s easiest way to shop for groceries online. Freshness guaranteed. Convenience unmatched.
-
-			   <a href="/" style="margin:0 10px; color: rgb(72, 158, 109); text-decoration:none;">Home</a>
+    Try Groceroo today — Adelaide’s easiest way to shop for groceries online. Quality guaranteed. Convenience unmatched.
+	
+    .<br>
+      <a href="/" style="margin:0 10px; color: rgb(72, 158, 109); text-decoration:none;">Home</a>
       <a href="/grocery-run" style="margin:0 10px; color: rgb(72, 158, 109); text-decoration:none;">Grocery Run</a>
       <a href="/shop" style="margin:0 10px; color: rgb(72, 158, 109); text-decoration:none;">Shop</a>
       <a href="/privacy" style="margin:0 10px; color: rgb(72, 158, 109); text-decoration:none;">Privacy</a>
       <a href="/terms" style="margin:0 10px; color: rgb(72, 158, 109); text-decoration:none;">Terms</a>
-	</p>
-	</body>
+    </p>
+
+    <!-- Visually hidden contact info for accessibility, aligned to bottom in white -->
+    <div class="visually-hidden footer-contact-info" aria-label="Contact Information">
+      <div style="color: #fff;">
+        <div>Support: <a href="tel:+61478477036" style="color:#fff; text-decoration:underline;">+61 478 477 036</a></div>
+        <div>WhatsApp: <a href="https://wa.me/61478477036" style="color:#fff; text-decoration:underline;">Link</a></div>
+      </div>
+    </div>
+    <style>
+    #center-spinner {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: -9999;
+      pointer-events: none;
+    }
+    .spinner {
+      width: 38px;
+      height: 38px;
+      border: 4px solid #fff;
+      border-top: 4px solid rgba(255,255,255,0.2);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg);}
+      100% { transform: rotate(360deg);}
+    }
+  </style>
+  <style>
+    .footer-contact-info {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: -9999;
+      color: #fff;
+      background: none;
+      text-align: center;
+      font-size: 0.95em;
+    }
+  </style>
+  </body>
 </html>

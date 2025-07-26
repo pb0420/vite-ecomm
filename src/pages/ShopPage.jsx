@@ -34,6 +34,7 @@ const ShopPage = () => {
   const [hasMore, setHasMore] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
   const [showLoginDialog, setShowLoginDialog] = useState(false);
+  const [showFeatured, setShowFeatured] = useState(featuredParam === 'true');
 
   // Debounce search input
   useEffect(() => {
@@ -68,10 +69,10 @@ const ShopPage = () => {
 
     navigate({
     pathname: location.pathname,
-    search: `search=${searchTerm}&cat_filter=${selectedCategory}&sort=${sortBy}`,
+    search: `search=${searchTerm}&cat_filter=${selectedCategory}&sort=${sortBy}&featured=${showFeatured || 'false'}`,
   }, { replace: true });
 
-  }, [searchTerm, selectedCategory, sortBy, featuredParam]);
+  }, [searchTerm, selectedCategory, sortBy, showFeatured]);
 
   const fetchCategories = async () => {
     try {
@@ -194,9 +195,10 @@ const ShopPage = () => {
     setSearchTerm('');
     setSelectedCategory('all');
     setSortBy('name-asc');
+    setShowFeatured(false);
   };
 
-  const hasActiveFilters = searchInput || selectedCategory !== 'all' || sortBy !== 'name-asc';
+  const hasActiveFilters = searchInput || selectedCategory !== 'all' || sortBy !== 'name-asc' || featuredParam === 'true';
 
   return (
     <div className="flex flex-col min-h-screen">

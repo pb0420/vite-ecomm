@@ -277,7 +277,7 @@ const HomePage = () => {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.3 }}
-            className="relative mb-6"
+            className="relative mb-4"
           >
             <div className="flex overflow-x-auto pb-1 space-x-4 scrollbar-hide px-2 md:px-0 md:justify-center">
               {categories.map((category) => (
@@ -320,11 +320,11 @@ const HomePage = () => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.3 }}
           >
-            <Link to="/shop" className="block w-[70%] max-w-[140px]">
+            <Link to="/shop" className="block w-[60%] max-w-[120px]">
               <Button
                 size="sm"
                 style={{ background: '#fd7507', color: 'white' }}
-                className="w-full h-12 font-bold text-base mx-auto backdrop-blur-sm transition-all duration-300 hover:scale-105"
+                className="w-full h-10 font-bold text-base mx-auto backdrop-blur-sm transition-all duration-300 hover:scale-105"
               >
                 <Store className="w-4 h-5 mr-2" /> Shop
               </Button>
@@ -333,9 +333,9 @@ const HomePage = () => {
               <Button
                 size="sm"
                 style={{ background: '#3bc371', color: 'white' }}
-                className="w-full h-12 font-bold text-base mx-auto rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-105 border-0"
+                className="w-full h-10 font-bold text-base mx-auto rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-105 border-0"
               >
-                ...<Truck className="w-5 h-5 mr-2" /> Grocery Run
+                <Truck className="w-5 h-5 mr-2" /> Grocery Run
               </Button>
             </Link>
           </motion.div>
@@ -382,7 +382,7 @@ const HomePage = () => {
             >
               Featured Products
             </motion.h2>
-            <Link to="/shop" className="flex-none group text-center">
+            <Link to="/shop?featured=true" className="flex-none group text-center">
               <div className="flex flex-col items-center">
                 <div className="w-12 h-12 mx-auto mb-1 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:bg-white/30 transition-all duration-300 shadow-lg">
                   <ArrowRight className="h-5 w-5 text-primary" />

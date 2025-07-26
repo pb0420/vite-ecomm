@@ -195,7 +195,11 @@ const overlayVariants = {
                       <Button 
                         variant="outline" 
                         className="w-full"
-                        onClick={clearCart}
+                        onClick={() => {
+                          if (window.confirm('Are you sure you want to clear your cart?')) {
+                            clearCart();
+                          }
+                        }}
                       >
                         Clear Cart
                       </Button>

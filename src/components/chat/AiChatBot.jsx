@@ -424,6 +424,14 @@ const updateUserChatHistory = async () => {
                 {user ? (
                   <>
                     <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-rounded p-4 space-y-4">
+                      {/* Loading spinner for old messages or any loading */}
+                      {(isLoading || pendingMessages.length > 0) && (
+                        <div className="flex justify-end mb-2">
+                          <span className="inline-block">
+                            <span className="inline-block w-5 h-5 border-2 border-[#3cb371] border-t-transparent rounded-full animate-spin"></span>
+                          </span>
+                        </div>
+                      )}
                       {messages.map((message, index) => (
                         <div
                           key={index}
