@@ -230,9 +230,8 @@ const ShopPage = () => {
                 </p>
               </div>
 
-              {/* Search Bar */}
               <motion.div
-                className="relative max-w-xl w-full"
+                className="relative w-full max-w-2xl mx-auto"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.5 }}
@@ -242,21 +241,21 @@ const ShopPage = () => {
                   <Input
                     type="search"
                     placeholder="Search for products..."
-                    className="h-11 pl-10 pr-4 bg-white/95 backdrop-blur-lg border-0 shadow-lg text-gray-800 placeholder:text-gray-500"
+                    className="h-11 pl-10 pr-4 bg-white/95 backdrop-blur-lg border-0 shadow-lg text-gray-800 placeholder:text-gray-500 w-full"
                     value={searchInput}
                     onChange={(e) => handleSearchInputChange(e.target.value)}
                   />
                 </div>
               </motion.div>
 
-              {/* Filters Row - left aligned, icons on right */}
+              {/* Filters Row - centered below search */}
               <motion.div
-                className="flex flex-col sm:flex-row gap-2 items-center justify-start max-w-3xl w-full"
+                className="flex flex-col sm:flex-row gap-2 items-center justify-center max-w-3xl w-full mx-auto mt-2"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4, duration: 0.5 }}
               >
-                <div className="flex gap-2 w-full sm:w-auto justify-start">
+                <div className="flex gap-2 w-full sm:w-auto justify-center">
                   {/* Category Filter */}
                   <div className="min-w-[120px] w-[200px] flex items-center">
                     <Select value={selectedCategory} onValueChange={handleCategoryChange}>
@@ -341,10 +340,12 @@ const ShopPage = () => {
             <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : products.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-32 p-8 text-center border rounded-lg">
-            <h3 className="text-lg font-medium">No products found</h3>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Try adjusting your search or filter criteria.
+          <div className="flex flex-col items-center justify-center h-48 p-8 text-center border rounded-lg bg-white/80 shadow-md">
+            <h3 className="text-xl font-semibold text-primary mb-2">No products found</h3>
+            <p className="mt-2 text-base text-muted-foreground">
+              Sorry, we couldn't find any products matching your search or filters.<br />
+              Try adjusting your search or filter criteria.<br />
+              Or try our <a href="/grocery-run" className="text-green-700 underline font-medium hover:text-green-900">Grocery Run</a> service for custom shopping!
             </p>
             {hasActiveFilters && (
               <Button 

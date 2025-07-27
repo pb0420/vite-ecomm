@@ -60,11 +60,6 @@ const UpcomingOrders = ({ orders }) => {
                   <Badge className={getStatusColor(order.status)}>
                     {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                   </Badge>
-                  <Link to={`/pickup-order/${order.id}`}>
-                    <Button variant="ghost" size="sm">
-                      <Eye className="w-4 h-4" />
-                    </Button>
-                  </Link>
                 </div>
               </div>
             </CardHeader>

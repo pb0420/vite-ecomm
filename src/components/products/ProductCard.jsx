@@ -54,7 +54,7 @@ const ProductCard = ({ product }) => {
               variant="destructive" 
               className="absolute top-2 right-2 text-xs"
             >
-              Out of Stock
+              Unavailable
             </Badge>
           )}
         </div>

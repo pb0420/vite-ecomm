@@ -610,39 +610,47 @@ const StorePickupPage = () => {
             >
                 <div>
                   <h1 className="text-lg md:text-xl font-bold text-white mb-1 text-left">Grocery Run </h1>
-                  <p className="text-white/90 text-xs text-left">Let us do the shopping for you at multiple stores!</p>
+                  <p className="text-white/90 text-xs text-left">Custom shopping at multiple stores!</p>
                 </div>
                 
 
-              {/* How it works steps - Made smaller */}
+              
               <div className="grid gap-1 grid-cols-2 md:grid-cols-4 max-w-2xl mx-auto">
-                <div className="flex flex-col items-center text-center space-y-0.5 bg-white/10 backdrop-blur-sm rounded-lg p-1.5">
-                  <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-white/20 flex items-center justify-center">
-                    <Store className="w-2.5 h-2.5 md:w-3 md:h-3 text-white" />
+                <div className="flex items-center space-x-2 bg-[#3cb371] rounded-lg p-1.5 h-full">
+                  <div className="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center">
+                    <Store className="w-7 h-7 md:w-10 md:h-10 text-white" />
                   </div>
-                  <h3 className="font-medium text-white text-xs">1. Add Stores</h3>
-                  <p className="text-xs text-white/80 hidden md:block">Select stores and set budget</p>
+                  <div className="flex flex-col justify-center text-left">
+                    <h3 className="font-bold text-white text-sm md:text-base leading-tight">1. Add Stores</h3>
+                    <p className="text-xs md:text-sm text-white/90">Select stores and set budget</p>
+                  </div>
                 </div>
-                <div className="flex flex-col items-center text-center space-y-0.5 bg-white/10 backdrop-blur-lg rounded-lg p-1.5">
-                  <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-white/20 flex items-center justify-center">
-                    <MessageCircle className="w-2.5 h-2.5 md:w-3 md:h-3 text-white" />
+                <div className="flex items-center space-x-2 bg-[#3cb371] rounded-lg p-1.5 h-full">
+                  <div className="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center">
+                    <MessageCircle className="w-7 h-7 md:w-10 md:h-10 text-white" />
                   </div>
-                  <h3 className="font-medium text-white text-xs">2. Share Lists</h3>
-                  <p className="text-xs text-white/80 hidden md:block">Add shopping lists</p>
+                  <div className="flex flex-col justify-center text-left">
+                    <h3 className="font-bold text-white text-sm md:text-base leading-tight">2. Share Lists</h3>
+                    <p className="text-xs md:text-sm text-white/90">Add shopping lists</p>
+                  </div>
                 </div>
-                <div className="flex flex-col items-center text-center space-y-0.5 bg-white/10 backdrop-blur-lg rounded-lg p-2">
-                  <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-white/20 flex items-center justify-center">
-                    <Clock className="w-2.5 h-2.5 md:w-3 md:h-3 text-white" />
+                <div className="flex items-center space-x-2 bg-[#3cb371] rounded-lg p-2 h-full">
+                  <div className="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center">
+                    <Clock className="w-7 h-7 md:w-10 md:h-10 text-white" />
                   </div>
-                  <h3 className="font-medium text-white text-xs">3. We Shop</h3>
-                  <p className="text-xs text-white/80 hidden md:block">We shop at all stores</p>
+                  <div className="flex flex-col justify-center text-left">
+                    <h3 className="font-bold text-white text-sm md:text-base leading-tight">3. We Shop</h3>
+                    <p className="text-xs md:text-sm text-white/90">We shop at all stores</p>
+                  </div>
                 </div>
-                <div className="flex flex-col items-center text-center space-y-0.5 bg-white/10 backdrop-blur-lg rounded-lg p-2">
-                  <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-white/20 flex items-center justify-center">
-                    <MapPin className="w-2.5 h-2.5 md:w-3 md:h-3 text-white" />
+                <div className="flex items-center space-x-2 bg-[#3cb371] rounded-lg p-2 h-full">
+                  <div className="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center">
+                    <MapPin className="w-7 h-7 md:w-10 md:h-10 text-white" />
                   </div>
-                  <h3 className="font-medium text-white text-xs">4. Delivery</h3>
-                  <p className="text-xs text-white/80 hidden md:block">All items delivered to you</p>
+                  <div className="flex flex-col justify-center text-left">
+                    <h3 className="font-bold text-white text-sm md:text-base leading-tight">4. Delivery</h3>
+                    <p className="text-xs md:text-sm text-white/90">All items delivered to you</p>
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -662,7 +670,6 @@ const StorePickupPage = () => {
                     <li>We shop at all selected stores for you.</li>
                     <li>All items are delivered in to the address provided.</li>
                     <li>Provide delivery instructions and contact preferences.</li>
-                    <li>We send you the bill from the stores.</li>
                     <li>The final amount may change after shopping, and you may be required to pay the difference before delivery</li>
                   </ul>
                 </span>
@@ -710,13 +717,9 @@ const StorePickupPage = () => {
                 <CardContent>
                   <form onSubmit={handleSubmit} className="mb-4 space-y-6">
                     <div className="space-y-4">
-                      <h3 className="text-lg font-semibold">Add Stores</h3>
-                       <div className="text-xs text-muted-foreground mt-1">
-                          <span className="font-medium text-green-600">Note:</span> You can provide your order lists/photos later after scheduling too. 
-                        </div>
-                      {/* Store Search */}
-                      <div className="flex items-center justify-between">
-                        <div className="relative w-full">
+                      <div className="flex items-center justify-between gap-2">
+                        <h3 className="text-lg font-semibold mb-0">Add Stores</h3>
+                        <div className="relative w-64 max-w-full">
                           <Search className="absolute left-2.5 top-3.5 h-4 w-4 text-muted-foreground" />
                           <Input
                             type="search"
@@ -727,7 +730,9 @@ const StorePickupPage = () => {
                           />
                         </div>
                       </div>
-                      
+                      <div className="text-xs text-muted-foreground mt-1">
+                        <span className="font-medium text-green-600">Note:</span> You can provide your order lists/photos after scheduling up to 1 hour before time slot. 
+                      </div>
                       <StoreSelector
                         stores={filteredStores}
                         selectedStores={selectedStores}

@@ -415,27 +415,78 @@ const PickupOrderDetailsPage = () => {
 
                     {/* Store Notes */}
                     <div className="space-y-2">
-                      <Label htmlFor={`notes-${storeOrder.store_id}`}>Shopping List / Notes</Label>
-                      <Textarea
-                        id={`notes-${storeOrder.store_id}`}
-                        value={storeNotes[storeOrder.store_id] || ''}
-                        onChange={(e) => setStoreNotes(prev => ({
-                          ...prev,
-                          [storeOrder.store_id]: e.target.value
-                        }))}
-                        placeholder="Add your shopping list or special instructions for this store..."
-                        rows={3}
-                        disabled={order.status === 'completed' || order.status === 'cancelled'}
-                      />
-                      {order.status !== 'completed' && order.status !== 'cancelled' && (
-                        <Button
-                          size="sm"
-                          onClick={() => handleSaveStoreNotes(storeOrder.store_id, storeOrder.id)}
-                          disabled={savingNotes[storeOrder.store_id]}
-                        >
-                          {savingNotes[storeOrder.store_id] ? 'Saving...' : 'Save Notes'}
-                        </Button>
-                      )}
+                      {/* Only allow editing if not completed/cancelled and at least 1 hour before time slot */}
+                      {(() => {
+                        // Parse the time slot start time
+                        let canEdit = true;
+                        if (order.status === 'completed' || order.status === 'cancelled') {
+                          canEdit = false;
+                        } else if (order.pickup_date && order.time_slot) {
+                          // Try to extract start time from time_slot string (e.g. '10:00 AM - 12:00 PM')
+                          const slotMatch = (order.time_slot || '').match(/(\d{1,2}:\d{2}\s*[AP]M)/i);
+                          if (slotMatch) {
+                            const slotTime = slotMatch[1];
+                            const pickupDate = new Date(order.pickup_date);
+                            // Parse slotTime to 24h
+                            let [time, ampm] = slotTime.split(/\s/);
+                            let [hour, min] = time.split(':').map(Number);
+                            if (ampm && ampm.toUpperCase().startsWith('P') && hour < 12) hour += 12;
+                            if (ampm && ampm.toUpperCase().startsWith('A') && hour === 12) hour = 0;
+                            pickupDate.setHours(hour, min, 0, 0);
+                            const now = new Date();
+                            // Only allow editing if now is at least 1 hour before slot
+                            if (pickupDate.getTime() - now.getTime() < 60 * 60 * 1000) {
+                              canEdit = false;
+                            }
+                          }
+                        }
+                        return (
+                          <StoreNotes
+                            storeId={storeOrder.store_id}
+                            notes={storeNotes[storeOrder.store_id] || ''}
+                            onNotesChange={(storeId, newNotes) => setStoreNotes(prev => ({ ...prev, [storeId]: newNotes }))}
+                            suggestedItems={Array.isArray(storeOrder.stores?.store_suggested_items) ? storeOrder.stores.store_suggested_items : []}
+                            maxItems={10}
+                            showQtyButtons={true}
+                            minimumOrder={30}
+                            estimatedTotal={storeOrder.estimated_total}
+                            onEstimatedTotalChange={() => {}}
+                            // Disable editing if not allowed
+                            disabled={!canEdit}
+                          />
+                        );
+                      })()}
+                      {/* Save button only if editing is allowed */}
+                      {(() => {
+                        let canEdit = true;
+                        if (order.status === 'completed' || order.status === 'cancelled') {
+                          canEdit = false;
+                        } else if (order.pickup_date && order.time_slot) {
+                          const slotMatch = (order.time_slot || '').match(/(\d{1,2}:\d{2}\s*[AP]M)/i);
+                          if (slotMatch) {
+                            const slotTime = slotMatch[1];
+                            const pickupDate = new Date(order.pickup_date);
+                            let [time, ampm] = slotTime.split(/\s/);
+                            let [hour, min] = time.split(':').map(Number);
+                            if (ampm && ampm.toUpperCase().startsWith('P') && hour < 12) hour += 12;
+                            if (ampm && ampm.toUpperCase().startsWith('A') && hour === 12) hour = 0;
+                            pickupDate.setHours(hour, min, 0, 0);
+                            const now = new Date();
+                            if (pickupDate.getTime() - now.getTime() < 60 * 60 * 1000) {
+                              canEdit = false;
+                            }
+                          }
+                        }
+                        return (canEdit &&
+                          <Button
+                            size="sm"
+                            onClick={() => handleSaveStoreNotes(storeOrder.store_id, storeOrder.id)}
+                            disabled={savingNotes[storeOrder.store_id]}
+                          >
+                            {savingNotes[storeOrder.store_id] ? 'Saving...' : 'Save Notes'}
+                          </Button>
+                        );
+                      })()}
                     </div>
 
                     {/* Store Photos */}

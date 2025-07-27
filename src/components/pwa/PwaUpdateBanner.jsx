@@ -4,6 +4,7 @@ import { getQueryCache, setQueryCache, clearQueryCache } from '@/lib/queryCache'
 
 
 const LOCAL_VERSION = '1.0.2'; // <-- Set your current deployed version here
+const RELOAD_CACHE_KEY = 'pwa_update_read_';
 
 const PwaUpdateBanner = () => {
   const [updateMessage, setUpdateMessage] = useState('A new version is available!');

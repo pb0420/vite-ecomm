@@ -169,7 +169,7 @@ const ProductPage = () => {
                   disabled={!product.in_stock}
                 >
                   <ShoppingCart className="w-4 h-4 mr-2" />
-                  {product.in_stock ? 'Add to Cart' : 'Out of Stock'}
+                  {product.in_stock ? 'Add to Cart' : 'Unavailable'}
                 </Button>
               )}
             </div>
