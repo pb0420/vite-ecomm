@@ -2,28 +2,34 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { getQueryCache, setQueryCache, clearQueryCache } from '@/lib/queryCache';
 
-
-const LOCAL_VERSION = '1.0.2'; // <-- Set your current deployed version here
-const RELOAD_CACHE_KEY = 'pwa_update_read_';
-
 const PwaUpdateBanner = () => {
   const [updateMessage, setUpdateMessage] = useState('A new version is available!');
 
   useEffect(() => {
     let intervalId;
     const checkPwaVersion = async () => {
+      // Get cached version
+      let cachedVersion = getQueryCache('pwa_version');
+      let reloadCount = getQueryCache('pwa_reload_count') || 0;
+      // Always fetch latest version from DB
       const { data, error } = await supabase
         .from('general_settings')
         .select('pwa_version, pwa_update_message')
         .eq('id', 1)
         .single();
       if (error || !data) return;
-      if (LOCAL_VERSION !== data.pwa_version) {
-          setUpdateMessage(data.pwa_update_message || 'A new version is available!');
-        // Use queryCache to track reload count for this version
-        let reloadCount = getQueryCache(RELOAD_CACHE_KEY + '_' + data.pwa_version) || 0;
+      setUpdateMessage(data.pwa_update_message || 'A new version is available!');
+      // If no cached version, set it for 1 day
+      if (!cachedVersion) {
+        setQueryCache('pwa_version', data.pwa_version, 1440); // 1440 min = 1 day
+        setQueryCache('pwa_reload_count', 0, 1440);
+        return;
+      }
+      // If version changed, reload up to 2 times
+      if (cachedVersion !== data.pwa_version) {
         if (reloadCount < 2) {
-          setQueryCache(RELOAD_CACHE_KEY + '_' + data.pwa_version, reloadCount + 1, 10); // 10 min cache
+          setQueryCache('pwa_reload_count', reloadCount + 1, 1440);
+          setQueryCache('pwa_version', data.pwa_version, 1440);
           if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then(function (registrations) {
               for (let registration of registrations) {
@@ -35,22 +41,12 @@ const PwaUpdateBanner = () => {
             window.location.reload(true);
           }
         }
-        // If reloadCount >= 2, do nothing (prevents infinite reload)
-      }else{
-         for (let i = 0; i < localStorage.length; i++) {
-          const key = localStorage.key(i);
-          if (key && key.startsWith(RELOAD_CACHE_KEY)) {
-            localStorage.removeItem(key);
-            i--;
-          }
-        }
+        // If already reloaded twice, do nothing
+      } else {
+        // If version matches, reset reload count
+        setQueryCache('pwa_reload_count', 0, 1440);
       }
     };
-    let checkIfSecondRefreshRequired = localStorage.getItem('updateSecondTime');
-    if (checkIfSecondRefreshRequired == 1) {
-      localStorage.removeItem('updateSecondTime'); // Clear the flag after reload
-      window.location.reload(true); // Force reload to get new files
-    }
     checkPwaVersion(); // Initial check
     intervalId = setInterval(checkPwaVersion, 1800000); // Check every 30 mins
     return () => clearInterval(intervalId);

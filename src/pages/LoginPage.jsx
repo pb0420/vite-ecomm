@@ -2,7 +2,6 @@
 import React from 'react';
 import CustomerLoginFormCard from '@/components/auth/CustomerLoginFormCard';
 import {Elements,PaymentElement} from '@stripe/react-stripe-js';
-import {loadStripe} from '@stripe/stripe-js';
 
 const LoginPage = () => {
   return (
@@ -11,14 +10,6 @@ const LoginPage = () => {
   //   </div>
     <>
 <p>login</p>
-
-  <Elements stripe={loadStripe("pk_test_L1f0e3XAzjsG7jtp4uN7L9ql")} options={{
-  mode:'payment',
-  currency:'aud',
-  amount:1999
-  }}>   =====
-      <PaymentElement />
-    </Elements> 
       </>
   )
 };

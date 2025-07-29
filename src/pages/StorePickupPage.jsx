@@ -711,7 +711,7 @@ const StorePickupPage = () => {
                   <p className="text-grey/20 text-xs text-left">Order groceries from multiple stores around town!</p>
                   </CardTitle>
                   <CardDescription>
-                    Schedule your grocery run by selecting stores, setting a date and time, and providing any special instructions.
+                    Schedule a grocery run by selecting stores, setting a date and time, and providing any special instructions. No alcohol or tobacco orders allowed.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
