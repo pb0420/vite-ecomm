@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from '@/components/ui/use-toast';
 
-const StripeSettingsForm = () => {
+const GatewaySettingsForm = () => {
   const [settings, setSettings] = useState({ publishable_key: '', price_id: '', openai_key: '' });
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -178,4 +178,4 @@ const StripeSettingsForm = () => {
   );
 };
 
-export default StripeSettingsForm;
+export default GatewaySettingsForm;

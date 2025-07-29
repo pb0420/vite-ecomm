@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import DeliverySettingsForm from '@/components/admin/DeliverySettingsForm';
-import StripeSettingsForm from '@/components/admin/StripeSettingsForm'; // New import
+import GatewaySettingsForm from '@/components/admin/GatewaySettingsForm'; // New import
 import { Separator } from '@/components/ui/separator';
 
 const AdminSettingsTab = () => {
@@ -28,7 +28,7 @@ const AdminSettingsTab = () => {
           Configure your Stripe account to enable online payments.
         </p>
         <div className="p-6 mt-4 border rounded-lg">
-          <StripeSettingsForm />
+          <GatewaySettingsForm />
         </div>
       </div>
     </motion.div>

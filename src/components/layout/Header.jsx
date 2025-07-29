@@ -108,6 +108,12 @@ const Header = () => {
         </nav>
 
         <div className="flex items-center space-x-1">
+          <Button variant="ghost" size="icon" className="relative hover:bg-white/20" onClick={toggleCart}>
+            <ShoppingCart className="w-5 h-5 text-white" />
+            {cartCount > 0 && (
+              <Badge variant="default" className="absolute -top-2 -right-2 px-1.5 py-0.5 min-w-[1.25rem] text-xs bg-[#fd7507] hover:bg-[#fd7507]/90 text-white border-0">{cartCount}</Badge>
+            )}
+          </Button>
           <Button variant="ghost" size="icon" className="relative hover:bg-white/20" onClick={() => setIsNotifOpen(true)}>
             <Bell className="w-5 h-5 text-white" />
             {notifCount > 0 && (
@@ -115,12 +121,6 @@ const Header = () => {
             )}
           </Button>
           <NotificationDrawer open={isNotifOpen} onClose={() => setIsNotifOpen(false)} onRead={handleNotifRead} />
-          <Button variant="ghost" size="icon" className="relative hover:bg-white/20" onClick={toggleCart}>
-            <ShoppingCart className="w-5 h-5 text-white" />
-            {cartCount > 0 && (
-              <Badge variant="default" className="absolute -top-2 -right-2 px-1.5 py-0.5 min-w-[1.25rem] text-xs bg-[#fd7507] hover:bg-[#fd7507]/90 text-white border-0">{cartCount}</Badge>
-            )}
-          </Button>
 
           {!loading && (
             user ? (

@@ -36,7 +36,7 @@ export const fetchUserNotifications = async (userId) => {
     .from('pickup_orders')
     .select('*')
     .eq('user_id', userId)
-    .in('status', ['pending', 'processing', 'ready'])
+    .in('status', ['pending', 'processing', 'out_for_delivery'])
     .order('pickup_date', { ascending: true })
     .limit(3);
 
