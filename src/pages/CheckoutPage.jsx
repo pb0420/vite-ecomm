@@ -353,7 +353,7 @@ const CheckoutPage = () => {
       <div className="flex justify-center w-full mt-8 mb-4">
         <Button
           className="w-full max-w-xl text-base h-12 md:h-12 md:text-lg shadow-lg"
-          onClick={() => navigate('/stripe-payment',{state: {orderData:orderData,deliveryFee:deliveryDetails.fee, finalTotal: getFinalTotal(), serviceFee: getServiceFee(), discountAmount: getDiscountAmount()}})}
+          onClick={() => navigate('/order-payment',{state: {orderData:orderData,deliveryFee:deliveryDetails.fee, finalTotal: getFinalTotal(), serviceFee: getServiceFee(), discountAmount: getDiscountAmount()}})}
           disabled={!user || !termsAccepted || showAccountSetup || customerDetails.address.length === 0 || getSubtotal() <= 0 || isSubmitting}
         >
           Proceed to Payment &nbsp; <CreditCard />

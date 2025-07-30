@@ -33,7 +33,7 @@ import PickupPaymentPage from '@/pages/PickupPaymentPage';
 import PickupOrderDetailsPage from '@/pages/PickupOrderDetailsPage';
 import PrivacyPage from '@/pages/PrivacyPage';
 import TermsPage from '@/pages/TermsPage';
-import StripePaymentPage from '@/pages/StripePaymentPage';
+import OrderPaymentPage from '@/pages/OrderPaymentPage';
 import ContactPage from '@/pages/ContactPage';
 import WorkPage from '@/pages/WorkPage';
 import AiChatBot from '@/components/chat/AiChatBot'; 
@@ -74,7 +74,7 @@ const App = () => {
                     <Route path="/admin" element={<AdminPage />} />
                     <Route path="/privacy" element={<PrivacyPage />} />
                     <Route path="/terms" element={<TermsPage />} />
-                    <Route path="/stripe-payment" element={<StripePaymentPage />} />
+                    <Route path="/order-payment" element={<OrderPaymentPage />} />
                     <Route path="/contact" element={<ContactPage />} />
                     <Route path="/work" element={<WorkPage />} />
                     <Route path="*" element={<div><h1>404 - Page not Found</h1><p>Click the top-left icon to return to home</p></div>} />
