@@ -77,7 +77,18 @@ const App = () => {
                     <Route path="/order-payment" element={<OrderPaymentPage />} />
                     <Route path="/contact" element={<ContactPage />} />
                     <Route path="/work" element={<WorkPage />} />
-                    <Route path="*" element={<div><h1>404 - Page not Found</h1><p>Click the top-left icon to return to home</p></div>} />
+                    <Route path="*" element={
+                      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-8">
+                        <h1 className="text-4xl font-bold text-primary mb-4">404</h1>
+                        <p className="text-lg text-muted-foreground mb-2">Oops! The page you are looking for does not exist.</p>
+                        <p className="mb-6 text-sm text-gray-500">It might have been moved or deleted.</p>
+                        <div className="flex flex-wrap gap-4 justify-center">
+                          <a href="/" className="px-5 py-2 rounded bg-primary text-white font-semibold shadow hover:bg-green-700 transition">Home</a>
+                          <a href="/shop" className="px-5 py-2 rounded bg-[#ff9800] text-white font-semibold shadow hover:bg-orange-600 transition">Shop</a>
+                          <a href="/grocery-run" className="px-5 py-2 rounded bg-[#3cb371] text-white font-semibold shadow hover:bg-green-800 transition">Grocery Run</a>
+                        </div>
+                      </div>
+                    } />
                   </Routes>
                 </AnimatePresence>
               </main>

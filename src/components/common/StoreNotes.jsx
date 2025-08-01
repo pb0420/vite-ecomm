@@ -125,7 +125,7 @@ const StoreNotes = ({
       )}
       {/* Quick options for notes */}
       <div className="flex flex-wrap gap-2 mb-2">
-        {["Find cheaper options", "Replace out of stock items", "Call if unavailable", "Add organic options", "No plastic bags"].map((opt, idx) => (
+        {["Find specials and better price options", "Replace out of stock items", "Call if unavailable", "Add organic options", "No plastic bags"].map((opt, idx) => (
           <button
             key={idx}
             type="button"

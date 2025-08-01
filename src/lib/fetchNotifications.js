@@ -45,7 +45,7 @@ export const fetchUserNotifications = async (userId) => {
     ...(orders || []).map(order => ({
       type: 'order',
       id: order.id,
-      title: 'Upcoming Delivery',
+      title: `Upcoming Delivery #${order.id.slice(0, 6).toUpperCase()}`,
       time: `${new Date(order.expected_delivery_at)}`,
       admin_messages: order.admin_messages || [],
       status: order.status,
@@ -53,7 +53,7 @@ export const fetchUserNotifications = async (userId) => {
     ...(pickups || []).map(pickup => ({
       type: 'pickup',
       id: pickup.id,
-      title: 'Upcoming Grocery Run',
+      title: `Upcoming Grocery Run #${pickup.id.slice(0, 6).toUpperCase()}`,
       time: pickup.time_slot ? `${new Date(pickup.pickup_date)} - ${pickup.time_slot}` : pickup.pickup_date,
       admin_messages: pickup.admin_messages || [],
       status: pickup.status,

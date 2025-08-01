@@ -147,23 +147,29 @@ const AdminPage = () => {
   return (
     <div className="container px-4 py-8 mx-auto md:px-6">
       <AdminPageHeader />
-      <AdminSummaryCards
+      {/* <AdminSummaryCards
         pendingCount={pendingOrdersCount}
         processingCount={processingOrdersCount}
         deliveredCount={deliveredOrdersCount}
-      />
+      /> */}
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-8 space-y-6">
-        <TabsList className="grid w-full grid-cols-7 md:w-auto md:inline-flex">
-          {tabItems.map(tab => (
-            <TabsTrigger key={tab.value} value={tab.value} className="flex items-center">
-              <tab.icon className="w-4 h-4 mr-2" />{tab.label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-        {tabItems.map(tab => (
-          <TabsContent key={tab.value} value={tab.value}>{tab.component}</TabsContent>
-        ))}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-8">
+        <div className="w-full flex flex-col gap-4">
+          <TabsList className="flex flex-row overflow-x-auto no-scrollbar bg-background rounded-lg shadow-sm p-2 mb-4 gap-2 w-full">
+            {tabItems.map(tab => (
+              <TabsTrigger key={tab.value} value={tab.value} className="flex items-center px-2 py-2 sm:px-4 sm:py-2 text-xs sm:text-sm md:text-base rounded transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
+                <tab.icon className="w-4 h-4 mr-2" />{tab.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          <div className="w-full min-h-[300px] bg-background rounded-lg shadow-sm p-4 mt-6">
+            {tabItems.map(tab => (
+              <TabsContent key={tab.value} value={tab.value} className="w-full">
+                {tab.component}
+              </TabsContent>
+            ))}
+          </div>
+        </div>
       </Tabs>
 
       <DeleteConfirmationDialog

@@ -10,6 +10,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/contexts/AuthContext';
 import { setQueryCache, getQueryCache } from '@/lib/queryCache';
 import LoginDialog from '@/components/auth/LoginDialog';
+import { getDistance } from '@/lib/utils';
 
 function isIos() {
   return /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
@@ -34,6 +35,8 @@ const AddToHomeScreenToast = ({ onClose, platform }) => (
     </span>
   </div>
 );
+
+const ADELAIDE_COORDS = { lat: -34.9285, lng: 138.6007 };
 
 const HomePage = () => {
   const { user, userLocation, getUserLocation } = useAuth();
@@ -188,6 +191,8 @@ const HomePage = () => {
     localStorage.setItem('a2hs-dismissed', '1');
   };
 
+  const isTooFar = userLocation && getDistance(userLocation.lat, userLocation.lng, ADELAIDE_COORDS.lat, ADELAIDE_COORDS.lng) > 50;
+
   return (
     <div className="flex flex-col min-h-screen">
       {showA2HS && <AddToHomeScreenToast onClose={handleCloseA2HS} platform={platform} />}
@@ -202,6 +207,11 @@ const HomePage = () => {
         </div>
         <div className="container relative h-full px-4 md:px-6">
           <div className="flex flex-col justify-center h-full max-w-4xl mx-auto pb-2 md:pt-4 md:pb-2">
+            {isTooFar && (
+              <div className="absolute top-2 left-1/2 -translate-x-1/2 bg-black/40 text-white text-xs px-3 py-1 rounded shadow z-10">
+                You seem to be too far away.
+              </div>
+            )}
             <motion.div
               className="space-y-2 md:space-y-3"
               initial={{ opacity: 0, y: 30 }}

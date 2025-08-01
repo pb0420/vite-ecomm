@@ -17,6 +17,7 @@ import { format } from 'date-fns';
 import CancelOrderDialog from '@/components/common/CancelOrderDialog';
 import OrderMessaging from '@/components/common/OrderMessaging';
 import StoreNotes from '@/components/common/StoreNotes';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 const PickupOrderDetailsPage = () => {
   const { id } = useParams();
@@ -31,6 +32,9 @@ const PickupOrderDetailsPage = () => {
   const [savingNotes, setSavingNotes] = useState({});
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [cancelling, setCancelling] = useState(false);
+  // Bill modal state
+  const [selectedBill, setSelectedBill] = useState(null);
+  const logoUrl = '/logo.webp';
 
   useEffect(() => {
     if (!user) {
@@ -192,6 +196,14 @@ const PickupOrderDetailsPage = () => {
       case 'cancelled': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
     }
+  };
+
+  // PDF download handler
+  const handleDownloadBillPDF = (bill) => {
+    import('../lib/generateBill').then(({ generateBillPDF }) => {
+      const doc = generateBillPDF({ order, bill, logoUrl });
+      doc.save(`bill_${order.id}_${bill.id || ''}.pdf`);
+    });
   };
 
   if (loading) {
@@ -531,6 +543,92 @@ const PickupOrderDetailsPage = () => {
                   </div>
                 </CardContent>
               </Card>
+            )}
+            {/* Bill Section for delivered orders */}
+            {order.status === 'completed' && order.bills && order.bills.length > 0 && (
+              <Card className="mt-6">
+                <CardHeader>
+                  <CardTitle>Bills</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {order.bills.map((bill, idx) => (
+                      <div key={bill.id || idx} className="flex items-center justify-between p-2 border rounded">
+                        <span>Bill #{bill.id ? bill.id.slice(0,6).toUpperCase() : idx+1}</span>
+                        <Button variant="outline" onClick={() => setSelectedBill(bill)}>
+                          View Bill
+                        </Button>
+                        <Button variant="secondary" onClick={e => {
+                          e.preventDefault();
+                          if (bill.image) {
+                            const link = document.createElement('a');
+                            link.href = bill.image;
+                            link.download = `bill_${order.id}_${bill.id || ''}.jpg`;
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                          } else {
+                            import('../lib/generateBill').then(({ generateBillPDF }) => {
+                              const doc = generateBillPDF({ order, bill, logoUrl });
+                              doc.save(`bill_${order.id}_${bill.id || ''}.pdf`);
+                            });
+                          }
+                        }}>
+                          Download {bill.image ? 'Image' : 'PDF'}
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+            {/* Bill Modal */}
+            {selectedBill && (
+              <Dialog open={!!selectedBill} onOpenChange={open => { if (!open) setSelectedBill(null); }}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Bill Details</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-2">
+                    {selectedBill.image ? (
+                      <img src={selectedBill.image} alt="Bill" className="w-64 mx-auto" />
+                    ) : selectedBill.items && selectedBill.items.length > 0 ? (
+                      <>
+                        <img src={logoUrl} alt="Logo" className="w-24 mb-2 mx-auto" />
+                        <div>Bill ID: {selectedBill.id}</div>
+                        <div>Date: {new Date(selectedBill.created_at).toLocaleString()}</div>
+                        <div>Total: {formatCurrency(selectedBill.total)}</div>
+                        <div className="text-xs text-gray-500">ABN 257 558 402 06</div>
+                        <div>
+                          <h4 className="font-semibold">Items</h4>
+                          <ul className="list-disc ml-4">
+                            {selectedBill.items.map((item, i) => (
+                              <li key={i}>{item.name} x{item.quantity} - {formatCurrency(item.price)}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="text-center text-muted-foreground">Bill unavailable</div>
+                    )}
+                  </div>
+                  <Button onClick={() => {
+                    if (selectedBill.image) {
+                      const link = document.createElement('a');
+                      link.href = selectedBill.image;
+                      link.download = `bill_${order.id}_${selectedBill.id || ''}.jpg`;
+                      link.click();
+                    } else {
+                      import('../lib/generateBill').then(({ generateBillPDF }) => {
+                        const doc = generateBillPDF({ order, bill: selectedBill, logoUrl });
+                        doc.save(`bill_${order.id}_${selectedBill.id || ''}.pdf`);
+                      });
+                    }
+                  }}>
+                    Download {selectedBill.image ? 'Image' : 'PDF'}
+                  </Button>
+                </DialogContent>
+              </Dialog>
             )}
           </div>
 

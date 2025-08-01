@@ -24,6 +24,12 @@ const AdminOrdersTab = () => {
   const [actualAmount, setActualAmount] = useState('');
   const [confirmingPayment, setConfirmingPayment] = useState(false);
   const [timezone, setTimezone] = useState(DEFAULT_TIMEZONE);
+  // Bill modal state
+  const [selectedBill, setSelectedBill] = useState(null);
+  const [showBillEditor, setShowBillEditor] = useState(false);
+  const [billForm, setBillForm] = useState({ id: '', items: [], total: '', created_at: '', image: '' });
+  const logoUrl = '/logo.webp';
+  const [billImageFile, setBillImageFile] = useState(null);
 
   useEffect(() => {
     fetchTimezone();
@@ -195,6 +201,92 @@ const AdminOrdersTab = () => {
       console.error('Error sending message:', error);
       toast({ variant: "destructive", title: "Error", description: "Could not send message." });
     }
+  };
+
+  const handleDownloadBillPDF = (bill) => {
+    if (bill.image) {
+      // Download image
+      const link = document.createElement('a');
+      link.href = bill.image;
+      link.download = `bill_${selectedOrder.id}_${bill.id || ''}.jpg`;
+      link.click();
+    } else {
+      import('@/lib/generateBill').then(({ generateBillPDF }) => {
+        const doc = generateBillPDF({ order: selectedOrder, bill, logoUrl });
+        doc.save(`bill_${selectedOrder.id}_${bill.id || ''}.pdf`);
+      });
+    }
+  };
+
+  const handleEditBill = (bill) => {
+    setBillForm({
+      id: bill?.id || '',
+      items: bill?.items || [],
+      total: bill?.total || '',
+      created_at: bill?.created_at || new Date().toISOString(),
+      image: bill?.image || ''
+    });
+    setBillImageFile(null);
+    setShowBillEditor(true);
+  };
+
+  const handleBillFormChange = (field, value) => {
+    setBillForm(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleBillItemChange = (idx, field, value) => {
+    setBillForm(prev => ({
+      ...prev,
+      items: prev.items.map((item, i) => i === idx ? { ...item, [field]: value } : item)
+    }));
+  };
+
+  const handleAddBillItem = () => {
+    setBillForm(prev => ({ ...prev, items: [...prev.items, { name: '', quantity: 1, price: 0 }] }));
+  };
+
+  const handleRemoveBillItem = (idx) => {
+    setBillForm(prev => ({ ...prev, items: prev.items.filter((_, i) => i !== idx) }));
+  };
+
+  const handleRemoveBill = async (billId) => {
+    const updatedBills = (selectedOrder.bills || []).filter(b => b.id !== billId);
+    await supabase.from('orders').update({ bills: updatedBills }).eq('id', selectedOrder.id);
+    setSelectedOrder({ ...selectedOrder, bills: updatedBills });
+    toast({ title: 'Bill removed', description: 'Bill has been deleted.' });
+  };
+
+  const handleBillImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    // Upload to supabase storage
+    const fileName = `bill_${selectedOrder.id}_${Date.now()}`;
+    const { data, error } = await supabase.storage.from('bills').upload(fileName, file, { upsert: true });
+    if (error) {
+      toast({ variant: 'destructive', title: 'Upload failed', description: error.message });
+      return;
+    }
+    const imageUrl = supabase.storage.from('bills').getPublicUrl(fileName).publicUrl;
+    setBillForm(prev => ({ ...prev, image: imageUrl }));
+    setBillImageFile(file);
+  };
+
+  const handleSaveBill = async () => {
+    const updatedBills = selectedOrder.bills ? [...selectedOrder.bills] : [];
+    if (billForm.id) {
+      // Edit existing
+      const idx = updatedBills.findIndex(b => b.id === billForm.id);
+      if (idx !== -1) updatedBills[idx] = billForm;
+      else updatedBills.push(billForm);
+    } else {
+      // New bill
+      billForm.id = Math.random().toString(36).slice(2, 10).toUpperCase();
+      updatedBills.push(billForm);
+    }
+    await supabase.from('orders').update({ bills: updatedBills }).eq('id', selectedOrder.id);
+    setSelectedOrder({ ...selectedOrder, bills: updatedBills });
+    setShowBillEditor(false);
+    toast({ title: 'Bill saved', description: 'Bill has been updated.' });
   };
 
   const filteredOrders = orders.filter(order => {
@@ -401,6 +493,44 @@ const AdminOrdersTab = () => {
                               </div>
                             </div>
 
+                            {/* Bills */}
+                            {selectedOrder?.bills && selectedOrder.bills.length > 0 ? (
+                              <div className="mt-4">
+                                <h4 className="font-semibold mb-2">Bills</h4>
+                                <div className="space-y-2">
+                                  {selectedOrder.bills.map((bill, idx) => (
+                                    <div key={bill.id || idx} className="flex items-center justify-between p-2 border rounded">
+                                      <span>Bill #{bill.id ? bill.id.slice(0,6).toUpperCase() : idx+1}</span>
+                                      <Button variant="outline" onClick={() => setSelectedBill(bill)}>
+                                        View Bill
+                                      </Button>
+                                      <Button variant="secondary" onClick={() => handleDownloadBillPDF(bill)}>
+                                        Download PDF
+                                      </Button>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="mt-4">
+                                <h4 className="font-semibold mb-2">Bills</h4>
+                                <div className="text-muted-foreground mb-2">No bills found for this order.</div>
+                                <Button variant="primary" onClick={() => {
+                                  setSelectedOrder(order);
+                                  setBillForm({
+                                    id: '',
+                                    items: [],
+                                    total: order.total || '',
+                                    created_at: new Date().toISOString(),
+                                    image: ''
+                                  });
+                                  setShowBillEditor(true);
+                                }}>
+                                  Generate Bill
+                                </Button>
+                              </div>
+                            )}
+
                             {/* Messages */}
                             <div>
                               <h4 className="font-semibold mb-2">Messages</h4>
@@ -478,6 +608,75 @@ const AdminOrdersTab = () => {
             ))
           )}
         </div>
+      )}
+
+      {selectedBill && (
+        <Dialog open={!!selectedBill} onOpenChange={open => { if (!open) setSelectedBill(null); }}>
+          <DialogContent className="max-w-md w-full sm:max-w-lg md:max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Bill Details</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-2">
+              {selectedBill.image ? (
+                <img src={selectedBill.image} alt="Bill" className="w-64 mx-auto" />
+              ) : selectedBill.items && selectedBill.items.length > 0 ? (
+                <>
+                  <img src={logoUrl} alt="Logo" className="w-24 mb-2 mx-auto" />
+                  <div>Bill ID: {selectedBill.id}</div>
+                  <div>Date: {new Date(selectedBill.created_at).toLocaleString()}</div>
+                  <div>Total: {formatCurrency(selectedBill.total)}</div>
+                  <div>
+                    <h4 className="font-semibold">Items</h4>
+                    <ul className="list-disc ml-4">
+                      {selectedBill.items.map((item, i) => (
+                        <li key={i}>{item.name} x{item.quantity} - {formatCurrency(item.price)}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </>
+              ) : (
+                <div className="text-center text-muted-foreground">Bill unavailable</div>
+              )}
+            </div>
+            <Button onClick={() => handleDownloadBillPDF(selectedBill)}>
+              Download {selectedBill.image ? 'Image' : 'PDF'}
+            </Button>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {showBillEditor && (
+        <Dialog open={showBillEditor} onOpenChange={open => { if (!open) setShowBillEditor(false); }}>
+          <DialogContent className="max-w-md w-full sm:max-w-lg md:max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{billForm.id ? 'Edit Bill' : 'Generate Bill'}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-2">
+              <Label>Bill ID</Label>
+              <Input value={billForm.id} disabled />
+              <Label>Date</Label>
+              <Input type="datetime-local" value={billForm.created_at.slice(0,16)} onChange={e => handleBillFormChange('created_at', e.target.value)} />
+              <Label>Total</Label>
+              <Input type="number" value={billForm.total} onChange={e => handleBillFormChange('total', e.target.value)} />
+              <Label>Items</Label>
+              {billForm.items.map((item, idx) => (
+                <div key={idx} className="flex gap-2 mb-2">
+                  <Input placeholder="Name" value={item.name} onChange={e => handleBillItemChange(idx, 'name', e.target.value)} />
+                  <Input type="number" placeholder="Qty" value={item.quantity} onChange={e => handleBillItemChange(idx, 'quantity', e.target.value)} />
+                  <Input type="number" placeholder="Price" value={item.price} onChange={e => handleBillItemChange(idx, 'price', e.target.value)} />
+                  <Button variant="destructive" onClick={() => handleRemoveBillItem(idx)}>Remove</Button>
+                </div>
+              ))}
+              <Button variant="outline" onClick={handleAddBillItem}>Add Item</Button>
+              <Label className="mt-4">Or upload bill image (jpg/png):</Label>
+              <Input type="file" accept="image/*" onChange={handleBillImageUpload} />
+              {billForm.image && (
+                <img src={billForm.image} alt="Bill" className="w-32 mt-2" />
+              )}
+            </div>
+            <Button className="mt-4" onClick={handleSaveBill}>Save Bill</Button>
+          </DialogContent>
+        </Dialog>
       )}
     </motion.div>
   );
