@@ -46,7 +46,9 @@ export const fetchUserNotifications = async (userId) => {
       type: 'order',
       id: order.id,
       title: `Upcoming Delivery #${order.id.slice(0, 6).toUpperCase()}`,
-      time: `${new Date(order.expected_delivery_at)}`,
+      time: order.expected_delivery_at
+        ? `${new Date(order.expected_delivery_at)}`
+        : `${new Date(Date.now() + 60 * 60 * 1000)}`,
       admin_messages: order.admin_messages || [],
       status: order.status,
     })),

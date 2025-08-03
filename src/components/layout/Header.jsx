@@ -89,9 +89,9 @@ const Header = () => {
             <></>
       ) : (
                 <img
-          src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/home-icon.webp"
+          src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/home-icon2.webp"
           alt="Home"
-          style={{ marginLeft: '5px', marginBottom:'2px', width: '15px', height: '15px' }}
+          style={{ marginLeft: '5px', marginBottom:'2px', width: '20px', height: '20px' }}
           className="w-3 h-3"
           aria-label="Home"
         />

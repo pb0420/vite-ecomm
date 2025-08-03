@@ -326,7 +326,7 @@ const OrderConfirmationPage = () => {
               Continue Shopping
             </Button>
           </Link>
-          <Link to="/account/orders">
+          <Link to="/account?tab=orders">
             <Button>
               <Package className="mr-2 h-4 w-4" />
               View All Orders

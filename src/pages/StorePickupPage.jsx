@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Store, Clock, Calendar, MessageCircle, Bot, MapPin, Phone, Search, CreditCard, Truck } from 'lucide-react';
+import { Store, Clock, Calendar, MessageCircle, Globe, MapPin, Phone, Search, CreditCard, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -614,7 +614,7 @@ const StorePickupPage = () => {
 
               
               <div className="grid gap-1 grid-cols-2 md:grid-cols-4 max-w-2xl mx-auto">
-                <div className="flex items-center space-x-2 bg-[#ff9800] rounded-lg p-1.5 h-full">
+                <div className="flex items-center space-x-2 bg-primary rounded-lg p-1.5 h-full">
                   <div className="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center">
                     <Store className="w-7 h-7 md:w-10 md:h-10 text-white" />
                   </div>
@@ -641,7 +641,7 @@ const StorePickupPage = () => {
                     <p className="text-xs md:text-sm text-white/90">Items are shopped on your behalf</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-2 bg-[#ff9800] rounded-lg p-2 h-full">
+                <div className="flex items-center space-x-2 bg-[#3cb371] rounded-lg p-2 h-full">
                   <div className="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center">
                     <MapPin className="w-7 h-7 md:w-10 md:h-10 text-white" />
                   </div>
@@ -708,14 +708,14 @@ const StorePickupPage = () => {
                 </button>
                   </CardTitle>
                   <CardDescription>
-                    No alcohol or tobacco orders allowed.
+                    No alcohol or tobacco products.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleSubmit} className="mb-4 space-y-6 rounded-2xl bg-green-50/60 p-1.5 md:p-8 shadow-sm max-w-3xl mx-auto">
                     <div className="space-y-4">
                       <div className="flex items-center justify-between gap-1">
-                        <h3 className="text-lg font-semibold mb-0">Add Stores</h3>
+                        <h3 className="text-md font-semibold mb-0">Add Stores</h3>
                         <div className="relative w-50 max-w-full">
                           <Search className="absolute left-2.5 top-3.5 h-4 w-4 text-muted-foreground" />
                           <Input
@@ -889,7 +889,7 @@ const StorePickupPage = () => {
                                 <RadioGroupItem value="phone" id="phone" className="mr-2 w-6 h-6" />
                                 <span className="flex items-center gap-3 w-full">
                                   <span className="flex items-center justify-center w-10 h-10">
-                                    <Phone className="w-8 h-8 text-primary" />
+                                    <Phone className="w-6 h-6 text-primary" />
                                   </span>
                                   <span className="text-base font-medium">SMS/Call</span>
                                 </span>
@@ -901,7 +901,7 @@ const StorePickupPage = () => {
                                 <RadioGroupItem value="inapp" id="inapp" className="mr-2 w-6 h-6" />
                                 <span className="flex items-center gap-3 w-full">
                                   <span className="flex items-center justify-center w-10 h-10">
-                                    <Bot className="w-8 h-8 text-primary" />
+                                    <Globe className="w-6 h-6 text-primary" />
                                   </span>
                                   <span className="text-base font-medium">Online</span>
                                 </span>

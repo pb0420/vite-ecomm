@@ -13,6 +13,7 @@ import Footer from '@/components/layout/Footer';
 import CartDrawer from '@/components/cart/CartDrawer';
 import { Toaster } from '@/components/ui/toaster';
 import ScrollToTopButton from '@/components/ui/scroll-to-top-btn';
+import ScrollToTop from '@/components/ui/ScrollToTop';
 
 
 // Pages
@@ -52,6 +53,7 @@ const App = () => {
       <OrderProvider>
         <CartProvider>
           <Router>
+            <ScrollToTop />
             <div className="flex flex-col min-h-screen bg-background font-sans antialiased">
               <Header />
               <main className="flex-1">

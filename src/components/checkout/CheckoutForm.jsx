@@ -41,8 +41,8 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
         name: user.name || '',
         email: user.email || '',
         phone: user.phone || '',
-        address: user.addresses[0]?.address || '',
-        postcode: user.addresses[0]?.postcode ||'',
+        address: (user.addresses && user.addresses[0]?.address) ? user.addresses[0].address : '',
+        postcode: (user.addresses && user.addresses[0]?.postcode) ? user.addresses[0].postcode : '',
         deliveryNotes: '',
       });
     }
