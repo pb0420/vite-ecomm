@@ -112,7 +112,7 @@ const ProductPage = () => {
         >
           <img  
             alt={product.name} 
-            className="w-3/5 h-3/5 object-contain mx-auto"
+            className="object-contain mx-auto"
             src={product.image_url || "https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/product-placeholder.webp"} 
           />
         </motion.div>

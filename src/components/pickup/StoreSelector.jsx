@@ -122,18 +122,20 @@ const StoreSelector = ({
                     <div>
                       <div className="flex items-center gap-1 sm:gap-2">
                         <CardTitle className="text-base leading-tight">{store.name}</CardTitle>
-                        <Badge className="bg-primary/10 text-primary font-semibold px-2 py-0.5 text-xs">Min ${minimumOrder}</Badge>
                       </div>
-                      <div className="text-xs text-muted-foreground leading-tight">{store.address.slice(0,20)}</div>
                       <div className="flex items-center gap-2 mt-1">
-                        <span className="text-xs">
-                          {formatAMPM(store.opening_time)} - {formatAMPM(store.closing_time)}
-                        </span>
+                        <span className="text-xs text-muted-foreground leading-tight">{store.address.slice(0,20)}</span>
                         {distance && (
                           <span className="text-xs text-primary font-semibold">
                             • {distance.toFixed(1)} km
                           </span>
                         )}
+                      </div>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-xs">
+                          {formatAMPM(store.opening_time)} - {formatAMPM(store.closing_time)}
+                        </span>
+                        <Badge className="bg-primary/10 text-primary font-semibold px-2 py-0.5 text-xs align-middle">Min ${minimumOrder}</Badge>
                       </div>
                     </div>
                   </div>
@@ -149,8 +151,20 @@ const StoreSelector = ({
                 </CardHeader>
                 {isSelected && (
                   <CardContent className="space-y-4 border-t pt-4 bg-gray-50 rounded-b-lg p-2">
-                    {/* Estimated Total */}
-                    <div className="space-y-1">
+                    {/* Suggested Items */}
+                    <StoreNotes
+                      storeId={store.id}
+                      notes={selectedStore?.notes || ''}
+                      onNotesChange={handleNotesChange}
+                      suggestedItems={Array.isArray(store.store_suggested_items) ? store.store_suggested_items : []}
+                      maxItems={10}
+                      showQtyButtons={true}
+                      minimumOrder={minimumOrder}
+                      estimatedTotal={selectedStore?.estimatedTotal || 0}
+                      onEstimatedTotalChange={handleStoreNotesEstimatedTotal}
+                    />
+                    {/* Estimated Total - moved to bottom */}
+                    <div className="space-y-1 mt-4">
                       <Label htmlFor={`estimated-${store.id}`} className="text-sm font-medium">Estimated Total ($)</Label>
                       <Input
                         id={`estimated-${store.id}`}
@@ -178,18 +192,6 @@ const StoreSelector = ({
                         <span className="text-xs text-red-500">Minimum order: ${minimumOrder}</span>
                       )}
                     </div>
-                    {/* Suggested Items */}
-                    <StoreNotes
-                      storeId={store.id}
-                      notes={selectedStore?.notes || ''}
-                      onNotesChange={handleNotesChange}
-                      suggestedItems={Array.isArray(store.store_suggested_items) ? store.store_suggested_items : []}
-                      maxItems={10}
-                      showQtyButtons={true}
-                      minimumOrder={minimumOrder}
-                      estimatedTotal={selectedStore?.estimatedTotal || 0}
-                      onEstimatedTotalChange={handleStoreNotesEstimatedTotal}
-                    />
                   </CardContent>
                 )}
               </Card>

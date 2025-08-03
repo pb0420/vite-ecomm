@@ -59,15 +59,42 @@ const StoreNotes = ({
     fetchOldNotes();
   }, [user, storeId]);
 
-  const filteredItems = suggestedItems.filter(item =>
-    item.name.toLowerCase().includes(search.toLowerCase())
-  );
+  let filteredItems = [];
+  try {
+    filteredItems = suggestedItems.filter(item =>
+      item.name && item.name.toLowerCase().includes(search.toLowerCase())
+    );
+  } catch (e) {
+    filteredItems = [];
+  }
+
   const itemsToShow = filteredItems.slice(0, maxItems);
+
+  // Custom items state
+  const [customItems, setCustomItems] = useState([]);
+  const [customItemName, setCustomItemName] = useState('');
+  // Get all items (suggested + custom)
+  const allItems = [...itemsToShow, ...customItems.map(name => ({ name, price: DEFAULT_PRICE, custom: true }))];
+
+  // Add custom item
+  const handleAddCustomItem = () => {
+    const name = customItemName.trim();
+    if (!name || allItems.some(i => i.name.toLowerCase() === name.toLowerCase())) return;
+    setCustomItems([...customItems, name]);
+    setCustomItemName('');
+  };
+  // Remove custom item
+  const handleRemoveCustomItem = (name) => {
+    setCustomItems(customItems.filter(i => i !== name));
+    // Remove from notes
+    const regex = new RegExp(`^${name} x(\\d+)$`, 'm');
+    onNotesChange(storeId, (notes || '').replace(regex, '').replace(/\n+/g, '\n').trim());
+  };
 
   // Regex for matching item and quantity in notes
   const getItemQty = (itemName) => {
     const regex = new RegExp(`^${itemName} x(\\d+)$`, 'm');
-    const match = notes.match(regex);
+    const match = (notes || '').match(regex);
     return match ? parseInt(match[0].split('x')[1], 10) : 0;
   };
   const handleItemQtyChange = (item, qty) => {
@@ -97,11 +124,31 @@ const StoreNotes = ({
     // eslint-disable-next-line
   }, [notes, suggestedItems, maxItems]);
 
+  // Helper for info popup direction
+  const getPopupPosition = (el) => {
+    if (!el) return { left: '100%', top: 0 };
+    const rect = el.getBoundingClientRect();
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    // Try right, else left, else below
+    if (rect.right + 180 < vw) return { left: '100%', top: 0 };
+    if (rect.left - 180 > 0) return { right: '100%', top: 0 };
+    if (rect.bottom + 120 < vh) return { left: 0, top: '100%' };
+    return { left: 0, top: 0 };
+  };
+
+  // Track which info popup is open
+  const [infoOpen, setInfoOpen] = useState(null);
+  const infoRefs = useRef({});
+
+  // Highlight items in notes
+  const isItemInNotes = (name) => getItemQty(name) > 0;
+
   return (
     <div className="space-y-3">
       {oldNotes.length > 0 && showOldNotes && (
         <div className="mb-2">
-          <Label className="text-sm font-medium">Previous Notes </Label>
+          <Label className="text-sm font-medium">Use Previous Notes </Label>
           <div className="flex flex-col gap-2 mt-1">
             {oldNotes.map((n, idx) => (
               <button
@@ -123,25 +170,6 @@ const StoreNotes = ({
           </div>
         </div>
       )}
-      {/* Quick options for notes */}
-      <div className="flex flex-wrap gap-2 mb-2">
-        {["Find specials and better price options", "Replace out of stock items", "Call if unavailable", "Add organic options", "No plastic bags"].map((opt, idx) => (
-          <button
-            key={idx}
-            type="button"
-            className="border rounded px-2 py-1 text-xs bg-gray-50 hover:bg-primary/10"
-            onClick={() => {
-              if (notes && !notes.includes(opt)) {
-                onNotesChange(storeId, notes + '\n' + opt);
-              } else if (!notes) {
-                onNotesChange(storeId, opt);
-              }
-            }}
-          >
-            {opt}
-          </button>
-        ))}
-      </div>
       {suggestedItems.length > maxItems && (
         <div className="mb-2">
           <input
@@ -157,17 +185,30 @@ const StoreNotes = ({
         Suggested Items
       </Label>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-2">
-        {itemsToShow.map(item => {
+        {allItems.map(item => {
           const qty = getItemQty(item.name);
           const price = item.price ? Number(item.price) : DEFAULT_PRICE;
           return (
-            <div key={item.name} className="flex items-center justify-between bg-white border rounded px-2 py-2 shadow-sm min-w-[160px] max-w-full overflow-hidden">
+            <div
+              key={item.name}
+              className={`flex items-center justify-between border rounded px-2 py-2 shadow-sm min-w-[160px] max-w-full overflow-hidden transition-all
+                ${isItemInNotes(item.name) ? 'bg-green-50 border-green-400 ring-2 ring-green-300' : item.custom ? 'bg-blue-50 border-blue-300' : 'bg-white'}
+              `}
+            >
               <div className="flex items-center gap-2">
-                <span className="text-xs line-clamp-2">{item.name}:</span>
+                <span className="text-xs line-clamp-2 font-semibold">{item.name}{item.custom && <span className="ml-1 text-[10px] text-blue-500">(custom)</span>}:</span>
                 {item.image_url || item.description ? (
-                  <span className="ml-1 cursor-pointer group relative">
+                  <span
+                    className="ml-1 cursor-pointer relative"
+                    ref={el => infoRefs.current[item.name] = el}
+                    onMouseEnter={() => setInfoOpen(item.name)}
+                    onMouseLeave={() => setInfoOpen(null)}
+                  >
                     <Info className="w-4 h-4 text-primary" />
-                    <div className="absolute z-10 left-6 top-0 bg-white border rounded shadow-lg p-2 text-xs w-40 hidden group-hover:block">
+                    <div
+                      className={`absolute z-50 bg-white border rounded shadow-lg p-2 text-xs w-48 transition-opacity duration-100 ${infoOpen === item.name ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+                      style={infoOpen === item.name ? getPopupPosition(infoRefs.current[item.name]) : {}}
+                    >
                       {item.image_url && (
                         <img src={item.image_url} alt={item.name} className="w-full h-16 object-cover mb-1 rounded" />
                       )}
@@ -175,6 +216,13 @@ const StoreNotes = ({
                     </div>
                   </span>
                 ) : null}
+                {item.custom && (
+                  <button
+                    type="button"
+                    className="ml-1 text-xs text-red-500 hover:underline"
+                    onClick={() => handleRemoveCustomItem(item.name)}
+                  >Remove</button>
+                )}
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-xs font-semibold text-right min-w-[40px]">A${price}</span>
@@ -208,7 +256,42 @@ const StoreNotes = ({
           );
         })}
       </div>
-      <div>
+      {/* Add custom item UI */}
+      <div className="flex gap-2 mt-2">
+        <input
+          type="text"
+          value={customItemName}
+          onChange={e => setCustomItemName(e.target.value)}
+          placeholder="Add custom item..."
+          className="border rounded px-2 py-1 text-xs flex-1"
+          onKeyDown={e => { if (e.key === 'Enter') handleAddCustomItem(); }}
+        />
+        <button
+          type="button"
+          className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs font-semibold"
+          onClick={handleAddCustomItem}
+        >Add</button>
+      </div>
+       {/* Quick options for notes */}
+      <div className="flex flex-wrap gap-2 mb-2">
+        {["Find specials and better price options", "Replace out of stock items", "Call if unavailable", "Add organic options", "No plastic bags"].map((opt, idx) => (
+          <button
+            key={idx}
+            type="button"
+            className="border rounded px-2 py-1 text-xs bg-gray-50 hover:bg-primary/10"
+            onClick={() => {
+              if (notes && !notes.includes(opt)) {
+                onNotesChange(storeId, notes + '\n' + opt);
+              } else if (!notes) {
+                onNotesChange(storeId, opt);
+              }
+            }}
+          >
+            {opt}
+          </button>
+        ))}
+      </div>
+      <div className="mt-2">
         <Label htmlFor={`notes-${storeId}`} className="text-sm font-medium">Shopping List / Notes</Label>
       </div>
       <Textarea
@@ -216,8 +299,8 @@ const StoreNotes = ({
         value={notes || ''}
         onChange={e => onNotesChange(storeId, e.target.value)}
         placeholder="Add your shopping list or special instructions..."
-        rows={2}
-        className="mt-1 text-base px-2 py-1 rounded border focus:outline-primary"
+        rows={3}
+        className="mt-1 text-base px-2 py-1 rounded border focus:outline-primary bg-yellow-50 border-yellow-300"
       />
     </div>
   );
