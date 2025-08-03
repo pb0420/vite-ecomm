@@ -155,6 +155,7 @@ const HomePage = () => {
   // Debounced search navigation
   useEffect(() => {
     if (!searchQuery) return;
+    if (searchQuery.length < 2) return; // Minimum 2 characters to search
     setSearchLoading(true);
     const timer = setTimeout(() => {
     setSearchLoading(false);
@@ -168,7 +169,7 @@ const HomePage = () => {
         localStorage.setItem('search_count', (count + 1).toString());
       }
       navigate(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
-    }, 650);
+    }, 950);
     return () => clearTimeout(timer);
   }, [searchQuery, user, navigate]);
 
@@ -259,10 +260,10 @@ const HomePage = () => {
                 <div className="flex-1 relative pb-2">
                   <Input
                     type="text"
-                    placeholder="Search for groceries and more..."
+                    placeholder="Search for groceries and other items..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="h-11 md:h-11 pl-3 bg-white/95 backdrop-blur-sm border-0 shadow-lg text-gray-800 placeholder:text-gray-500 text-sm"
+                    className="h-11 md:h-11 pl-3 bg-white/95 backdrop-blur-sm shadow-lg border-0 text-gray-800 placeholder:text-gray-500 text-md"
                   />
                    {searchLoading && (
                       <span className="absolute right-3 top-1/2 -translate-y-1/2">

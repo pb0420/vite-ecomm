@@ -86,7 +86,7 @@ const StoreSelector = ({
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2">
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 max-w-5xl mx-auto">
         {sortedStores.map((store) => {
           const isSelected = selectedStores.some(s => s.id === store.id);
           const selectedStore = selectedStores.find(s => s.id === store.id);
@@ -105,10 +105,10 @@ const StoreSelector = ({
               transition={{ duration: 0.3 }}
               className="w-full"
             >
-              <Card className={`transition-all ${isSelected ? 'ring-2 ring-primary shadow-lg' : 'hover:shadow-md'} p-2 sm:p-2`}> {/* Add padding for mobile */}
-                <CardHeader className="pb-3 flex flex-row items-center justify-between border-b gap-2 sm:gap-2 p-2"> {/* Add gap for mobile */}
-                  <div className="flex items-center space-x-2 sm:space-x-1">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-muted flex items-center justify-center overflow-hidden">
+              <Card className={`transition-all ${isSelected ? 'ring-2 ring-primary shadow-lg' : 'hover:shadow-md'} p-2 sm:p-2`}>
+                <CardHeader className="pb-3 border-b gap-2 sm:gap-2 p-2">
+                  <div className="flex flex-row gap-4 items-stretch w-full min-h-[5.5rem]">
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-muted flex items-center justify-center overflow-hidden border-2 border-primary/30 shadow-sm flex-shrink-0">
                       {store.image ? (
                         <img
                           src={store.image}
@@ -116,38 +116,39 @@ const StoreSelector = ({
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <Store className="w-6 h-6 text-muted-foreground" />
+                        <Store className="w-12 h-12 text-muted-foreground" />
                       )}
                     </div>
-                    <div>
-                      <div className="flex items-center gap-1 sm:gap-2">
-                        <CardTitle className="text-base leading-tight">{store.name}</CardTitle>
-                      </div>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="text-xs text-muted-foreground leading-tight">{store.address.slice(0,20)}</span>
+                    <div className="flex flex-col flex-1 min-w-0 justify-between">
+                      <div>
+                        <CardTitle className="text-lg sm:text-xl font-bold leading-tight text-primary-dark line-clamp-2">{store.name}</CardTitle>
+                        <span className="text-base text-muted-foreground leading-tight font-medium truncate block">{store.address.slice(0, 48)}</span>
                         {distance && (
-                          <span className="text-xs text-primary font-semibold">
+                          <span className="text-base text-primary font-semibold block">
                             • {distance.toFixed(1)} km
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="text-xs">
-                          {formatAMPM(store.opening_time)} - {formatAMPM(store.closing_time)}
-                        </span>
-                        <Badge className="bg-primary/10 text-primary font-semibold px-2 py-0.5 text-xs align-middle">Min ${minimumOrder}</Badge>
-                      </div>
+                      <span className="text-base font-semibold block truncate mt-2">
+                        {formatAMPM(store.opening_time)} - {formatAMPM(store.closing_time)}
+                      </span>
                     </div>
                   </div>
-                  <Button
-                    type="button"
-                    variant={isSelected ? "default" : "outline"}
-                    size="md"
-                    className="rounded-full w-8 h-8 flex items-center justify-center"
-                    onClick={() => handleStoreSelect(store)}
-                  >
-                    {isSelected ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-                  </Button>
+                  <div className="flex w-full items-end justify-between mt-4">
+                    <Button
+                      type="button"
+                      variant={isSelected ? "solid" : "outline"}
+                      size="icon"
+                      className={`rounded-xl w-36 h-14 flex items-center justify-center border-2 shadow-lg transition-all duration-150 text-lg ${isSelected ? 'bg-green-500 text-white border-green-500 hover:bg-green-600' : 'bg-white text-primary border-primary hover:bg-primary/10'} ml-0`}
+                      style={{ boxShadow: '0 4px 16px 0 rgba(60,179,113,0.10)' }}
+                      onClick={() => handleStoreSelect(store)}
+                      aria-label={isSelected ? 'Remove store' : 'Add store'}
+                    >
+                      {isSelected ? <Minus className="w-8 h-8" /> : <Plus className="w-8 h-8" />}
+                      <span className="ml-2 font-semibold text-base">{isSelected ? 'Remove' : 'Add'}</span>
+                    </Button>
+                    <span className="text-sm text-primary font-semibold whitespace-nowrap mb-1">Min: ${minimumOrder}</span>
+                  </div>
                 </CardHeader>
                 {isSelected && (
                   <CardContent className="space-y-4 border-t pt-4 bg-gray-50 rounded-b-lg p-2">

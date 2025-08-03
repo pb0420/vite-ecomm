@@ -74,7 +74,15 @@ const StoreNotes = ({
   const [customItems, setCustomItems] = useState([]);
   const [customItemName, setCustomItemName] = useState('');
   // Get all items (suggested + custom)
-  const allItems = [...itemsToShow, ...customItems.map(name => ({ name, price: DEFAULT_PRICE, custom: true }))];
+  const [customItemPrices, setCustomItemPrices] = useState({});
+  const allItems = [
+    ...itemsToShow,
+    ...customItems.map(name => ({
+      name,
+      price: customItemPrices[name] !== undefined ? customItemPrices[name] : DEFAULT_PRICE,
+      custom: true
+    }))
+  ];
 
   // Add custom item
   const handleAddCustomItem = () => {
@@ -82,10 +90,23 @@ const StoreNotes = ({
     if (!name || allItems.some(i => i.name.toLowerCase() === name.toLowerCase())) return;
     setCustomItems([...customItems, name]);
     setCustomItemName('');
+    setCustomItemPrices(prices => ({ ...prices, [name]: DEFAULT_PRICE }));
+    // Set qty to 1 in notes
+    let newNotes = notes || '';
+    const regex = new RegExp(`^${name} x(\\d+)$`, 'm');
+    if (!regex.test(newNotes)) {
+      newNotes = newNotes ? `${newNotes}\n${name} x1` : `${name} x1`;
+      onNotesChange(storeId, newNotes);
+    }
   };
   // Remove custom item
   const handleRemoveCustomItem = (name) => {
     setCustomItems(customItems.filter(i => i !== name));
+    setCustomItemPrices(prices => {
+      const newPrices = { ...prices };
+      delete newPrices[name];
+      return newPrices;
+    });
     // Remove from notes
     const regex = new RegExp(`^${name} x(\\d+)$`, 'm');
     onNotesChange(storeId, (notes || '').replace(regex, '').replace(/\n+/g, '\n').trim());
@@ -141,6 +162,23 @@ const StoreNotes = ({
   const [infoOpen, setInfoOpen] = useState(null);
   const infoRefs = useRef({});
 
+  // Close popup on outside click
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (infoOpen && infoRefs.current[infoOpen]) {
+        if (!infoRefs.current[infoOpen].contains(e.target)) {
+          setInfoOpen(null);
+        }
+      }
+    }
+    if (infoOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [infoOpen]);
+
   // Highlight items in notes
   const isItemInNotes = (name) => getItemQty(name) > 0;
 
@@ -154,7 +192,7 @@ const StoreNotes = ({
               <button
                 key={idx}
                 type="button"
-                className="border rounded px-2 py-1 text-xs bg-gray-50 hover:bg-primary/10 text-left"
+                className="border rounded px-2 py-1 text-xs bg-gray-50 hover:bg-primary/10 flex justify-between items-center"
                 onClick={() => {
                   if (notes) {
                     onNotesChange(storeId, notes + '\n' + n.notes);
@@ -164,7 +202,8 @@ const StoreNotes = ({
                   setShowOldNotes(false);
                 }}
               >
-                <span className="font-semibold">{new Date(n.date).toLocaleDateString()}:</span> Order #{n.noteId.slice(0,6).toUpperCase()}
+                <span className="font-mono font-semibold text-blue-700">Order #{n.noteId.slice(0,6).toUpperCase()}</span>
+                <span className="ml-auto text-xs text-gray-500 font-medium">{new Date(n.date).toLocaleDateString()}</span>
               </button>
             ))}
           </div>
@@ -191,45 +230,62 @@ const StoreNotes = ({
           return (
             <div
               key={item.name}
-              className={`flex items-center justify-between border rounded px-2 py-2 shadow-sm min-w-[160px] max-w-full overflow-hidden transition-all
+              className={`relative border rounded px-3 py-3 shadow-sm min-h-[90px] min-w-[220px] max-w-full overflow-hidden transition-all flex flex-col justify-between
                 ${isItemInNotes(item.name) ? 'bg-green-50 border-green-400 ring-2 ring-green-300' : item.custom ? 'bg-blue-50 border-blue-300' : 'bg-white'}
               `}
             >
-              <div className="flex items-center gap-2">
-                <span className="text-xs line-clamp-2 font-semibold">{item.name}{item.custom && <span className="ml-1 text-[10px] text-blue-500">(custom)</span>}:</span>
-                {item.image_url || item.description ? (
-                  <span
-                    className="ml-1 cursor-pointer relative"
-                    ref={el => infoRefs.current[item.name] = el}
-                    onMouseEnter={() => setInfoOpen(item.name)}
-                    onMouseLeave={() => setInfoOpen(null)}
-                  >
-                    <Info className="w-4 h-4 text-primary" />
-                    <div
-                      className={`absolute z-50 bg-white border rounded shadow-lg p-2 text-xs w-48 transition-opacity duration-100 ${infoOpen === item.name ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-                      style={infoOpen === item.name ? getPopupPosition(infoRefs.current[item.name]) : {}}
-                    >
-                      {item.image_url && (
-                        <img src={item.image_url} alt={item.name} className="w-full h-16 object-cover mb-1 rounded" />
-                      )}
-                      {item.description && <div>{item.description}</div>}
-                    </div>
-                  </span>
-                ) : null}
-                {item.custom && (
-                  <button
-                    type="button"
-                    className="ml-1 text-xs text-red-500 hover:underline"
-                    onClick={() => handleRemoveCustomItem(item.name)}
-                  >Remove</button>
-                )}
+              {/* Top row: Title */}
+              <div className="flex items-center min-h-[28px]">
+                <span className="text-base font-semibold line-clamp-2 break-all">{item.name}</span>
               </div>
-              <div className="flex items-center gap-3">
-                <span className="text-xs font-semibold text-right min-w-[40px]">A${price}</span>
+              {/* Bottom row: Info icon (if any) left, qty right */}
+              <div className="flex flex-row items-end justify-between mt-2">
+                <div className="flex items-center">
+                  {!item.custom && (
+                    <span className="text-xs font-semibold text-right min-w-[40px] ml-2">A${price} &nbsp;</span>
+                  )}
+                  {item.image_url || item.description ? (
+                    <span
+                      className="mr-2 cursor-pointer relative flex items-center"
+                      ref={el => infoRefs.current[item.name] = el}
+                    >
+                      <button
+                        type="button"
+                        aria-label="Show info"
+                        tabIndex={0}
+                        onClick={e => {
+                          e.stopPropagation();
+                          setInfoOpen(infoOpen === item.name ? null : item.name);
+                        }}
+                        className="focus:outline-none"
+                      >
+                        <Info className="w-5 h-5 text-primary" />
+                      </button>
+                      <div
+                        className={`absolute bg-white border rounded shadow-lg p-2 text-xs w-56 transition-opacity duration-100 ${infoOpen === item.name ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+                        style={infoOpen === item.name ? { ...getPopupPosition(infoRefs.current[item.name]), zIndex: 9999 } : {}}
+                        role="dialog"
+                        aria-modal="true"
+                      >
+                        {item.image_url && (
+                          <img src={item.image_url} alt={item.name} className="w-full h-16 object-cover mb-1 rounded" />
+                        )}
+                        {item.description && <div>{item.description}</div>}
+                      </div>
+                    </span>
+                  ) : null}
+                  {item.custom && (
+                    <button
+                      type="button"
+                      className="text-xs text-red-500 hover:underline ml-1"
+                      onClick={() => handleRemoveCustomItem(item.name)}
+                    >Remove</button>
+                  )}
+                </div>
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
-                    className="h-6 w-6 flex items-center justify-center rounded bg-[#34d399] hover:bg-[#27694a] text-white border"
+                    className="h-7 w-7 flex items-center justify-center rounded bg-[#34d399] hover:bg-[#27694a] text-white border"
                     disabled={qty <= 0}
                     onClick={() => handleItemQtyChange(item, Math.max(0, qty - 1))}
                   >
@@ -240,12 +296,12 @@ const StoreNotes = ({
                     min={0}
                     value={qty}
                     onChange={e => handleItemQtyChange(item, Math.max(0, parseInt(e.target.value) || 0))}
-                    className="w-8 text-xs border rounded px-1 py-0.5 focus:outline-primary text-center appearance-none"
+                    className="w-10 text-xs border rounded px-1 py-1 focus:outline-primary text-center appearance-none"
                     style={{ WebkitAppearance: 'none', MozAppearance: 'textfield' }}
                   />
                   <button
                     type="button"
-                    className="h-6 w-6 flex items-center justify-center rounded bg-[#34d399] hover:bg-[#27694a] text-white border"
+                    className="h-7 w-7 flex items-center justify-center rounded bg-[#34d399] hover:bg-[#27694a] text-white border"
                     onClick={() => handleItemQtyChange(item, qty + 1)}
                   >
                     <span className="font-bold text-lg">+</span>

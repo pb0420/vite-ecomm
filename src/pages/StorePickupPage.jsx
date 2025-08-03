@@ -340,20 +340,19 @@ const StorePickupPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!validateForm()) {
       toast({ variant: "destructive", title: "Missing Information", description: "Please fill in all required fields and accept the terms." });
       return;
     }
-
     try {
-      const subtotal = selectedStores.reduce((total, store) => total + (store.estimatedTotal || 0), 0);
-      const discountAmount = appliedPromo ? appliedPromo.discountAmount : 0;
-      const finalTotal = getFinalTotal();
-
       // Get the selected time slot for timeslot_id
       const timeSlot = availableTimeSlots.find(slot => slot.id === selectedTimeSlot);
       const timeSlotDisplay = timeSlot ? `${formatTimeToAMPM(timeSlot.start_time)} - ${formatTimeToAMPM(timeSlot.end_time)}` : '';
+
+      // Calculation helpers
+      const subtotal = getSubtotal();
+      const finalTotal = getFinalTotal();
+      const discountAmount = getDiscount();
 
       // Create the main pickup order
       const { data: pickupOrder, error: orderError } = await supabase
@@ -413,7 +412,6 @@ const StorePickupPage = () => {
       // }
 
       //Update user address if not set already
-
       if(!user.addresses || user.addresses.length === 0){
         const newAddresses = [{
           id: Math.random().toString(36).substr(2, 9),
@@ -616,13 +614,13 @@ const StorePickupPage = () => {
 
               
               <div className="grid gap-1 grid-cols-2 md:grid-cols-4 max-w-2xl mx-auto">
-                <div className="flex items-center space-x-2 bg-[#3cb371] rounded-lg p-1.5 h-full">
+                <div className="flex items-center space-x-2 bg-[#ff9800] rounded-lg p-1.5 h-full">
                   <div className="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center">
                     <Store className="w-7 h-7 md:w-10 md:h-10 text-white" />
                   </div>
                   <div className="flex flex-col justify-center text-left">
-                    <h3 className="font-bold text-white text-sm md:text-base leading-tight">1. Add Stores</h3>
-                    <p className="text-xs md:text-sm text-white/90">Select stores and set budget</p>
+                    <h3 className="font-bold text-white text-sm md:text-base leading-tight">Add Stores</h3>
+                    <p className="text-xs md:text-sm text-white/90">Select stores and set your budget</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2 bg-[#3cb371] rounded-lg p-1.5 h-full">
@@ -630,25 +628,25 @@ const StorePickupPage = () => {
                     <MessageCircle className="w-7 h-7 md:w-10 md:h-10 text-white" />
                   </div>
                   <div className="flex flex-col justify-center text-left">
-                    <h3 className="font-bold text-white text-sm md:text-base leading-tight">2. Share Lists</h3>
-                    <p className="text-xs md:text-sm text-white/90">Add shopping lists</p>
+                    <h3 className="font-bold text-white text-sm md:text-base leading-tight">Share Details</h3>
+                    <p className="text-xs md:text-sm text-white/90">Provide shopping lists, notes or pictures</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-2 bg-[#3cb371] rounded-lg p-2 h-full">
+                <div className="flex items-center space-x-2 bg-primary rounded-lg p-2 h-full">
                   <div className="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center">
                     <Clock className="w-7 h-7 md:w-10 md:h-10 text-white" />
                   </div>
                   <div className="flex flex-col justify-center text-left">
-                    <h3 className="font-bold text-white text-sm md:text-base leading-tight">3. We Shop</h3>
-                    <p className="text-xs md:text-sm text-white/90">We shop at all stores</p>
+                    <h3 className="font-bold text-white text-sm md:text-base leading-tight">Shopping</h3>
+                    <p className="text-xs md:text-sm text-white/90">Items are shopped on your behalf</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-2 bg-[#3cb371] rounded-lg p-2 h-full">
+                <div className="flex items-center space-x-2 bg-[#ff9800] rounded-lg p-2 h-full">
                   <div className="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center">
                     <MapPin className="w-7 h-7 md:w-10 md:h-10 text-white" />
                   </div>
                   <div className="flex flex-col justify-center text-left">
-                    <h3 className="font-bold text-white text-sm md:text-base leading-tight">4. Delivery</h3>
+                    <h3 className="font-bold text-white text-sm md:text-base leading-tight">Delivery</h3>
                     <p className="text-xs md:text-sm text-white/90">All items delivered to you</p>
                   </div>
                 </div>
@@ -708,22 +706,21 @@ const StorePickupPage = () => {
                 >
                   <Info className="w-5 h-5 text-grey" />
                 </button>
-                  <p className="text-grey/20 text-xs text-left">Order groceries from multiple stores around town!</p>
                   </CardTitle>
                   <CardDescription>
-                    Schedule a grocery run by selecting stores, setting a date and time, and providing any special instructions. No alcohol or tobacco orders allowed.
+                    No alcohol or tobacco orders allowed.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <form onSubmit={handleSubmit} className="mb-4 space-y-6">
+                  <form onSubmit={handleSubmit} className="mb-4 space-y-6 rounded-2xl bg-green-50/60 p-1.5 md:p-8 shadow-sm max-w-3xl mx-auto">
                     <div className="space-y-4">
-                      <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center justify-between gap-1">
                         <h3 className="text-lg font-semibold mb-0">Add Stores</h3>
-                        <div className="relative w-64 max-w-full">
+                        <div className="relative w-50 max-w-full">
                           <Search className="absolute left-2.5 top-3.5 h-4 w-4 text-muted-foreground" />
                           <Input
                             type="search"
-                            placeholder="Search stores..."
+                            placeholder="Search"
                             className="pl-8"
                             value={storeSearchQuery}
                             onChange={(e) => setStoreSearchQuery(e.target.value)}
@@ -753,20 +750,28 @@ const StorePickupPage = () => {
                               type="button"
                               variant="outline"
                               className={cn(
-                                "w-full justify-start text-left font-normal",
+                                "w-full justify-start text-left font-normal text-lg py-5 px-4 flex items-center gap-4",
                                 !selectedDate && "text-muted-foreground"
                               )}
                             >
-                              <Calendar className="mr-2 h-4 w-4" />
-                              {selectedDate ? formatDateForTimezone(selectedDate, timezone) : <span>Pick a date</span>}
+                              <Calendar className="mr-3 w-8 h-8 text-primary" />
+                              {selectedDate ? (
+                                <span className="text-lg">{formatDateForTimezone(selectedDate, timezone)}</span>
+                              ) : (
+                                <span className="text-lg">Pick a date</span>
+                              )}
                             </Button>
                           </PopoverTrigger>
                           <PopoverContent className="w-auto p-0" align="start">
                             <div className="p-4">
                               {/* Calendar quick select buttons for today/tomorrow */}
                               <div className="flex gap-2 mb-2">
-                                <Button type="button" size="sm" onClick={() => setSelectedDate(new Date())}>Today</Button>
-                                <Button type="button" size="sm" onClick={() => setSelectedDate(addDays(new Date(), 1))}>Tomorrow</Button>
+                                <Button type="button" size="lg" className="text-base px-4 py-2" onClick={() => setSelectedDate(new Date())}>
+                                  <Calendar className="w-5 h-5 mr-2" />Today
+                                </Button>
+                                <Button type="button" size="lg" className="text-base px-4 py-2" onClick={() => setSelectedDate(addDays(new Date(), 1))}>
+                                  <Calendar className="w-5 h-5 mr-2" />Tomorrow
+                                </Button>
                               </div>
                               <CalendarPicker
                                 mode="single"
@@ -784,15 +789,16 @@ const StorePickupPage = () => {
                         <Label>Time Slot</Label>
                         {loadingSlots ? (
                           <div className="flex items-center justify-center py-4">
-                            <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                            <div className="w-6 h-6 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
                           </div>
                         ) : availableTimeSlots.length === 0 ? (
-                          <p className="text-sm text-muted-foreground py-2">
+                          <p className="text-base text-muted-foreground py-2">
                             No available time slots for this date.
                           </p>
                         ) : (
                           <Select value={selectedTimeSlot} onValueChange={handleTimeSlotChange}>
-                            <SelectTrigger className={formErrors.timeSlot ? 'border-destructive' : ''}>
+                            <SelectTrigger className={formErrors.timeSlot ? 'border-destructive' : 'text-lg py-5 px-4 flex items-center gap-4'}>
+                              <Clock className="w-8 h-8 mr-3 text-primary" />
                               <SelectValue placeholder="Choose a time slot" />
                             </SelectTrigger>
                             <SelectContent>
@@ -812,8 +818,11 @@ const StorePickupPage = () => {
                                 }
                                 return (
                                   <SelectItem key={slot.id} value={slot.id} disabled={disabled}>
-                                    {formatTimeToAMPM(slot.start_time)} - {formatTimeToAMPM(slot.end_time)}
-                                    {disabled && <span className="text-xs text-red-500 ml-2">(Unavailable)</span>}
+                                    <span className="flex items-center gap-3 text-lg">
+                                      <Clock className="w-6 h-6 text-primary" />
+                                      {formatTimeToAMPM(slot.start_time)} - {formatTimeToAMPM(slot.end_time)}
+                                      {disabled && <span className="text-xs text-red-500 ml-2">(Unavailable)</span>}
+                                    </span>
                                   </SelectItem>
                                 );
                               })}
@@ -860,19 +869,43 @@ const StorePickupPage = () => {
                         <div className="space-y-4">
                           <div className="space-y-2">
                             <Label>Contact Preference</Label>
-                            <RadioGroup value={contactPreference} onValueChange={setContactPreference} className="grid gap-2">
-                              <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="whatsapp" id="whatsapp" />
-                                <Label htmlFor="whatsapp">WhatsApp</Label>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="phone" id="phone" />
-                                <Label htmlFor="phone">SMS/Call</Label>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="inapp" id="inapp" />
-                                <Label htmlFor="inapp">On this site</Label>
-                              </div>
+                            <RadioGroup value={contactPreference} onValueChange={setContactPreference} className="flex flex-col gap-3 w-full">
+                              <Label
+                                htmlFor="whatsapp"
+                                className={`flex items-center gap-4 px-4 py-4 rounded-xl border border-gray-200 bg-white shadow-sm hover:border-primary cursor-pointer transition-all w-full select-none ${contactPreference === 'whatsapp' ? 'border-primary ring-2 ring-primary/30 bg-primary/5' : ''}`}
+                              >
+                                <RadioGroupItem value="whatsapp" id="whatsapp" className="mr-2 w-6 h-6" />
+                                <span className="flex items-center gap-3 w-full">
+                                  <span className="flex items-center justify-center w-10 h-10">
+                                    <MessageCircle style={{color:'#3cb371'}}  className="w-5 h-5 mr-2" />
+                                  </span>
+                                  <span className="text-base font-medium">WhatsApp</span>
+                                </span>
+                              </Label>
+                              <Label
+                                htmlFor="phone"
+                                className={`flex items-center gap-4 px-4 py-4 rounded-xl border border-gray-200 bg-white shadow-sm hover:border-primary cursor-pointer transition-all w-full select-none ${contactPreference === 'phone' ? 'border-primary ring-2 ring-primary/30 bg-primary/5' : ''}`}
+                              >
+                                <RadioGroupItem value="phone" id="phone" className="mr-2 w-6 h-6" />
+                                <span className="flex items-center gap-3 w-full">
+                                  <span className="flex items-center justify-center w-10 h-10">
+                                    <Phone className="w-8 h-8 text-primary" />
+                                  </span>
+                                  <span className="text-base font-medium">SMS/Call</span>
+                                </span>
+                              </Label>
+                              <Label
+                                htmlFor="inapp"
+                                className={`flex items-center gap-4 px-4 py-4 rounded-xl border border-gray-200 bg-white shadow-sm hover:border-primary cursor-pointer transition-all w-full select-none ${contactPreference === 'inapp' ? 'border-primary ring-2 ring-primary/30 bg-primary/5' : ''}`}
+                              >
+                                <RadioGroupItem value="inapp" id="inapp" className="mr-2 w-6 h-6" />
+                                <span className="flex items-center gap-3 w-full">
+                                  <span className="flex items-center justify-center w-10 h-10">
+                                    <Bot className="w-8 h-8 text-primary" />
+                                  </span>
+                                  <span className="text-base font-medium">Online</span>
+                                </span>
+                              </Label>
                             </RadioGroup>
                           </div>
 
