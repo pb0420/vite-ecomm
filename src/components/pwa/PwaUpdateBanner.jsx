@@ -81,11 +81,11 @@ const PwaUpdateBanner = () => {
 
   if (showBanner) {
     return (
-      <div className="fixed bottom-0 left-0 w-full bg-yellow-500 text-white text-center py-3 z-50 shadow-lg font-semibold flex flex-col sm:flex-row items-center justify-center gap-3">
-        <span>{updateMessage}</span>
+      <div className="fixed bottom-0 left-0 w-full bg-yellow-500 text-white text-center py-5 z-50 shadow-lg font-semibold flex flex-row items-center justify-center gap-4 min-h-[64px]">
+        <span className="text-base sm:text-lg">{updateMessage}</span>
         <button
           onClick={handleUpdate}
-          className="ml-4 px-4 py-2 bg-white text-yellow-700 font-bold rounded shadow hover:bg-yellow-100 transition border border-yellow-300"
+          className="ml-4 px-6 py-3 bg-white text-yellow-700 font-bold rounded shadow hover:bg-yellow-100 transition border border-yellow-300 text-base sm:text-lg"
         >
           Update
         </button>

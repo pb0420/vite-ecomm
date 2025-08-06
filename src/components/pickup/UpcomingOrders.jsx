@@ -31,10 +31,10 @@ const UpcomingOrders = ({ orders }) => {
     return (
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-8">
-          <Package className="w-12 h-12 text-muted-foreground mb-4" />
+          <Package clsassName="w-12 h-12 text-muted-foreground mb-4" />
           <h3 className="text-lg font-medium mb-2">No upcoming orders</h3>
           <p className="text-sm text-muted-foreground text-center">
-            Your scheduled pickup orders will appear here.
+            Your scheduled grocery run orders will appear here.
           </p>
         </CardContent>
       </Card>

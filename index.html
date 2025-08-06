@@ -30,7 +30,7 @@
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
     <p style="color: rgb(72, 158, 109); font-size: 0.92em; line-height: 1.5;" class="visually-hidden">
-    	
+      
         Welcome to Groceroo, Adelaide’s new platform for fast and affordable online grocery delivery. Say goodbye to traffic, long checkout lines, and time-consuming supermarket visits. With Groceroo, you can shop for all your grocery needs from the comfort of your home and have them delivered — quickly, safely, and reliably.
 
     We offer a wide range of grocery categories tailored to suit every household. Browse through fresh fruits and vegetables, dairy and eggs, meat and seafood, bakery items, snacks, beverages, pantry staples, and cleaning and household essentials. Whether you’re looking for everyday basics or special ingredients for a recipe, Groceroo has you covered.
@@ -44,7 +44,7 @@
     Groceroo supports busy families, students, professionals, and seniors with a reliable and convenient service. Whether you need a quick top-up or a full grocery restock, our app and website make it simple to schedule and track your delivery.
 
     Try Groceroo today — Adelaide’s easiest way to shop for groceries online. Quality guaranteed. Convenience unmatched.
-	
+  
     .<br>
       <a href="/" style="margin:0 10px; color: rgb(72, 158, 109); text-decoration:none;">Home</a>
       <a href="/grocery-run" style="margin:0 10px; color: rgb(72, 158, 109); text-decoration:none;">Grocery Run</a>
@@ -96,5 +96,14 @@
       font-size: 0.95em;
     }
   </style>
+    <div id="browser-hint-message" class="visually-hidden" style="display:none;position:fixed;left:0;right:0;bottom:0;z-index:99999;background:rgba(0,0,0,0.7);color:#fff;text-align:center;padding:18px 8px;font-size:1.08em;letter-spacing:0.01em;line-height:1.5;">
+      Please try opening this app in a new browser. groceroo.com.au
+    </div>
+    <script>
+      setTimeout(function() {
+        var el = document.getElementById('browser-hint-message');
+        if (el) el.style.display = 'block';
+      }, 20000);
+    </script>
   </body>
 </html>
