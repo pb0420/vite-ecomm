@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import PhotoUpload from '@/components/pickup/PhotoUpload';
+import useSupabaseStorage from '@/hooks/useSupabaseStorage';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from '@/components/ui/use-toast';
@@ -35,6 +36,10 @@ const PickupOrderDetailsPage = () => {
   // Bill modal state
   const [selectedBill, setSelectedBill] = useState(null);
   const logoUrl = '/logo.webp';
+
+  const { uploadFile } = useSupabaseStorage();
+  // Store photo viewer state
+  const [photoViewer, setPhotoViewer] = useState({ open: false, images: [], index: 0 });
 
   useEffect(() => {
     if (!user) {
@@ -502,19 +507,43 @@ const PickupOrderDetailsPage = () => {
                     </div>
 
                     {/* Store Photos */}
-                    {order.status !== 'completed' && order.status !== 'cancelled' && (
-                      <div className="space-y-2">
-                        <Label>Photos for {storeOrder.stores?.name}</Label>
-                        <PhotoUpload
-                          photos={storePhotos[storeOrder.store_id] || []}
-                          onPhotosChange={(photos) => setStorePhotos(prev => ({
-                            ...prev,
-                            [storeOrder.store_id]: photos
-                          }))}
-                          maxPhotos={5}
-                        />
-                      </div>
-                    )}
+                    {/* Photo upload hidden for now */}
+      {/* Store Photo Viewer Modal */}
+      {photoViewer.open && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70" onClick={() => setPhotoViewer({ ...photoViewer, open: false })}>
+          <div className="relative bg-white rounded-lg shadow-lg p-4 max-w-lg w-full flex flex-col items-center" onClick={e => e.stopPropagation()}>
+            <img
+              src={photoViewer.images[photoViewer.index]}
+              alt={`Photo ${photoViewer.index + 1}`}
+              className="max-h-[60vh] w-auto object-contain rounded mb-4"
+            />
+            <div className="flex justify-between w-full items-center">
+              <button
+                className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold"
+                onClick={() => setPhotoViewer(v => ({ ...v, index: (v.index - 1 + v.images.length) % v.images.length }))}
+                disabled={photoViewer.images.length <= 1}
+              >
+                Prev
+              </button>
+              <span className="text-sm text-gray-600">{photoViewer.index + 1} / {photoViewer.images.length}</span>
+              <button
+                className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold"
+                onClick={() => setPhotoViewer(v => ({ ...v, index: (v.index + 1) % v.images.length }))}
+                disabled={photoViewer.images.length <= 1}
+              >
+                Next
+              </button>
+            </div>
+            <button
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl font-bold"
+              onClick={() => setPhotoViewer({ ...photoViewer, open: false })}
+              aria-label="Close"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
                   </div>
                 ))}
               </CardContent>

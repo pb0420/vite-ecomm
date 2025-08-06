@@ -236,7 +236,7 @@ const HomePage = () => {
                   {userLocation ? (
                     <span className="inline-flex items-center gap-1 bg-[#fd7507] text-white text-sm font-semibold px-2 py-1 rounded-full shadow">
                       <Clock className="w-3 h-3 text-white font-semibold text-base" />
-                      {deliveryTime} minutes
+                      {deliveryTime} mins
                     </span>
                   ) : (
                     <Button

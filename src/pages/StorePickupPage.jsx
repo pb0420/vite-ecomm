@@ -15,7 +15,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import PhoneLoginForm from '@/components/auth/PhoneLoginForm';
 import AddressAutocomplete from '@/components/ui/address-autocomplete';
 import StoreSelector from '@/components/pickup/StoreSelector';
-import PhotoUpload from '@/components/pickup/PhotoUpload';
 import UpcomingOrders from '@/components/pickup/UpcomingOrders';
 import PromoCodeInput from '@/components/checkout/PromoCodeInput';
 import { useAuth } from '@/contexts/AuthContext';
@@ -623,13 +622,13 @@ const StorePickupPage = () => {
                     <p className="text-xs md:text-sm text-white/90">Select stores and set your budget</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-2 bg-[#3cb371] rounded-lg p-1.5 h-full">
+                <div className="flex items-center space-x-2 bg-primary rounded-lg p-1.5 h-full">
                   <div className="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center">
                     <MessageCircle className="w-7 h-7 md:w-10 md:h-10 text-white" />
                   </div>
                   <div className="flex flex-col justify-center text-left">
                     <h3 className="font-bold text-white text-sm md:text-base leading-tight">Share Details</h3>
-                    <p className="text-xs md:text-sm text-white/90">Provide shopping lists, notes or pictures</p>
+                    <p className="text-xs md:text-sm text-white/90">Provide shopping lists, notes and other details</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2 bg-primary rounded-lg p-2 h-full">
@@ -641,7 +640,7 @@ const StorePickupPage = () => {
                     <p className="text-xs md:text-sm text-white/90">Items are shopped on your behalf</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-2 bg-[#3cb371] rounded-lg p-2 h-full">
+                <div className="flex items-center space-x-2 bg-primary rounded-lg p-2 h-full">
                   <div className="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center">
                     <MapPin className="w-7 h-7 md:w-10 md:h-10 text-white" />
                   </div>
@@ -664,8 +663,8 @@ const StorePickupPage = () => {
                 <span>
                   <ul className="list-disc pl-4 pb-4 space-y-2 text-sm text-align-left">
                     <li>Select one or more stores and set your budget for each.</li>
-                    <li>Add your shopping lists, notes, or provide photos of products or past bills.</li>
-                    <li>We shop at all selected stores for you.</li>
+                    <li>Add your shopping lists, notes, or provide photos via WhatsApp of products or past bills.</li>
+                    <li>Products will be shopped on your behalf.</li>
                     <li>All items are delivered in to the address provided.</li>
                     <li>Provide delivery instructions and contact preferences.</li>
                     <li>The final amount may change after shopping, and you may be required to pay the difference before delivery</li>

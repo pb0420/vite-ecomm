@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 
 const CANCEL_REASONS = [
@@ -19,11 +19,30 @@ const CancelOrderDialog = ({ open, onClose, onConfirm, loading }) => {
     onConfirm(finalReason);
   };
 
+
+  // Prevent background scroll when dialog is open
+  useEffect(() => {
+    if (open) {
+      document.body.classList.add('overflow-hidden');
+    } else {
+      document.body.classList.remove('overflow-hidden');
+    }
+    return () => {
+      document.body.classList.remove('overflow-hidden');
+    };
+  }, [open]);
+
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md"
+        onClick={e => e.stopPropagation()}
+      >
         <h2 className="text-lg font-semibold mb-2">Cancel Order</h2>
         <p className="text-sm text-muted-foreground mb-4">
           Cancelling your order may incur a cancellation fee. Please select a reason:

@@ -31,6 +31,8 @@ const AdminPickupOrdersTab = () => {
   const [billForm, setBillForm] = useState({ id: '', items: [], total: '', created_at: '', image: '' });
   const logoUrl = '/logo.webp';
   const [billImageFile, setBillImageFile] = useState(null);
+  // Store photo viewer modal state
+  const [photoViewer, setPhotoViewer] = useState({ open: false, images: [], index: 0 });
 
   const playNotificationSound = () => {
     const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT');
@@ -227,6 +229,67 @@ const AdminPickupOrdersTab = () => {
     
     return matchesSearch;
   });
+  // Store Photos Section
+  {filteredOrders.map(order => (
+    <div key={order.id} className="order-card">
+      {order.pickup_order_stores?.map((storeOrder, idx) => (
+        <div key={storeOrder.id} className="store-order-card">
+          {Array.isArray(storeOrder.photos) && storeOrder.photos.length > 0 && (
+            <div className="mt-2">
+              <div className="font-semibold text-xs mb-1">Photos for {storeOrder.stores?.name}</div>
+              <div className="flex flex-wrap gap-2">
+                {storeOrder.photos.map((photo, pidx) => (
+                  <img
+                    key={pidx}
+                    src={photo.data || photo.url || photo}
+                    alt={`Store Photo ${pidx + 1}`}
+                    className="w-16 h-16 object-cover rounded cursor-pointer border border-gray-200"
+                    onClick={() => setPhotoViewer({ open: true, images: storeOrder.photos.map(p => p.data || p.url || p), index: pidx })}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  ))}
+  {/* Store Photo Viewer Modal */}
+  {photoViewer.open && (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70" onClick={() => setPhotoViewer({ ...photoViewer, open: false })}>
+      <div className="relative bg-white rounded-lg shadow-lg p-4 max-w-lg w-full flex flex-col items-center" onClick={e => e.stopPropagation()}>
+        <img
+          src={photoViewer.images[photoViewer.index]}
+          alt={`Photo ${photoViewer.index + 1}`}
+          className="max-h-[60vh] w-auto object-contain rounded mb-4"
+        />
+        <div className="flex justify-between w-full items-center">
+          <button
+            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold"
+            onClick={() => setPhotoViewer(v => ({ ...v, index: (v.index - 1 + v.images.length) % v.images.length }))}
+            disabled={photoViewer.images.length <= 1}
+          >
+            Prev
+          </button>
+          <span className="text-sm text-gray-600">{photoViewer.index + 1} / {photoViewer.images.length}</span>
+          <button
+            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold"
+            onClick={() => setPhotoViewer(v => ({ ...v, index: (v.index + 1) % v.images.length }))}
+            disabled={photoViewer.images.length <= 1}
+          >
+            Next
+          </button>
+        </div>
+        <button
+          className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl font-bold"
+          onClick={() => setPhotoViewer({ ...photoViewer, open: false })}
+          aria-label="Close"
+        >
+          ×
+        </button>
+      </div>
+    </div>
+  )}
 
   const getStatusColor = (status) => {
     switch (status) {
