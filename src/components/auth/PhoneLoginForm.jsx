@@ -153,7 +153,7 @@ const PhoneLoginForm = ({ onSuccess }) => {
                 ) : (
                   <div className="flex items-center">
                     <MessageSquare className="w-4 h-4 mr-2" />
-                    Send Verification Code
+                    Send Code
                   </div>
                 )}
               </Button>

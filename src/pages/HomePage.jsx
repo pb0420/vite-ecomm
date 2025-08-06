@@ -227,12 +227,12 @@ const HomePage = () => {
                 transition={{ delay: 0.1, duration: 0.2 }}
               >
                 {/* Left: Orange marker and Adelaide, and right part aligned left */}
-                <div className="flex items-center gap-2 p-1">
+                <div className="flex items-center gap-1">
                   <MapPin className="w-5 h-5 text-[#fd7507]" />
-                  <span className="text-white font-bold text-base">Adelaide</span>
+                  <span className="text-white font-bold text-sm">Adelaide</span>
                   {/* Delivery time or Get Location, now next to Adelaide */}
                   {userLocation ? (
-                    <span className="inline-flex items-center gap-1 bg-[#fd7507] text-white text-sm font-semibold px-2 py-1 rounded-full shadow">
+                    <span className="inline-flex items-center gap-1 bg-[#fd7507] text-white text-sm px-2 py-1 rounded-full shadow">
                       <Clock className="w-3 h-3 text-white font-semibold text-base" />
                       {deliveryTime} min.
                     </span>

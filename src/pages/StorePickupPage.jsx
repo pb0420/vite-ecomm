@@ -26,7 +26,7 @@ import AddressSelector from '@/components/checkout/AddressSelector';
 import { formatCurrency } from '@/lib/utils';
 import { Calendar as CalendarPicker } from '@/components/ui/calendar';
 import { fetchPostcodes } from '@/lib/fetchPostcodes';
-import { addDays } from 'date-fns';
+import { addDays, format } from 'date-fns';
 import { Info } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
@@ -39,10 +39,10 @@ import {
 } from '@/lib/timezone';
 
 const NOTE_SUGGESTIONS = [
+   "No Calls, Text Only\n",
   "Call on arrival\n",
-  "Leave with reception\n",
-  "Knock softly, baby sleeping\n",
   "Text me before delivery\n",
+  "Leave with reception\n",
 ];
 
 const StorePickupPage = () => {
@@ -651,7 +651,7 @@ const StorePickupPage = () => {
                     </div>
                     <h3 className="font-bold text-white text-sm md:text-base leading-tight">Delivery</h3>
                   </div>
-                  <p className="text-xs md:text-sm text-white/90 pl-1">All items delivered to you.</p>
+                  <p className="text-xs md:text-sm text-white/90 pl-1">All items delivered at the provided address.</p>
                 </div>
               </div>
             </motion.div>
@@ -720,18 +720,18 @@ const StorePickupPage = () => {
                       <div className="flex items-center justify-between gap-1">
                         <h3 className="text-md font-semibold mb-0">Add Stores</h3>
                         <div className="relative w-50 max-w-full">
-                          <Search className="absolute left-2.5 top-3.5 h-4 w-4 text-muted-foreground" />
+                          <Search className="absolute right-2.5 top-3.5 h-4 w-4 text-muted-foreground" />
                           <Input
                             type="search"
                             placeholder="Search"
-                            className="pl-8"
+                            className="pl-2"
                             value={storeSearchQuery}
                             onChange={(e) => setStoreSearchQuery(e.target.value)}
                           />
                         </div>
                       </div>
                       <div className="text-xs text-muted-foreground mt-1">
-                        <span className="font-medium text-green-600">Note:</span> You can provide your order lists/photos after scheduling up to 1 hour before time slot. 
+                        <span className="font-medium text-green-600">Note:</span> You can provide your order lists/photos after scheduling up to 1 hour before your time slot. 
                       </div>
                       <StoreSelector
                         stores={filteredStores}
@@ -759,7 +759,7 @@ const StorePickupPage = () => {
                             >
                               <Calendar className="mr-3 w-8 h-8 text-primary" />
                               {selectedDate ? (
-                                <span className="text-lg">{formatDateForTimezone(selectedDate, timezone)}</span>
+                                <span className="text-lg">{ format(selectedDate , "PPP")}</span>
                               ) : (
                                 <span className="text-lg">Pick a date</span>
                               )}
@@ -800,7 +800,7 @@ const StorePickupPage = () => {
                           </p>
                         ) : (
                           <Select value={selectedTimeSlot} onValueChange={handleTimeSlotChange}>
-                            <SelectTrigger className={formErrors.timeSlot ? 'border-destructive' : 'text-lg py-5 px-4 flex items-center gap-4'}>
+                            <SelectTrigger className={formErrors.timeSlot ? 'border-destructive' : 'text-md py-5 px-2 flex items-center gap-1'}>
                               <Clock className="w-8 h-8 mr-3 text-primary" />
                               <SelectValue placeholder="Choose a time slot" />
                             </SelectTrigger>
@@ -822,7 +822,6 @@ const StorePickupPage = () => {
                                 return (
                                   <SelectItem key={slot.id} value={slot.id} disabled={disabled}>
                                     <span className="flex items-center gap-3 text-lg">
-                                      <Clock className="w-6 h-6 text-primary" />
                                       {formatTimeToAMPM(slot.start_time)} - {formatTimeToAMPM(slot.end_time)}
                                       {disabled && <span className="text-xs text-red-500 ml-2">(Unavailable)</span>}
                                     </span>
@@ -894,7 +893,7 @@ const StorePickupPage = () => {
                                   <span className="flex items-center justify-center w-10 h-10">
                                     <Phone className="w-6 h-6 text-primary" />
                                   </span>
-                                  <span className="text-base font-medium">SMS/Call</span>
+                                  <span className="text-base font-medium">Call/SMS</span>
                                 </span>
                               </Label>
                               <Label

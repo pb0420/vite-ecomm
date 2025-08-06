@@ -28,11 +28,11 @@ const CheckoutForm = ({ onDetailsChange, errors }) => {
   const [showPostcodeDropdown, setShowPostcodeDropdown] = useState(false);
 
   const NOTE_SUGGESTIONS = [
-    "Call on arrival,\n",
-    "Leave with reception,\n",
-    "Knock softly, baby sleeping,\n",
-    "Text me before delivery,\n",
-    ];
+    "No Calls, Text Only\n",
+    "Call on arrival\n",
+    "Text me before delivery\n",
+    "Leave with reception\n",
+  ];
 
   // Pre-fill form if user is logged in
   useEffect(() => {

@@ -99,7 +99,7 @@ const ProductPage = () => {
           onClick={() => navigate(-1)}
         >
           <ArrowLeft className="w-4 h-4 mr-1" />
-          Go Back
+          Back
         </Button>
       </div>
       
