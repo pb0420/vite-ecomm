@@ -53,12 +53,6 @@
       <a href="/terms" style="margin:0 10px; color: rgb(72, 158, 109); text-decoration:none;">Terms</a>
     </p>
 
-    <!-- Visually hidden contact info for accessibility, aligned to bottom in white -->
-    <div class="visually-hidden footer-contact-info" aria-label="Contact Information">
-      <div style="color: #fff;">
-        <div>Support (Call/WhatsApp): <a href="tel:+61478477036" style="color:#fff; text-decoration:underline;">+61 478 477 036</a></div>
-      </div>
-    </div>
     <style>
     #center-spinner {
       position: fixed;
@@ -95,14 +89,26 @@
       font-size: 0.95em;
     }
   </style>
-    <div id="browser-hint-message" class="visually-hidden" style="display:none;position:fixed;left:0;right:0;bottom:0;z-index:99999;background:rgba(0,0,0,0.7);color:#fff;text-align:center;padding:18px 8px;font-size:1.08em;letter-spacing:0.01em;line-height:1.5;">
-      Please try to delete and re-install the web-app or use it in a browser. Go to groceroo.com.au
-    </div>
-    <script>
-      setTimeout(function() {
-        var el = document.getElementById('browser-hint-message');
-        if (el) el.style.display = 'block';
-      }, 20000);
-    </script>
+  <div id="browser-hint-message" class="visually-hidden" style="display:none;position:fixed;left:0;right:0;bottom:0;z-index:99999;background:rgba(0,0,0,0.7);color:#fff;text-align:center;padding:18px 8px;font-size:1.08em;letter-spacing:0.01em;line-height:1.5;">
+  <span id="browser-hint-text">
+    Please check your network connection and try again.
+  </span>
+  <div>Support (Call/WhatsApp): <a href="tel:+61478477036" style="color:#fff; text-decoration:underline;">+61 478 477 036</a></div>
+</div>
+<script>
+  setTimeout(function() {
+    var el = document.getElementById('browser-hint-message');
+    var text = document.getElementById('browser-hint-text');
+    // Check for standalone mode (PWA)
+    var isStandalone = window.matchMedia('(display-mode: standalone)').matches
+      || window.navigator.standalone === true;
+    if (el) {
+      el.style.display = 'block';
+      if (isStandalone && text) {
+        text.textContent = "Please delete and re-install the Groceroo web-app by visiting groceroo.com.au in your browser.";
+      }
+    }
+  }, 10000);
+</script>
   </body>
 </html>
