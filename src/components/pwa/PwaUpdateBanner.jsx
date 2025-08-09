@@ -4,7 +4,7 @@ import { getQueryCache, setQueryCache, clearQueryCache } from '@/lib/queryCache'
 
 
 // IMPORTANT: This version string should always match the value in the database (general_settings.pwa_version)
-const CODE_PWA_VERSION = '1.0.3';
+const CODE_PWA_VERSION = '1.0.4';
 
 const PwaUpdateBanner = () => {
   const [updateMessage, setUpdateMessage] = useState('A new version is available!');

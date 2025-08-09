@@ -72,7 +72,7 @@ const TermsPage = () => {
               <li>Returns are accepted only for items that are damaged, defective, or incorrect at the time of delivery.</li>
               <li>To request a return or refund, you must contact us within 24 hours of receiving your order.</li>
               <li>Proof of purchase and photographic evidence of the issue may be required.</li>
-              <li>Perishable goods (such as fresh produce, dairy, and frozen items) are not eligible for return unless they are damaged or spoiled upon delivery.</li>
+              <li>Certain items (such as fresh produce, dairy, and frozen items) may not be eligible for return unless they are damaged or spoiled upon delivery.</li>
               <li>Refunds will be processed to your original payment method within 5–7 business days after approval.</li>
               <li>Delivery fees are non-refundable except in cases where the entire order is returned due to our error.</li>
               <li>We reserve the right to refuse returns or refunds if the claim does not seem justified.</li>
