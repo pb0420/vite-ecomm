@@ -715,7 +715,7 @@ const StorePickupPage = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <form onSubmit={handleSubmit} className="mb-4 space-y-6 rounded-2xl bg-green-50/60 p-1.5 md:p-8 shadow-sm max-w-3xl mx-auto">
+                  <form onSubmit={handleSubmit} className="mb-4 space-y-6 rounded-2xl bg-green-50/60 p-1.5 md:p-8 shadow-sm max-w-3xl lg:max-w-4xl xl:max-w-5xl mx-auto">
                     <div className="space-y-4">
                       <div className="flex items-center justify-between gap-1">
                         <h3 className="text-md font-semibold mb-0">Add Stores</h3>

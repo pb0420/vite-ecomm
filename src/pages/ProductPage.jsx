@@ -13,6 +13,7 @@ const ProductPage = () => {
   const [loading, setLoading] = useState(true);
   const { addToCart, updateQuantity, cart } = useCart();
   const navigate = useNavigate();
+  const [showImagePreview, setShowImagePreview] = useState(false);
   
   useEffect(() => {
     const fetchProduct = async () => {
@@ -108,14 +109,42 @@ const ProductPage = () => {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.3 }}
-          className="overflow-hidden rounded-lg bg-white aspect-square flex items-center justify-center min-h-[180px] max-h-[220px]"
+          className="overflow-hidden rounded-lg bg-white aspect-square flex items-center justify-center min-h-[180px] max-h-[260px] mx-auto cursor-pointer"
+          style={{ alignSelf: 'center' }}
+          onClick={() => setShowImagePreview(true)}
+          title="Click to enlarge"
         >
           <img  
             alt={product.name} 
-            className="object-contain mx-auto"
+            className="object-contain mx-auto max-h-[240px]"
             src={product.image_url || "https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/product-placeholder.webp"} 
+            style={{ display: 'block', margin: '0 auto', maxWidth: '100%' }}
           />
         </motion.div>
+
+        {/* Image Preview Modal */}
+        {showImagePreview && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
+            onClick={() => setShowImagePreview(false)}
+            style={{ cursor: 'zoom-out' }}
+          >
+            <img
+              src={product.image_url || "https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/product-placeholder.webp"}
+              alt={product.name}
+              className="max-w-[90vw] max-h-[80vh] rounded-lg shadow-lg border-2 border-white"
+              style={{ background: '#fff' }}
+              onClick={e => e.stopPropagation()}
+            />
+            <button
+              onClick={() => setShowImagePreview(false)}
+              className="absolute top-4 right-4 text-white text-3xl font-bold bg-black/40 rounded-full w-10 h-10 flex items-center justify-center"
+              aria-label="Close preview"
+            >
+              ×
+            </button>
+          </div>
+        )}
         
         <motion.div
           initial={{ opacity: 0, x: 20 }}

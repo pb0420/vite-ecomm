@@ -288,18 +288,18 @@ const HomePage = () => {
             transition={{ delay: 0.2, duration: 0.3 }}
             className="relative mb-4"
           >
-            <div className="flex overflow-x-auto pb-1 space-x-4 scrollbar-hide px-2 md:px-0 md:justify-center">
+            <div className="flex overflow-x-auto pb-1 space-x-2 md:space-x-3 scrollbar-hide px-1 md:px-0 md:justify-center">
               {categories.map((category) => (
                 <Link
                   key={category.id}
                   to={`/category/${category.id}`}
                   className="flex-none group text-center"
                 >
-                  <div className="w-20 h-20 md:w-24 md:h-24 mx-auto mb-1 bg-white flex items-center justify-center group-hover:bg-gray-100 transition-all duration-300 shadow-none border-none">
+                  <div className="w-16 h-16 md:w-20 md:h-20 mx-auto mb-1 bg-white flex items-center justify-center group-hover:bg-gray-100 transition-all duration-300 shadow-none border-none rounded-none">
                     <img
                       src={category.icon_url}
                       alt={category.name}
-                      className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-full"
+                      className="w-12 h-12 md:w-16 md:h-16 object-cover rounded-none"
                       onError={(e) => {
                         e.target.style.display = 'none';
                         e.target.nextSibling.style.display = 'flex';
@@ -312,7 +312,7 @@ const HomePage = () => {
                 </Link>
               ))}
               <Link to="/categories" className="flex-none group text-center">
-                <div className="w-20 h-20 md:w-24 md:h-24 mx-auto mb-1 bg-white flex items-center justify-center group-hover:bg-gray-100 transition-all duration-300 shadow-none border-none">
+                <div className="w-16 h-16 md:w-20 md:h-20 mx-auto mb-1 bg-white flex items-center justify-center group-hover:bg-gray-100 transition-all duration-300 shadow-none border-none rounded-none">
                   <div className="flex flex-col items-center">
                     <ArrowRight className="h-8 w-8 md:h-10 md:w-10 text-primary" />
                   </div>
