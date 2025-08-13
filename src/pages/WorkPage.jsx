@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { toast } from '@/components/ui/use-toast';
+import { supabase } from '@/lib/supabaseClient';
 
 const WorkPage = () => {
   const [formData, setFormData] = useState({
@@ -22,13 +23,17 @@ const WorkPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    // Dummy API call
     try {
-      await fetch('https://jsonplaceholder.typicode.com/posts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+      const { error } = await supabase.from('outside_contact').insert({
+        type: 'work',
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        position: formData.position,
+        experience: formData.experience,
+        availability: formData.availability
       });
+      if (error) throw error;
       toast({
         title: "Application Received",
         description: "Thank you for your interest! We'll review your application and get back to you soon."
