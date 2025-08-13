@@ -463,7 +463,7 @@ const PickupOrderDetailsPage = () => {
                             notes={storeNotes[storeOrder.store_id] || ''}
                             onNotesChange={(storeId, newNotes) => setStoreNotes(prev => ({ ...prev, [storeId]: newNotes }))}
                             suggestedItems={Array.isArray(storeOrder.stores?.store_suggested_items) ? storeOrder.stores.store_suggested_items : []}
-                            maxItems={10}
+                            maxItems={6}
                             showQtyButtons={true}
                             minimumOrder={30}
                             estimatedTotal={storeOrder.estimated_total}

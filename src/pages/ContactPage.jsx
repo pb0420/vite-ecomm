@@ -19,16 +19,21 @@ const ContactPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    toast({
-      title: "Message Sent",
-      description: "Thank you for your message. We'll get back to you soon!"
-    });
-
-    setFormData({ name: '', email: '', subject: '', message: '' });
+    // Dummy API call
+    try {
+      await fetch('https://jsonplaceholder.typicode.com/posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      toast({
+        title: "Message Sent",
+        description: "Thank you for your message. We'll get back to you soon!"
+      });
+      setFormData({ name: '', email: '', subject: '', message: '' });
+    } catch (err) {
+      toast({ title: "Error", description: "Could not send message. Please try again." });
+    }
     setLoading(false);
   };
 
@@ -40,35 +45,35 @@ const ContactPage = () => {
         transition={{ duration: 0.3 }}
         className="max-w-2xl mx-auto"
       >
-        <h1 className="text-3xl font-bold mb-2">Contact Us</h1>
-        <p className="text-muted-foreground mb-8">
+        <h1 className="text-3xl font-bold mb-2 text-primary">Contact Us</h1>
+        <p className="text-muted-foreground mb-8 text-base">
           Have questions or feedback? We'd love to hear from you.
         </p>
 
         <div className="grid gap-8 md:grid-cols-2 mb-8">
-          <div className="flex items-center space-x-4">
-            <div className="p-3 rounded-full bg-primary/10">
-              <Mail className="w-6 h-6 text-primary" />
+          <div className="flex items-center space-x-4 bg-white rounded-lg shadow p-4">
+            <div className="p-3 rounded-full bg-[#fd7507]/20">
+              <Mail className="w-6 h-6 text-[#fd7507]" />
             </div>
             <div>
-              <h3 className="font-medium">Email</h3>
+              <h3 className="font-medium text-primary">Email</h3>
               <p className="text-sm text-muted-foreground">contact@groceroo.com.au</p>
             </div>
           </div>
           
-          <div className="flex items-center space-x-4">
-            <div className="p-3 rounded-full bg-primary/10">
-              <Phone className="w-6 h-6 text-primary" />
+          <div className="flex items-center space-x-4 bg-white rounded-lg shadow p-4">
+            <div className="p-3 rounded-full bg-[#3cb371]/20">
+              <Phone className="w-6 h-6 text-[#3cb371]" />
             </div>
             <div>
-              <h3 className="font-medium">Phone</h3>
+              <h3 className="font-medium text-primary">Phone</h3>
               <p className="text-sm text-muted-foreground">+61 478 477 036</p>
             </div>
           </div>
         </div>
 
-        <div className="p-6 border rounded-lg">
-          <h2 className="text-xl font-semibold mb-4">Send us a message</h2>
+        <div className="p-6 border rounded-lg bg-white shadow">
+          <h2 className="text-xl font-semibold mb-4 text-primary">Send us a message</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
@@ -91,7 +96,6 @@ const ContactPage = () => {
                 />
               </div>
             </div>
-            
             <div className="space-y-2">
               <Label htmlFor="subject">Subject</Label>
               <Input
@@ -101,7 +105,6 @@ const ContactPage = () => {
                 required
               />
             </div>
-            
             <div className="space-y-2">
               <Label htmlFor="message">Message</Label>
               <Textarea
@@ -110,10 +113,10 @@ const ContactPage = () => {
                 value={formData.message}
                 onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
                 required
+                className="bg-gray-50"
               />
             </div>
-
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button type="submit" className="w-full mt-2" disabled={loading}>
               {loading ? (
                 <>
                   <div className="mr-2 h-4 w-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin"></div>

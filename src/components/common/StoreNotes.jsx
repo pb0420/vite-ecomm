@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Info } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from "@/contexts/AuthContext";
 import { setQueryCache, getQueryCache } from '@/lib/queryCache';
+import { it } from 'date-fns/locale';
 
 const DEFAULT_PRICE = 5;
 
@@ -13,7 +15,7 @@ const StoreNotes = ({
   notes,
   onNotesChange,
   suggestedItems = [],
-  maxItems = 10,
+  maxItems = 6,
   showQtyButtons = false,
   minimumOrder = 30,
   estimatedTotal = 0,
@@ -69,7 +71,6 @@ const StoreNotes = ({
   }
 
   const itemsToShow = filteredItems.slice(0, maxItems);
-
   // Custom items state
   const [customItems, setCustomItems] = useState([]);
   const [customItemName, setCustomItemName] = useState('');
@@ -158,26 +159,8 @@ const StoreNotes = ({
     return { left: 0, top: 0 };
   };
 
-  // Track which info popup is open
+  // Track which info dialog is open
   const [infoOpen, setInfoOpen] = useState(null);
-  const infoRefs = useRef({});
-
-  // Close popup on outside click
-  useEffect(() => {
-    function handleClickOutside(e) {
-      if (infoOpen && infoRefs.current[infoOpen]) {
-        if (!infoRefs.current[infoOpen].contains(e.target)) {
-          setInfoOpen(null);
-        }
-      }
-    }
-    if (infoOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    } else {
-      document.removeEventListener('mousedown', handleClickOutside);
-    }
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [infoOpen]);
 
   // Highlight items in notes
   const isItemInNotes = (name) => getItemQty(name) > 0;
@@ -209,20 +192,20 @@ const StoreNotes = ({
           </div>
         </div>
       )}
+      <Label className="block mb-1 text-sm font-medium flex items-center gap-1">
+        Popular Items
+      </Label>
       {suggestedItems.length > maxItems && (
         <div className="mb-2">
           <input
             type="search"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Search suggested items..."
+            placeholder="Search store items..."
             className="border rounded px-2 py-1 w-full text-sm"
           />
         </div>
       )}
-      <Label className="block mb-1 text-sm font-medium flex items-center gap-1">
-        Suggested Items
-      </Label>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-2">
         {allItems.map(item => {
           const qty = getItemQty(item.name);
@@ -245,33 +228,36 @@ const StoreNotes = ({
                     <span className="text-xs font-semibold text-right min-w-[40px] ml-2">A${price} &nbsp;</span>
                   )}
                   {item.image_url || item.description ? (
-                    <span
-                      className="mr-2 cursor-pointer relative flex items-center"
-                      ref={el => infoRefs.current[item.name] = el}
-                    >
+                    <span className="mr-2 cursor-pointer flex items-center">
                       <button
                         type="button"
                         aria-label="Show info"
                         tabIndex={0}
                         onClick={e => {
                           e.stopPropagation();
-                          setInfoOpen(infoOpen === item.name ? null : item.name);
+                          setInfoOpen(item.name);
                         }}
                         className="focus:outline-none"
                       >
                         <Info className="w-5 h-5 text-primary" />
                       </button>
-                      <div
-                        className={`absolute bg-white border rounded shadow-lg p-2 text-xs w-56 transition-opacity duration-100 ${infoOpen === item.name ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-                        style={infoOpen === item.name ? { ...getPopupPosition(infoRefs.current[item.name]), zIndex: 9999 } : {}}
-                        role="dialog"
-                        aria-modal="true"
-                      >
-                        {item.image_url && (
-                          <img src={item.image_url} alt={item.name} className="w-full h-16 object-cover mb-1 rounded" />
-                        )}
-                        {item.description && <div>{item.description}</div>}
-                      </div>
+                      <Dialog open={infoOpen === item.name} onOpenChange={open => setInfoOpen(open ? item.name : null)}>
+                        <DialogContent className="max-w-xs p-0 overflow-hidden">
+                          <DialogHeader className="p-4 pb-0">
+                            <DialogTitle className="text-lg font-bold mb-2 flex items-center gap-2">
+                              {item.image_url && (
+                                <img src={item.image_url} alt={item.name} className="w-10 h-10 object-cover rounded mr-2 border border-gray-200" />
+                              )}
+                              {item.name}
+                            </DialogTitle>
+                          </DialogHeader>
+                          <DialogDescription asChild>
+                            <span className="block px-4 pb-4 text-sm text-gray-700">
+                              {item.description && <span>{item.description}</span>}
+                            </span>
+                          </DialogDescription>
+                        </DialogContent>
+                      </Dialog>
                     </span>
                   ) : null}
                   {item.custom && (
@@ -318,7 +304,7 @@ const StoreNotes = ({
           type="text"
           value={customItemName}
           onChange={e => setCustomItemName(e.target.value)}
-          placeholder="Add custom item..."
+          placeholder="Type item name and press Add..."
           className="border rounded px-2 py-1 text-xs flex-1"
           onKeyDown={e => { if (e.key === 'Enter') handleAddCustomItem(); }}
         />
@@ -327,6 +313,9 @@ const StoreNotes = ({
           className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs font-semibold"
           onClick={handleAddCustomItem}
         >Add</button>
+      </div>
+      <div className="mt-2">
+        <Label htmlFor={`notes-${storeId}`} className="text-sm font-medium">Shopping List / Notes</Label>
       </div>
        {/* Quick options for notes */}
       <div className="flex flex-wrap gap-2 mb-2">
@@ -346,9 +335,6 @@ const StoreNotes = ({
             {opt}
           </button>
         ))}
-      </div>
-      <div className="mt-2">
-        <Label htmlFor={`notes-${storeId}`} className="text-sm font-medium">Shopping List / Notes</Label>
       </div>
       <Textarea
         id={`notes-${storeId}`}

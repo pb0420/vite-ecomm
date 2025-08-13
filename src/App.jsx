@@ -39,6 +39,7 @@ import ContactPage from '@/pages/ContactPage';
 import WorkPage from '@/pages/WorkPage';
 import AiChatBot from '@/components/chat/AiChatBot'; 
 import PwaUpdateBanner from '@/components/pwa/PwaUpdateBanner';
+import BusinessDeliveryPage from './pages/BusinessDeliveryPage';
 
 
 
@@ -91,6 +92,7 @@ const App = () => {
                         </div>
                       </div>
                     } />
+                    <Route path="/business-delivery" element={<BusinessDeliveryPage />} />
                   </Routes>
                 </AnimatePresence>
               </main>

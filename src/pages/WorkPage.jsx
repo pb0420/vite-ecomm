@@ -22,23 +22,28 @@ const WorkPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    toast({
-      title: "Application Received",
-      description: "Thank you for your interest! We'll review your application and get back to you soon."
-    });
-
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      position: 'driver',
-      experience: '',
-      availability: ''
-    });
+    // Dummy API call
+    try {
+      await fetch('https://jsonplaceholder.typicode.com/posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      toast({
+        title: "Application Received",
+        description: "Thank you for your interest! We'll review your application and get back to you soon."
+      });
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        position: 'driver',
+        experience: '',
+        availability: ''
+      });
+    } catch (err) {
+      toast({ title: "Error", description: "Could not submit application. Please try again." });
+    }
     setLoading(false);
   };
 
@@ -50,8 +55,8 @@ const WorkPage = () => {
         transition={{ duration: 0.3 }}
         className="max-w-2xl mx-auto"
       >
-        <h1 className="text-3xl font-bold mb-2">Work With Us</h1>
-        <p className="text-muted-foreground mb-8">
+        <h1 className="text-3xl font-bold mb-2 text-primary">Work With Us</h1>
+        <p className="text-muted-foreground mb-8 text-base">
           Join our team and be part of Adelaide's growing grocery delivery service.
         </p>
 
@@ -83,8 +88,8 @@ const WorkPage = () => {
           </div>
         </div> */}
 
-        <div className="p-6 border rounded-lg">
-          <h2 className="text-xl font-semibold mb-4">Expression of Interest</h2>
+        <div className="p-6 border rounded-lg bg-white shadow">
+          <h2 className="text-xl font-semibold mb-4 text-primary">Expression of Interest</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
@@ -160,7 +165,7 @@ const WorkPage = () => {
               />
             </div>
 
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button type="submit" className="w-full mt-2" disabled={loading}>
               {loading ? (
                 <>
                   <div className="mr-2 h-4 w-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin"></div>

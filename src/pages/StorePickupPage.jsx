@@ -614,44 +614,56 @@ const StorePickupPage = () => {
               
               <div className="grid gap-2 grid-cols-2 md:grid-cols-4 max-w-4xl mx-auto">
                 {/* Add Stores */}
-                <div className="flex flex-col bg-[#3cb371] rounded-xl p-3 h-full min-w-0 justify-center">
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className="flex items-center justify-center rounded-full bg-[#fd7507]" style={{ width: '40px', height: '40px', minWidth: '40px', minHeight: '40px' }}>
-                      <Store className="w-6 h-6 text-white" />
+                <div className="flex flex-row bg-[#3cb371] rounded-xl p-3 h-full min-w-0 justify-center items-center relative">
+                  <div className="absolute left-0 top-3 bottom-3 w-2 rounded-xl bg-[#fd7507]" style={{ minHeight: '60px' }}></div>
+                  <div className="flex flex-col flex-1 pl-4">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="flex items-center justify-center rounded-full bg-[#fd7507]" style={{ width: '40px', height: '40px', minWidth: '40px', minHeight: '40px' }}>
+                        <Store className="w-6 h-6 text-white" />
+                      </div>
+                      <h3 className="font-bold text-white text-sm md:text-base leading-tight">Select Stores</h3>
                     </div>
-                    <h3 className="font-bold text-white text-sm md:text-base leading-tight">Add Stores</h3>
+                    <p className="text-xs md:text-sm text-white/90 pl-1">Add stores, set budgets and pay to reserve your slot.</p>
                   </div>
-                  <p className="text-xs md:text-sm text-white/90 pl-1">Select stores, set budget and reserve your slot.</p>
                 </div>
                 {/* Share Details */}
-                <div className="flex flex-col bg-[#3cb371] rounded-xl p-3 h-full min-w-0 justify-center">
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className="flex items-center justify-center rounded-full bg-[#fd7507]" style={{ width: '40px', height: '40px', minWidth: '40px', minHeight: '40px' }}>
-                      <MessageCircle className="w-6 h-6 text-white" />
+                <div className="flex flex-row bg-[#3cb371] rounded-xl p-3 h-full min-w-0 justify-center items-center relative">
+                  <div className="absolute left-0 top-3 bottom-3 w-2 rounded-xl bg-[#fd7507]" style={{ minHeight: '60px' }}></div>
+                  <div className="flex flex-col flex-1 pl-4">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="flex items-center justify-center rounded-full bg-[#fd7507]" style={{ width: '40px', height: '40px', minWidth: '40px', minHeight: '40px' }}>
+                        <MessageCircle className="w-6 h-6 text-white" />
+                      </div>
+                      <h3 className="font-bold text-white text-sm md:text-base leading-tight">Share Details</h3>
                     </div>
-                    <h3 className="font-bold text-white text-sm md:text-base leading-tight">Share Details</h3>
+                    <p className="text-xs md:text-sm text-white/90 pl-1">Provide shopping lists, notes and product details.</p>
                   </div>
-                  <p className="text-xs md:text-sm text-white/90 pl-1">Provide shopping lists, notes and product details.</p>
                 </div>
                 {/* Shopping */}
-                <div className="flex flex-col bg-[#3cb371] rounded-xl p-3 h-full min-w-0 justify-center">
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className="flex items-center justify-center rounded-full bg-[#fd7507]" style={{ width: '40px', height: '40px', minWidth: '40px', minHeight: '40px' }}>
-                      <Clock className="w-6 h-6 text-white" />
+                <div className="flex flex-row bg-[#3cb371] rounded-xl p-3 h-full min-w-0 justify-center items-center relative">
+                  <div className="absolute left-0 top-3 bottom-3 w-2 rounded-xl bg-[#fd7507]" style={{ minHeight: '60px' }}></div>
+                  <div className="flex flex-col flex-1 pl-4">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="flex items-center justify-center rounded-full bg-[#fd7507]" style={{ width: '40px', height: '40px', minWidth: '40px', minHeight: '40px' }}>
+                        <Clock className="w-6 h-6 text-white" />
+                      </div>
+                      <h3 className="font-bold text-white text-sm md:text-base leading-tight">Shopping</h3>
                     </div>
-                    <h3 className="font-bold text-white text-sm md:text-base leading-tight">Shopping</h3>
+                    <p className="text-xs md:text-sm text-white/90 pl-1">All items will be shopped on your behalf.</p>
                   </div>
-                  <p className="text-xs md:text-sm text-white/90 pl-1">Items are shopped on your behalf.</p>
                 </div>
                 {/* Delivery */}
-                <div className="flex flex-col bg-[#3cb371] rounded-xl p-3 h-full min-w-0 justify-center">
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className="flex items-center justify-center rounded-full bg-[#fd7507]" style={{ width: '40px', height: '40px', minWidth: '40px', minHeight: '40px' }}>
-                      <MapPin className="w-6 h-6 text-white" />
+                <div className="flex flex-row bg-[#3cb371] rounded-xl p-3 h-full min-w-0 justify-center items-center relative">
+                  <div className="absolute left-0 top-3 bottom-3 w-2 rounded-xl bg-[#fd7507]" style={{ minHeight: '60px' }}></div>
+                  <div className="flex flex-col flex-1 pl-4">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="flex items-center justify-center rounded-full bg-[#fd7507]" style={{ width: '40px', height: '40px', minWidth: '40px', minHeight: '40px' }}>
+                        <MapPin className="w-6 h-6 text-white" />
+                      </div>
+                      <h3 className="font-bold text-white text-sm md:text-base leading-tight">Delivery</h3>
                     </div>
-                    <h3 className="font-bold text-white text-sm md:text-base leading-tight">Delivery</h3>
+                    <p className="text-xs md:text-sm text-white/90 pl-1">Items delivered at the address you provide.</p>
                   </div>
-                  <p className="text-xs md:text-sm text-white/90 pl-1">All items delivered at the provided address.</p>
                 </div>
               </div>
             </motion.div>
@@ -718,7 +730,7 @@ const StorePickupPage = () => {
                   <form onSubmit={handleSubmit} className="mb-4 space-y-6 rounded-2xl bg-green-50/60 p-1.5 md:p-8 shadow-sm max-w-3xl lg:max-w-4xl xl:max-w-5xl mx-auto">
                     <div className="space-y-4">
                       <div className="flex items-center justify-between gap-1">
-                        <h3 className="text-md font-semibold mb-0">Add Stores</h3>
+                        <h3 className="text-md font-semibold mb-0 w-[25vw]">Add Stores</h3>
                         <div className="relative w-50 max-w-full">
                           <Search className="absolute right-2.5 top-3.5 h-4 w-4 text-muted-foreground" />
                           <Input
