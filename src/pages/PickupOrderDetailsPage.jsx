@@ -250,22 +250,26 @@ const PickupOrderDetailsPage = () => {
               Return to Account
             </Button>
           </Link>
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-            <div className="flex flex-col gap-1 sm:gap-0 sm:flex-row sm:items-center sm:space-x-4 flex-1">
-              <h1 className="text-xl sm:text-2xl font-bold text-wrap break-words">Grocery Run #{order.id.slice(0, 6).toUpperCase()}</h1>
-              <span className="text-muted-foreground text-sm sm:text-base flex items-center gap-2">
-                <Calendar className="w-4 h-4 mr-1 text-muted-foreground" />
-                {order.pickup_date ? format(new Date(order.pickup_date), 'PPP') : 'N/A'}
-                <Clock className="w-4 h-4 ml-2 mr-1 text-muted-foreground" />
-                {order.time_slot}
-              </span>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-2 w-full">
+              <h1 className="text-lg sm:text-2xl font-bold break-words text-wrap text-center sm:text-left">Grocery Run #{order.id.slice(0, 6).toUpperCase()}</h1>
+              <div className="flex flex-col xs:flex-row xs:items-center xs:justify-center gap-1 xs:gap-3 text-muted-foreground text-sm sm:text-base text-center sm:text-left">
+                <span className="flex items-center justify-center xs:justify-start">
+                  <Calendar className="w-4 h-4 mr-1 text-muted-foreground" />
+                  {order.pickup_date ? format(new Date(order.pickup_date), 'PPP') : 'N/A'}
+                </span>
+                <span className="flex items-center justify-center xs:justify-start">
+                  <Clock className="w-4 h-4 ml-2 mr-1 text-muted-foreground" />
+                  {order.time_slot}
+                </span>
+              </div>
             </div>
-            <div className="flex flex-row flex-wrap gap-2 sm:gap-4 items-center justify-end">
+            <div className="flex flex-row flex-wrap gap-2 sm:gap-4 items-center justify-center sm:justify-end mt-2 sm:mt-0">
               <Badge className={getPaymentStatusColor(order.payment_status)}>
                 <CreditCard />&nbsp; {order.payment_status.charAt(0).toUpperCase() + order.payment_status.slice(1)}
               </Badge>
               <Badge className={getStatusColor(order.status)}>
-               <Info />&nbsp; {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                <Info />&nbsp; {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
               </Badge>
             </div>
           </div>
@@ -356,64 +360,6 @@ const PickupOrderDetailsPage = () => {
                           </Badge>
                         </div>
                         <p className="text-sm text-muted-foreground">{storeOrder.stores?.address}</p>
-                        {/* Suggested Items */}
-                        {Array.isArray(storeOrder.stores?.store_suggested_items) && storeOrder.stores.store_suggested_items.length > 0 && (
-                          <div className="mt-2">
-                            <span className="text-xs font-semibold">Suggested Items:</span>
-                            <div className="flex flex-wrap gap-2 mt-1">
-                              {storeOrder.stores.store_suggested_items.map((item, idx) => {
-                                const regex = new RegExp(`${item.name} x(\\d+)`, 'g');
-                                const match = (storeNotes[storeOrder.store_id] || '').match(regex);
-                                const selectedQty = match ? parseInt(match[0].split('x')[1], 10) : 1;
-                                const checked = !!match;
-                                return (
-                                  <div key={item.name} className="flex items-center gap-1 bg-gray-100 rounded px-2 py-1">
-                                    <input
-                                      type="checkbox"
-                                      checked={checked}
-                                      onChange={e => {
-                                        let notes = storeNotes[storeOrder.store_id] || '';
-                                        const itemLine = `${item.name} x${selectedQty}`;
-                                        if (e.target.checked) {
-                                          // Add or update
-                                          if (regex.test(notes)) {
-                                            notes = notes.replace(regex, itemLine);
-                                          } else {
-                                            notes = notes ? `${notes}\n${itemLine}` : itemLine;
-                                          }
-                                        } else {
-                                          // Remove
-                                          notes = notes.replace(regex, '').replace(/^\s*[\r\n]/gm, '').trim();
-                                        }
-                                        setStoreNotes(prev => ({ ...prev, [storeOrder.store_id]: notes }));
-                                      }}
-                                      disabled={order.status === 'completed' || order.status === 'cancelled'}
-                                    />
-                                    <span className="text-xs">{item.name} : Qty&nbsp;</span>
-                                    <input
-                                      type="number"
-                                      min={1}
-                                      value={selectedQty}
-                                      onChange={e => {
-                                        let notes = storeNotes[storeOrder.store_id] || '';
-                                        const qty = Math.max(1, parseInt(e.target.value) || 1);
-                                        const itemLine = `${item.name} x${qty}`;
-                                        if (regex.test(notes)) {
-                                          notes = notes.replace(regex, itemLine);
-                                        } else {
-                                          notes = notes ? `${notes}\n${itemLine}` : itemLine;
-                                        }
-                                        setStoreNotes(prev => ({ ...prev, [storeOrder.store_id]: notes }));
-                                      }}
-                                      className="w-10 text-xs ml-1 border rounded px-1 py-0.5"
-                                      disabled={!checked || order.status === 'completed' || order.status === 'cancelled'}
-                                    />
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </div>
-                        )}
                       </div>
                       <div className="text-right">
                         <p className="font-medium">
@@ -500,7 +446,7 @@ const PickupOrderDetailsPage = () => {
                             onClick={() => handleSaveStoreNotes(storeOrder.store_id, storeOrder.id)}
                             disabled={savingNotes[storeOrder.store_id]}
                           >
-                            {savingNotes[storeOrder.store_id] ? 'Saving...' : 'Save Notes'}
+                            {savingNotes[storeOrder.store_id] ? 'Saving...' : 'Update Notes'}
                           </Button>
                         );
                       })()}
@@ -680,7 +626,8 @@ const PickupOrderDetailsPage = () => {
                   }]
                 }).eq('id', order.id);
               }}
-              disabled={order.status === 'cancelled' || order.status === 'completed'}
+              // disabled={order.status === 'cancelled' || order.status === 'completed'}
+              disbled={false}
             />
 
             {/* Cancel Order Button at the bottom */}

@@ -94,9 +94,9 @@ const StoreNotes = ({
     setCustomItemPrices(prices => ({ ...prices, [name]: DEFAULT_PRICE }));
     // Set qty to 1 in notes
     let newNotes = notes || '';
-    const regex = new RegExp(`^${name} x(\\d+)$`, 'm');
+    const regex = new RegExp(`^${name} >> (\\d+)$`, 'm');
     if (!regex.test(newNotes)) {
-      newNotes = newNotes ? `${newNotes}\n${name} x1` : `${name} x1`;
+      newNotes = newNotes ? `${newNotes}\n${name} >> 1` : `${name} >> 1`;
       onNotesChange(storeId, newNotes);
     }
   };
@@ -109,24 +109,24 @@ const StoreNotes = ({
       return newPrices;
     });
     // Remove from notes
-    const regex = new RegExp(`^${name} x(\\d+)$`, 'm');
+    const regex = new RegExp(`^${name} >> (\\d+)$`, 'm');
     onNotesChange(storeId, (notes || '').replace(regex, '').replace(/\n+/g, '\n').trim());
   };
 
   // Regex for matching item and quantity in notes
   const getItemQty = (itemName) => {
-    const regex = new RegExp(`^${itemName} x(\\d+)$`, 'm');
+    const regex = new RegExp(`^${itemName} >> (\\d+)$`, 'm');
     const match = (notes || '').match(regex);
-    return match ? parseInt(match[0].split('x')[1], 10) : 0;
+    return match ? parseInt(match[0].split('>>')[1], 10) : 0;
   };
   const handleItemQtyChange = (item, qty) => {
     let newNotes = notes || '';
-    const regex = new RegExp(`^${item.name} x(\\d+)$`, 'm');
+    const regex = new RegExp(`^${item.name} >> (\\d+)$`, 'm');
     if (qty > 0) {
       if (regex.test(newNotes)) {
-        newNotes = newNotes.replace(regex, `${item.name} x${qty}`);
+        newNotes = newNotes.replace(regex, `${item.name} >> ${qty}`);
       } else {
-        newNotes = newNotes ? `${newNotes}\n${item.name} x${qty}` : `${item.name} x${qty}`;
+        newNotes = newNotes ? `${newNotes}\n${item.name} >> ${qty}` : `${item.name} >> ${qty}`;
       }
     } else {
       newNotes = newNotes.replace(regex, '').replace(/\n+/g, '\n').trim();
