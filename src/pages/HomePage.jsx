@@ -244,14 +244,14 @@ const HomePage = () => {
                         <span className="ml-1">{deliveryTime} min</span>
                       </span>
                     ) : (
-                      <Button
-                        size="sm"
-                        className="bg-[#fd7507] text-white px-3 py-1 rounded-full shadow"
+                      <button
+                        type="button"
+                        className="inline-flex items-center gap-1 bg-gradient-to-r from-[#fff7e6] to-white text-[#fd7507] text-xs px-3 py-1 rounded-full shadow border border-[#fd7507] font-semibold tracking-wide"
                         onClick={getUserLocation}
                       >
-                        <Locate />
-                        <span className="ml-1 text-xs">Get Location</span>
-                      </Button>
+                        <Locate className="w-3 h-3 text-[#fd7507]" />
+                        <span className="ml-1">Locate</span>
+                      </button>
                     )}
                   </div>
                 </div>
@@ -316,7 +316,7 @@ const HomePage = () => {
             <Link to="/shop" className="block w-[60%] max-w-[120px]">
               <Button
                 size="sm"
-                className="w-full h-10 font-bold text-base mx-auto rounded-half border-2 border-[#fd7507] bg-white text-[#fd7507] shadow-lg hover:bg-[#fd7507] hover:text-white transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2"
+                className="w-full h-10 font-bold text-base mx-auto rounded-half border-2 border-[#fd7507] bg-[#fff7e6] text-[#fd7507] shadow-lg hover:bg-[#fd7507] hover:text-white transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2"
               >
                 <Store className="w-4 h-5 mr-2" /> Shop
               </Button>
@@ -324,7 +324,7 @@ const HomePage = () => {
             <Link to="/grocery-run" className="block w-full">
               <Button
                 size="sm"
-                className="w-full h-10 font-bold text-base mx-auto rounded-full border-2 border-[#3bc371] bg-white text-[#3bc371] shadow-lg hover:bg-[#3bc371] hover:text-white transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2"
+                className="w-full h-10 font-bold text-base mx-auto rounded-full border-2 border-[#3bc371] bg-[#e6fff7] text-[#3bc371] shadow-lg hover:bg-[#3bc371] hover:text-white transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2"
               >
                 <Truck className="w-5 h-5 mr-2" /> Grocery Run
               </Button>
