@@ -612,59 +612,36 @@ const StorePickupPage = () => {
                 
 
               
-              <div className="grid gap-2 grid-cols-2 md:grid-cols-4 max-w-4xl mx-auto">
-                {/* Add Stores */}
-                <div className="flex flex-row bg-[#3cb371] rounded-xl p-3 h-full min-w-0 justify-center items-center relative">
-                  <div className="absolute left-0 top-3 bottom-3 w-2 rounded-xl bg-[#fd7507]" style={{ minHeight: '60px' }}></div>
-                  <div className="flex flex-col flex-1 pl-4">
-                    <div className="flex items-center gap-2 mb-1">
-                      <div className="flex items-center justify-center rounded-full bg-[#fd7507]" style={{ width: '40px', height: '40px', minWidth: '40px', minHeight: '40px' }}>
-                        <Store className="w-6 h-6 text-white" />
+              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 max-w-5xl mx-auto mt-2">
+                {/* Step Card */}
+                {[
+                  {
+                    icon: <Store className="w-6 h-6 text-white" />, title: 'Select Stores', desc: 'Add stores, set budgets and pay to reserve your slot.'
+                  },
+                  {
+                    icon: <MessageCircle className="w-6 h-6 text-white" />, title: 'Share Details', desc: 'Provide shopping lists, notes and product details.'
+                  },
+                  {
+                    icon: <Clock className="w-6 h-6 text-white" />, title: 'Shopping', desc: 'All items will be shopped on your behalf.'
+                  },
+                  {
+                    icon: <MapPin className="w-6 h-6 text-white" />, title: 'Delivery', desc: 'Items delivered at the address you provide.'
+                  }
+                ].map((step, idx) => (
+                  <div key={step.title} className="relative flex flex-row bg-white rounded-xl shadow-md px-5 py-3 h-[70px] w-full min-w-0 items-center border border-gray-100 hover:shadow-xl transition-all duration-300 mx-auto"
+                    style={{ maxWidth: '420px', minWidth: '220px', width: '100%' }}>
+                    <div className="absolute left-0 top-4 bottom-4 w-1 rounded-lg bg-[#fd7507]" style={{ minHeight: '32px' }}></div>
+                    <div className="flex items-center w-full pl-2">
+                      <div className="flex items-center justify-center rounded-full bg-gradient-to-br from-[#fd7507] to-[#3cb371] shadow-md mr-4" style={{ width: '38px', height: '38px', minWidth: '38px', minHeight: '38px' }}>
+                        {step.icon}
                       </div>
-                      <h3 className="font-bold text-white text-sm md:text-base leading-tight">Select Stores</h3>
-                    </div>
-                    <p className="text-xs md:text-sm text-white/90 pl-1">Add stores, set budgets and pay to reserve your slot.</p>
-                  </div>
-                </div>
-                {/* Share Details */}
-                <div className="flex flex-row bg-[#3cb371] rounded-xl p-3 h-full min-w-0 justify-center items-center relative">
-                  <div className="absolute left-0 top-3 bottom-3 w-2 rounded-xl bg-[#fd7507]" style={{ minHeight: '60px' }}></div>
-                  <div className="flex flex-col flex-1 pl-4">
-                    <div className="flex items-center gap-2 mb-1">
-                      <div className="flex items-center justify-center rounded-full bg-[#fd7507]" style={{ width: '40px', height: '40px', minWidth: '40px', minHeight: '40px' }}>
-                        <MessageCircle className="w-6 h-6 text-white" />
+                      <div className="flex flex-col justify-center">
+                        <h3 className="font-bold text-gray-900 text-sm leading-tight mb-0 text-left">{step.title}</h3>
+                        <p className="text-xs text-gray-600 text-left mt-1">{step.desc}</p>
                       </div>
-                      <h3 className="font-bold text-white text-sm md:text-base leading-tight">Share Details</h3>
                     </div>
-                    <p className="text-xs md:text-sm text-white/90 pl-1">Provide shopping lists, notes and product details.</p>
                   </div>
-                </div>
-                {/* Shopping */}
-                <div className="flex flex-row bg-[#3cb371] rounded-xl p-3 h-full min-w-0 justify-center items-center relative">
-                  <div className="absolute left-0 top-3 bottom-3 w-2 rounded-xl bg-[#fd7507]" style={{ minHeight: '60px' }}></div>
-                  <div className="flex flex-col flex-1 pl-4">
-                    <div className="flex items-center gap-2 mb-1">
-                      <div className="flex items-center justify-center rounded-full bg-[#fd7507]" style={{ width: '40px', height: '40px', minWidth: '40px', minHeight: '40px' }}>
-                        <Clock className="w-6 h-6 text-white" />
-                      </div>
-                      <h3 className="font-bold text-white text-sm md:text-base leading-tight">Shopping</h3>
-                    </div>
-                    <p className="text-xs md:text-sm text-white/90 pl-1">All items will be shopped on your behalf.</p>
-                  </div>
-                </div>
-                {/* Delivery */}
-                <div className="flex flex-row bg-[#3cb371] rounded-xl p-3 h-full min-w-0 justify-center items-center relative">
-                  <div className="absolute left-0 top-3 bottom-3 w-2 rounded-xl bg-[#fd7507]" style={{ minHeight: '60px' }}></div>
-                  <div className="flex flex-col flex-1 pl-4">
-                    <div className="flex items-center gap-2 mb-1">
-                      <div className="flex items-center justify-center rounded-full bg-[#fd7507]" style={{ width: '40px', height: '40px', minWidth: '40px', minHeight: '40px' }}>
-                        <MapPin className="w-6 h-6 text-white" />
-                      </div>
-                      <h3 className="font-bold text-white text-sm md:text-base leading-tight">Delivery</h3>
-                    </div>
-                    <p className="text-xs md:text-sm text-white/90 pl-1">Items delivered at the address you provide.</p>
-                  </div>
-                </div>
+                ))}
               </div>
             </motion.div>
           </div>

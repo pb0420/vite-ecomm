@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Search, Filter, X, ArrowUpDown, Tag  } from 'lucide-react';
+import { Search, Filter, X, ArrowUpDown, Tag, MapPin, Clock  } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -10,6 +10,8 @@ import { supabase } from '@/lib/supabaseClient';
 import { setQueryCache, getQueryCache } from '@/lib/queryCache';
 import LoginDialog from '@/components/auth/LoginDialog';
 import { useAuth } from '@/contexts/AuthContext';
+import { getDeliveryTime } from '@/lib/deliveryTime';
+
 
 const PRODUCTS_PER_PAGE = 25;
 
@@ -35,6 +37,7 @@ const ShopPage = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [showLoginDialog, setShowLoginDialog] = useState(false);
   const [showFeatured, setShowFeatured] = useState(featuredParam === 'true');
+  const [deliveryTime, setDeliveryTime] = useState('30-45'); // Default delivery time
 
   // Debounce search input
   useEffect(() => {
@@ -58,6 +61,15 @@ const ShopPage = () => {
 
   useEffect(() => {
     fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    async function fetchDeliveryTime() {
+      // Fetch delivery time from cache or API
+      const dt = await getDeliveryTime();
+      if (dt) setDeliveryTime(dt);
+    }
+   fetchDeliveryTime();
   }, []);
 
   useEffect(() => {
@@ -220,14 +232,22 @@ const ShopPage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              {/* Title and Description - left aligned */}
-              <div className="text-left">
-                <h1 className="text-xl md:text-2xl font-bold text-white mb-1">
-                  {featuredParam === 'true' ? 'Featured Products' : 'Shop'}
-                </h1>
-                <p className="text-white/90 text-sm">
-                  Browse from a selection of groceries, household essentials and more.
-                </p>
+              {/* Title and Delivery Time Row */}
+              <div className="flex items-center justify-between w-full mb-1">
+                <div className="text-left">
+                  <h1 className="text-xl md:text-2xl font-bold text-white">
+                    {featuredParam === 'true' ? 'Featured Products' : 'Shop'}
+                  </h1>
+                  <p className="text-white/90 text-sm">
+                    Browse from a selection of groceries, household essentials and more.
+                  </p>
+                </div>
+                <div className="ml-4">
+                  <span className="inline-flex items-center gap-1 bg-white text-[#fd7507] text-xs px-3 py-1 rounded-full shadow border border-[#fd7507]">
+                    <Clock className="w-16 h-6 text-[#fd7507] font-semibold text-base" />
+                    {deliveryTime} min.
+                  </span>
+                </div>
               </div>
 
               <motion.div
@@ -236,6 +256,7 @@ const ShopPage = () => {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.5 }}
               >
+               
                 <div className="relative">
                   <Search style={{zIndex:'1'}} className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
                   <Input
@@ -282,7 +303,6 @@ const ShopPage = () => {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="name-asc">Name (A-Z)</SelectItem>
-                        <SelectItem value="name-desc">Name (Z-A)</SelectItem>
                         <SelectItem value="price-asc">Price (Low to High)</SelectItem>
                         <SelectItem value="price-desc">Price (High to Low)</SelectItem>
                       </SelectContent>

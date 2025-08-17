@@ -79,8 +79,8 @@ const Header = () => {
               backgroundImage: 'url(https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/logo-plain.webp)',
               backgroundSize: 'contain',
               backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'center',
-              width: '130px',
+              backgroundPosition: 'centre',
+              width: '140px',
               height: '40px',
             }}
             aria-label="Groceroo Logo" // Add aria-label for accessibility
@@ -91,7 +91,7 @@ const Header = () => {
                 <img
           src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/home-icon2.webp"
           alt="Home"
-          style={{ marginLeft: '5px', marginBottom:'2px', width: '20px', height: '20px' }}
+          style={{ marginLeft: '2px', marginBottom:'2px', width: '18px', height: '18px' }}
           className="w-3 h-3"
           aria-label="Home"
         />

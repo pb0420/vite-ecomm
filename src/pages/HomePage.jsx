@@ -1,5 +1,6 @@
 // File: groceroo/src/pages/HomePage.jsx
 import React, { useState, useEffect } from 'react';
+import { getDeliveryTime } from '@/lib/deliveryTime';
 import { color, motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Clock, ShieldCheck, MessageCircle, Handshake, ShoppingCart, CupSoda, EggFried, Cookie, Hamburger, Croissant, Apple, Banana, Beef, Candy, Fish, Utensils, Car, MapPin, Truck, Store, Search, Locate } from 'lucide-react';
@@ -56,11 +57,8 @@ const HomePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Try cache first
         let productsData = getQueryCache('featuredProducts');
         let categoriesData = getQueryCache('categories_home');
-        let deliverySettings = getQueryCache('deliverySettings');
-
         if (!productsData) {
           const { data, error } = await supabase
             .from('products')
@@ -81,21 +79,11 @@ const HomePage = () => {
           categoriesData = data || [];
           setQueryCache('categories_home', categoriesData);
         }
-        if (!deliverySettings) {
-          const { data, error } = await supabase
-            .from('delivery_settings')
-            .select('estimated_delivery_minutes')
-            .eq('id', 1)
-            .single();
-          if (!error && data) {
-            deliverySettings = data;
-            setQueryCache('deliverySettings', deliverySettings);
-          }
-        }
         setFeaturedProducts(productsData);
         setCategories(categoriesData);
-        if (deliverySettings) setDeliveryTime(deliverySettings.estimated_delivery_minutes);
-
+        // Fetch delivery time from utility
+        const dt = await getDeliveryTime();
+        if (dt) setDeliveryTime(dt);
         // Fetch previously ordered products if user is logged in
         if (user) {
           await fetchPreviouslyOrderedProducts();
@@ -106,7 +94,6 @@ const HomePage = () => {
         setLoading(false);
       }
     };
-
     fetchData();
   }, [user]);
 
@@ -197,7 +184,7 @@ const HomePage = () => {
   return (
     <div className="flex flex-col min-h-screen">
       {showA2HS && <AddToHomeScreenToast onClose={handleCloseA2HS} platform={platform} />}
-      <section className="relative min-h-[140px] h-[18vh] max-h-[180px] bg-gradient-to-b from-[#2E8B57] via-[#3CB371] to-white overflow-hidden">
+      <section className="relative min-h-[90px] h-[12vh] max-h-[120px] bg-gradient-to-b from-[#2E8B57] via-[#3CB371] to-white overflow-hidden">
         <div className="absolute inset-0">
           <img
             src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/outbanner.webp"
@@ -207,7 +194,7 @@ const HomePage = () => {
           <div className="absolute inset-0 bg-gradient-to-b from-[#2E8B57]/90 via-[#3CB371]/80 to-white/90" />
         </div>
         <div className="container relative h-full px-4 md:px-6">
-          <div className="flex flex-col justify-center h-full max-w-4xl mx-auto pb-2 md:pt-4 md:pb-2">
+          <div className="flex flex-col justify-center h-full max-w-4xl mx-auto pb-1 md:pt-2 md:pb-1">
             {isTooFar && (
               <div className="absolute top-2 left-1/2 -translate-x-1/2 bg-black/40 text-white text-xs px-3 py-1 rounded shadow z-10">
                 You seem to be too far away.
@@ -219,51 +206,25 @@ const HomePage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              {/* Location Row */}
-              <motion.div
-                className="flex items-center gap-1 mb-1"
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.1, duration: 0.2 }}
-              >
-                {/* Left: Orange marker and Adelaide, and right part aligned left */}
-                <div className="flex items-center gap-1">
-                  <MapPin className="w-5 h-5 text-[#fd7507]" />
-                  <span className="text-white font-bold text-sm">Adelaide</span>
-                  {/* Delivery time or Get Location, now next to Adelaide */}
-                  {userLocation ? (
-                    <span className="inline-flex items-center gap-1 bg-[#fd7507] text-white text-sm px-2 py-1 rounded-full shadow">
-                      <Clock className="w-3 h-3 text-white font-semibold text-base" />
-                      {deliveryTime} min.
-                    </span>
-                  ) : (
-                    <Button
-                      size="sm"
-                      className="bg-[#fd7507] text-white font-semibold px-3 py-1 rounded-full shadow ml-2"
-                      onClick={getUserLocation}
-                    >
-                      <Locate />
-                    </Button>
-                  )}
-                </div>
-              </motion.div>
               {/* Search Bar */}
               <motion.form
                 onSubmit={e => e.preventDefault()}
-                className="flex gap-1 w-full"
+                className="flex gap-1 w-full mt-3"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.3 }}
               >
-                <div className="flex-1 relative pb-2">
-                  <Input
-                    type="text"
-                    placeholder="Search for groceries and other items..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="h-11 md:h-11 pl-3 bg-white/95 backdrop-blur-sm shadow-lg border-0 text-gray-800 placeholder:text-gray-500 text-md"
-                  />
-                   {searchLoading && (
+                <div className="flex w-full items-start relative">
+                  {/* Left: Search bar */}
+                  <div className="flex-1 relative pb-2">
+                    <Input
+                      type="text"
+                      placeholder="Search for groceries and more..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="h-11 md:h-11 pl-3 bg-white/95 backdrop-blur-sm shadow-lg border-0 text-gray-800 placeholder:text-gray-500 text-sm"
+                    />
+                    {searchLoading && (
                       <span className="absolute right-3 top-1/2 -translate-y-1/2">
                         <svg className="animate-spin h-5 w-5 text-gray-400" viewBox="0 0 24 24">
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
@@ -271,8 +232,31 @@ const HomePage = () => {
                         </svg>
                       </span>
                     )}
+                  </div>
+                  {/* Right: Location and delivery time pill */}
+                  <div className="flex flex-col items-end ml-2 min-w-[90px]">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/80 shadow border border-gray-200 text-xs text-gray-700 font-semibold mb-1 tracking-wide">
+                      <MapPin className="w-3 h-3 text-[#fd7507] mr-1" />Adelaide
+                    </span>
+                    {userLocation ? (
+                      <span className="inline-flex items-center gap-1 bg-gradient-to-r from-[#fff7e6] to-white text-[#fd7507] text-xs px-3 py-1 rounded-full shadow border border-[#fd7507] font-semibold tracking-wide">
+                        <Clock className="w-3 h-3 text-[#fd7507] font-semibold text-base" />
+                        <span className="ml-1">{deliveryTime} min</span>
+                      </span>
+                    ) : (
+                      <Button
+                        size="sm"
+                        className="bg-[#fd7507] text-white px-3 py-1 rounded-full shadow"
+                        onClick={getUserLocation}
+                      >
+                        <Locate />
+                        <span className="ml-1 text-xs">Get Location</span>
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </motion.form>
+              {/* Location and Delivery Time Row - moved below search, left aligned */}
             </motion.div>
           </div>
         </div>
@@ -332,8 +316,7 @@ const HomePage = () => {
             <Link to="/shop" className="block w-[60%] max-w-[120px]">
               <Button
                 size="sm"
-                style={{ background: '#fd7507', color: 'white' }}
-                className="w-full h-10 font-bold text-base mx-auto backdrop-blur-sm transition-all duration-300 hover:scale-105"
+                className="w-full h-10 font-bold text-base mx-auto rounded-half border-2 border-[#fd7507] bg-white text-[#fd7507] shadow-lg hover:bg-[#fd7507] hover:text-white transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2"
               >
                 <Store className="w-4 h-5 mr-2" /> Shop
               </Button>
@@ -341,8 +324,7 @@ const HomePage = () => {
             <Link to="/grocery-run" className="block w-full">
               <Button
                 size="sm"
-                style={{ background: '#3bc371', color: 'white' }}
-                className="w-full h-10 font-bold text-base mx-auto rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-105 border-0"
+                className="w-full h-10 font-bold text-base mx-auto rounded-full border-2 border-[#3bc371] bg-white text-[#3bc371] shadow-lg hover:bg-[#3bc371] hover:text-white transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2"
               >
                 <Truck className="w-5 h-5 mr-2" /> Grocery Run
               </Button>
