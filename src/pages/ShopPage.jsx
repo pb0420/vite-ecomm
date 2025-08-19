@@ -242,9 +242,9 @@ const ShopPage = () => {
                     Browse from a selection of groceries, household essentials and more.
                   </p>
                 </div>
-                <div className="ml-1">
+                <div className="ml-1 w-48">
                   <span className="inline-flex items-center bg-white text-[#fd7507] text-sm px-3 py-1 rounded-full shadow border border-[#fd7507]">
-                    <Clock className="w-12 h-6 text-[#fd7507] font-semibold text-base" />
+                    <Clock className="w-8 h-4 text-[#fd7507] font-semibold text-base" />
                     {deliveryTime} min.
                   </span>
                 </div>

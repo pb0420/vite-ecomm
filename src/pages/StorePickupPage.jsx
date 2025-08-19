@@ -606,13 +606,13 @@ const StorePickupPage = () => {
               transition={{ duration: 0.5 }}
             >
                 <div>
-                  <h1 className="text-lg md:text-xl font-bold text-white mb-1 text-left">Grocery Run </h1>
-                  <p className="text-white/90 text-xs text-left">Custom grocery shopping at multiple stores!</p>
+                  <h1 className="text-lg md:text-md font-bold text-white mb-1 text-left">Grocery Run </h1>
+                  <p className="text-white/90 text-md text-left">Custom grocery shopping at multiple stores!</p>
                 </div>
                 
 
               
-              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 max-w-5xl mx-auto mt-2">
+              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 max-w-5xl mx-auto mt-2 py-2">
                 {/* Step Card */}
                 {[
                   {

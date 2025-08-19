@@ -16,7 +16,7 @@ export default defineConfig({
         name: 'Groceroo',
         short_name: 'Groceroo',
         description: 'Your grocery delivery app',
-        theme_color: '#2E8B57',
+        theme_color: '#3cb371',
         icons: [
           {
             src: 'https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/favicon.webp',

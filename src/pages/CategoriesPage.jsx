@@ -64,7 +64,7 @@ const CategoriesPage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <h1 className="text-3xl md:text-4xl font-bold text-white">Categories</h1>
+              <h1 className="text-2xl md:text-4xl font-bold text-white">Categories</h1>
               <p className="text-white/90">
                 Browse our selection of grocery categories to find the products what you need.
               </p>
@@ -73,7 +73,7 @@ const CategoriesPage = () => {
         </div>
       </section>
 
-      <div className="container px-4 py-8 mx-auto md:px-6">
+      <div className="container px-4 py-1 mx-auto md:px-6">
          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {categories.map((category, index) => (
             <motion.div

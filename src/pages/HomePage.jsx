@@ -326,7 +326,7 @@ const HomePage = () => {
             <Link to="/grocery-run" className="block w-full">
               <Button
                 size="sm"
-                className="w-full h-10 font-bold text-base mx-auto rounded-full border-2 border-[#3bc371] bg-[#e6fff7] text-[#3bc371] shadow-lg hover:bg-[#3bc371] hover:text-white transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2"
+                className="w-full h-10 font-bold text-base mx-auto rounded-half border-2 border-[#3bc371] bg-[#e6fff7] text-[#3bc371] shadow-lg hover:bg-[#3bc371] hover:text-white transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2"
               >
                 <Truck className="w-5 h-5 mr-2" /> Grocery Run
               </Button>
