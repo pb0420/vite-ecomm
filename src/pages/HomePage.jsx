@@ -186,12 +186,12 @@ const HomePage = () => {
       {showA2HS && <AddToHomeScreenToast onClose={handleCloseA2HS} platform={platform} />}
       <section className="relative min-h-[90px] h-[12vh] max-h-[120px] bg-gradient-to-b from-[#2E8B57] via-[#3CB371] to-white overflow-hidden">
         <div className="absolute inset-0">
-          <img
+          {/* <img
             src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/outbanner.webp"
             alt="Grocery delivery"
             className="w-full h-full object-cover opacity-30"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#2E8B57]/90 via-[#3CB371]/80 to-white/90" />
+          /> */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#3CB371]/90 via-[#3CB371]/80 to-white/90" />
         </div>
         <div className="container relative h-full px-4 md:px-6">
           <div className="flex flex-col justify-center h-full max-w-4xl mx-auto pb-1 md:pt-2 md:pb-1">
@@ -209,7 +209,7 @@ const HomePage = () => {
               {/* Search Bar */}
               <motion.form
                 onSubmit={e => e.preventDefault()}
-                className="flex gap-1 w-full mt-3"
+                className="flex gap-1 w-full mt-1"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.3 }}
@@ -235,24 +235,26 @@ const HomePage = () => {
                   </div>
                   {/* Right: Location and delivery time pill */}
                   <div className="flex flex-col items-end ml-2 min-w-[90px]">
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/80 shadow border border-gray-200 text-xs text-gray-700 font-semibold mb-1 tracking-wide">
-                      <MapPin className="w-3 h-3 text-[#fd7507] mr-1" />Adelaide
-                    </span>
-                    {userLocation ? (
-                      <span className="inline-flex items-center gap-1 bg-gradient-to-r from-[#fff7e6] to-white text-[#fd7507] text-xs px-3 py-1 rounded-full shadow border border-[#fd7507] font-semibold tracking-wide">
-                        <Clock className="w-3 h-3 text-[#fd7507] font-semibold text-base" />
-                        <span className="ml-1">{deliveryTime} min</span>
+                    <div className="flex flex-col gap-0.5 items-end">
+                      <span className="inline-flex items-center gap-1 min-w-[90px] h-6 px-2 py-0.5 rounded-full bg-white/80 shadow border border-gray-200 text-xs text-gray-700 font-semibold tracking-wide justify-center">
+                        <MapPin className="w-3 h-3 text-[#fd7507] mr-1" />Adelaide
                       </span>
-                    ) : (
-                      <button
-                        type="button"
-                        className="inline-flex items-center gap-1 bg-gradient-to-r from-[#fff7e6] to-white text-[#fd7507] text-xs px-3 py-1 rounded-full shadow border border-[#fd7507] font-semibold tracking-wide"
-                        onClick={getUserLocation}
-                      >
-                        <Locate className="w-3 h-3 text-[#fd7507]" />
-                        <span className="ml-1">Locate</span>
-                      </button>
-                    )}
+                      {userLocation ? (
+                        <span className="inline-flex items-center gap-1 min-w-[90px] h-6 px-2 py-0.5 rounded-full bg-gradient-to-r from-[#fff7e6] to-white text-[#fd7507] shadow border border-[#fd7507] text-xs font-semibold tracking-wide justify-center">
+                          <Clock className="w-3 h-3 text-[#fd7507] font-semibold text-base" />
+                          <span className="ml-1">{deliveryTime} min</span>
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          className="inline-flex items-center gap-1 min-w-[90px] h-6 px-2 py-0.5 rounded-full bg-gradient-to-r from-[#fff7e6] to-white text-[#fd7507] shadow border border-[#fd7507] text-xs font-semibold tracking-wide justify-center"
+                          onClick={getUserLocation}
+                        >
+                          <Locate className="w-3 h-3 text-[#fd7507]" />
+                          <span className="ml-1">Locate</span>
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </motion.form>

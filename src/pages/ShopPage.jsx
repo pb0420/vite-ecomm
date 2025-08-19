@@ -217,12 +217,12 @@ const ShopPage = () => {
       {/* Enhanced Hero Section with Filters - Made smaller */}
       <section className="relative min-h-[200px] bg-gradient-to-b from-[#2E8B57] via-[#3CB371] to-white overflow-hidden">
         <div className="absolute inset-0">
-          <img 
+          {/* <img 
             src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/outbanner.webp" 
             alt="Grocery Delivery" 
             className="w-full h-full object-cover opacity-20"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#2E8B57]/90 via-[#3CB371]/80 to-white/90" />
+          /> */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#3CB371]/90 via-[#3CB371]/80 to-white/90" />
         </div>
         <div className="container relative h-full px-4 md:px-6">
           <div className="flex flex-col justify-center h-full py-5">
@@ -242,9 +242,9 @@ const ShopPage = () => {
                     Browse from a selection of groceries, household essentials and more.
                   </p>
                 </div>
-                <div className="ml-4">
-                  <span className="inline-flex items-center gap-1 bg-white text-[#fd7507] text-xs px-3 py-1 rounded-full shadow border border-[#fd7507]">
-                    <Clock className="w-16 h-6 text-[#fd7507] font-semibold text-base" />
+                <div className="ml-1">
+                  <span className="inline-flex items-center bg-white text-[#fd7507] text-sm px-3 py-1 rounded-full shadow border border-[#fd7507]">
+                    <Clock className="w-12 h-6 text-[#fd7507] font-semibold text-base" />
                     {deliveryTime} min.
                   </span>
                 </div>

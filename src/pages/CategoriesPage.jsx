@@ -48,16 +48,16 @@ const CategoriesPage = () => {
       {/* Banner Section */}
       <section className="relative h-[30vh] min-h-[200px] bg-gradient-to-b from-[#2E8B57] via-[#3CB371] to-white overflow-hidden">
         <div className="absolute inset-0">
-          <img 
+          {/* <img 
             src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/outbanner.webp" 
             alt="Fresh groceries" 
             className="w-full h-full object-cover opacity-20"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#2E8B57]/90 via-[#3CB371]/80 to-white/90" />
+          /> */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#3CB371]/90 via-[#3CB371]/80 to-white/90" />
         </div>
         
         <div className="container relative h-full px-4 md:px-6">
-          <div className="flex flex-col justify-center h-full max-w-2xl">
+          <div className="flex flex-col justify-center h-[60%] max-w-2xl">
             <motion.div 
               className="space-y-2"
               initial={{ opacity: 0, y: 20 }}
@@ -66,7 +66,7 @@ const CategoriesPage = () => {
             >
               <h1 className="text-3xl md:text-4xl font-bold text-white">Categories</h1>
               <p className="text-white/90">
-                Browse our selection of grocery categories to find exactly what you need.
+                Browse our selection of grocery categories to find the products what you need.
               </p>
             </motion.div>
           </div>

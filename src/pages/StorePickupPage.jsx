@@ -589,12 +589,12 @@ const StorePickupPage = () => {
       {/* Banner Section with How it Works - Made smaller */}
       <section className="relative min-h-[200px] bg-gradient-to-b from-[#2E8B57] via-[#3CB371] to-white overflow-hidden">
         <div className="absolute inset-0">
-          <img
+          {/* <img
             src="https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/outbanner.webp"
             alt="Grocery delivery"
             className="w-full h-full object-cover opacity-30"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#2E8B57]/90 via-[#3CB371]/80 to-white/60" />
+          /> */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#3CB371]/90 via-[#3CB371]/80 to-white/60" />
         </div>
         
         <div className="container relative h-full px-4 md:px-2">
