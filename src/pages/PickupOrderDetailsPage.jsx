@@ -403,6 +403,21 @@ const PickupOrderDetailsPage = () => {
                             }
                           }
                         }
+                        if (!canEdit) {
+                          // Show notes in a disabled textarea if editing is not allowed
+                          return (
+                            <div className="space-y-1">
+                              <Label className="text-xs text-muted-foreground">Notes</Label>
+                              <Textarea
+                                value={storeOrder.notes || ''}
+                                disabled
+                                rows={3}
+                                className="bg-gray-100 text-gray-600"
+                              />
+                            </div>
+                          );
+                        }
+                        
                         return (
                           <StoreNotes
                             storeId={storeOrder.store_id}

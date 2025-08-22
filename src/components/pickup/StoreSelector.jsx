@@ -70,6 +70,15 @@ const StoreSelector = ({
   };
 
   const handleEstimatedTotalChange = (storeId, total) => {
+    // Ensure total is a valid number rounded to 2 decimal places
+    total = parseFloat(total);
+    if (isNaN(total) || total < 0) {
+      // store minimum value
+     total = selectedStores.find(s => s.id === storeId)?.minimum_order_amount || 0;
+    } else {
+      total = Math.round(total * 100) / 100; // Round to 2
+    }
+    // Update selected stores with the new estimated total
     const updatedStores = selectedStores.map(store => 
       store.id === storeId ? { ...store, estimatedTotal: parseFloat(total) || 0 } : store
     );
@@ -171,10 +180,13 @@ const StoreSelector = ({
                         id={`estimated-${store.id}`}
                         type="text"
                         inputMode="numeric"
-                        pattern="[0-9]*"
                         min={minimumOrder}
                         step="5"
-                        value={selectedStore?.estimatedTotal}
+                        value={
+                          selectedStore?.estimatedTotal !== undefined && selectedStore?.estimatedTotal !== ''
+                            ? Number(selectedStore.estimatedTotal).toFixed(2)
+                            : ''
+                        }
                         onChange={(e) => {
                           const val = e.target.value.replace(/[^0-9.]/g, '');
                           handleEstimatedTotalChange(store.id, val);
@@ -184,6 +196,8 @@ const StoreSelector = ({
                           if (isNaN(val) || val < minimumOrder) {
                             val = minimumOrder;
                           }
+                          // Round to 2 digits
+                          val = Math.round(val * 100) / 100;
                           handleEstimatedTotalChange(store.id, val);
                         }}
                         placeholder={`Minimum $${minimumOrder}`}

@@ -130,21 +130,37 @@ const WorkPage = () => {
             </div>
 
             <div className="space-y-2">
-              <Label>Position of Interest</Label>
-              <RadioGroup
-                value={formData.position}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, position: value }))}
-                className="flex space-x-4"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="driver" id="driver" />
-                  <Label htmlFor="driver">Delivery Driver</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="assistant" id="assistant" />
-                  <Label htmlFor="assistant">In-Store Assistant</Label>
-                </div>
-              </RadioGroup>
+              <Label>Position(s) of Interest</Label>
+              <div className="flex flex-wrap gap-4">
+                {[
+                  { value: "driver", label: "Delivery Driver" },
+                  { value: "assistant", label: "In-Store Assistant" },
+                  { value: "marketing", label: "Marketing (Internship)" },
+                  { value: "business", label: "Business Development (Internship)" },
+                  { value: "software", label: "Software Development (Internship)" },
+                ].map(opt => (
+                  <label key={opt.value} className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.position.split(',').includes(opt.value)}
+                      onChange={e => {
+                        let selected = formData.position ? formData.position.split(',') : [];
+                        if (e.target.checked) {
+                          selected.push(opt.value);
+                        } else {
+                          selected = selected.filter(v => v !== opt.value);
+                        }
+                        setFormData(prev => ({
+                          ...prev,
+                          position: selected.join(','),
+                        }));
+                      }}
+                      className="accent-primary h-4 w-4 rounded border-gray-300"
+                    />
+                    <span>{opt.label}</span>
+                  </label>
+                ))}
+              </div>
             </div>
 
             <div className="space-y-2">

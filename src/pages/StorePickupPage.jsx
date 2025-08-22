@@ -192,7 +192,7 @@ const StorePickupPage = () => {
       const { data, error } = await supabase
         .from('stores')
         .select('*')
-        .order('name');
+        .order('priority',{ ascending: false });
 
       if (error) throw error;
       setStores(data || []);
@@ -628,7 +628,7 @@ const StorePickupPage = () => {
                     icon: <MapPin className="w-6 h-6 text-white" />, title: 'Delivery', desc: 'Items delivered at the address you provide.'
                   }
                 ].map((step, idx) => (
-                  <div key={step.title} className="relative flex flex-row bg-white rounded-xl shadow-md px-5 py-3 h-[70px] w-full min-w-0 items-center border border-gray-100 hover:shadow-xl transition-all duration-300 mx-auto"
+                  <div key={step.title} className="relative flex flex-row bg-green-50 rounded-xl shadow-md px-5 py-4 h-[90px] w-full min-w-0 items-center border border-gray-100 hover:shadow-xl transition-all duration-300 mx-auto"
                     style={{ maxWidth: '420px', minWidth: '220px', width: '100%' }}>
                     <div className="absolute left-0 top-4 bottom-4 w-1 rounded-lg bg-[#fd7507]" style={{ minHeight: '32px' }}></div>
                     <div className="flex items-center w-full pl-2">
