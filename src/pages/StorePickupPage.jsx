@@ -612,8 +612,8 @@ const StorePickupPage = () => {
                 
 
               
-              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 max-w-5xl mx-auto mt-2 py-2">
-                {/* Step Card */}
+              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 max-w-4xl mx-auto mt-2 py-2">
+                {/* Step Card - now 3 cards, less wide */}
                 {[
                   {
                     icon: <Store className="w-6 h-6 text-white" />, title: 'Select Stores', desc: 'Add stores, set budgets and pay to reserve your slot.'
@@ -622,22 +622,25 @@ const StorePickupPage = () => {
                     icon: <MessageCircle className="w-6 h-6 text-white" />, title: 'Share Details', desc: 'Provide shopping lists, notes and product details.'
                   },
                   {
-                    icon: <Clock className="w-6 h-6 text-white" />, title: 'Shopping', desc: 'All items will be shopped on your behalf.'
-                  },
-                  {
-                    icon: <MapPin className="w-6 h-6 text-white" />, title: 'Delivery', desc: 'Items delivered at the address you provide.'
+                    icon: <Clock className="w-6 h-6 text-white" />, title: 'Shopping & Delivery', desc: 'All items will be shopped and delivered to your address.'
                   }
                 ].map((step, idx) => (
-                  <div key={step.title} className="relative flex flex-row bg-green-50 rounded-xl shadow-md px-5 py-4 h-[90px] w-full min-w-0 items-center border border-gray-100 hover:shadow-xl transition-all duration-300 mx-auto"
-                    style={{ maxWidth: '420px', minWidth: '220px', width: '100%' }}>
-                    <div className="absolute left-0 top-4 bottom-4 w-1 rounded-lg bg-[#fd7507]" style={{ minHeight: '32px' }}></div>
+                  <div
+                    key={step.title}
+                    className="relative flex flex-row bg-green-50 rounded-xl shadow-md px-3 py-3 h-[64px] sm:h-[80px] w-full min-w-0 items-center border border-gray-100 hover:shadow-xl transition-all duration-300 mx-auto"
+                    style={{ maxWidth: '100%', minWidth: '0', width: '100%' }}
+                  >
+                    <div className="absolute left-0 top-3 bottom-3 w-1 rounded-lg bg-[#fd7507]" style={{ minHeight: '24px' }}></div>
                     <div className="flex items-center w-full pl-2">
-                      <div className="flex items-center justify-center rounded-full bg-gradient-to-br from-[#fd7507] to-[#3cb371] shadow-md mr-4" style={{ width: '38px', height: '38px', minWidth: '38px', minHeight: '38px' }}>
+                      <div
+                        className="flex items-center justify-center rounded-full bg-gradient-to-br from-[#fd7507] to-[#3cb371] shadow-md mr-3 sm:mr-4"
+                        style={{ width: '28px', height: '28px', minWidth: '28px', minHeight: '28px' }}
+                      >
                         {step.icon}
                       </div>
                       <div className="flex flex-col justify-center">
-                        <h3 className="font-bold text-gray-900 text-sm leading-tight mb-0 text-left">{step.title}</h3>
-                        <p className="text-xs text-gray-600 text-left mt-1">{step.desc}</p>
+                        <h3 className="font-bold text-gray-900 text-xs sm:text-sm leading-tight mb-0 text-left">{step.title}</h3>
+                        <p className="text-[10px] sm:text-xs text-gray-600 text-left mt-1">{step.desc}</p>
                       </div>
                     </div>
                   </div>
@@ -700,7 +703,7 @@ const StorePickupPage = () => {
                 </button>
                   </CardTitle>
                   <CardDescription>
-                    No alcohol or tobacco products.
+                    Alcohol products would require a physical ID verification upon delivery (Must be over 21). No tobacco products allowed.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>

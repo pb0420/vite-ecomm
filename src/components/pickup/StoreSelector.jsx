@@ -146,9 +146,9 @@ const StoreSelector = ({
                   <div className="flex w-full items-end justify-between mt-4">
                     <Button
                       type="button"
-                      variant={isSelected ? "solid" : "outline"}
+                      variant={isSelected ? "outline" : "solid"}
                       size="icon"
-                      className={`rounded-xl w-36 h-14 flex items-center justify-center border-2 shadow-lg transition-all duration-150 text-lg ${isSelected ? 'bg-green-500 text-white border-green-500 hover:bg-green-600' : 'bg-white text-primary border-primary hover:bg-primary/10'} ml-0`}
+                      className={`rounded-xl w-36 h-14 flex items-center justify-center border-2 shadow-lg transition-all duration-150 text-lg ${isSelected ? 'bg-white text-primary border-primary hover:bg-primary/10' : 'bg-green-500 text-white border-green-500 hover:bg-green-600'} ml-0`}
                       style={{ boxShadow: '0 4px 16px 0 rgba(60,179,113,0.10)' }}
                       onClick={() => handleStoreSelect(store)}
                       aria-label={isSelected ? 'Remove store' : 'Add store'}
@@ -176,33 +176,74 @@ const StoreSelector = ({
                     {/* Estimated Total - moved to bottom */}
                     <div className="space-y-1 mt-4">
                       <Label htmlFor={`estimated-${store.id}`} className="text-sm font-medium">Estimated Total ($)</Label>
-                      <Input
-                        id={`estimated-${store.id}`}
-                        type="text"
-                        inputMode="numeric"
-                        min={minimumOrder}
-                        step="5"
-                        value={
-                          selectedStore?.estimatedTotal !== undefined && selectedStore?.estimatedTotal !== ''
-                            ? Number(selectedStore.estimatedTotal).toFixed(2)
-                            : ''
-                        }
-                        onChange={(e) => {
-                          const val = e.target.value.replace(/[^0-9.]/g, '');
-                          handleEstimatedTotalChange(store.id, val);
-                        }}
-                        onBlur={(e) => {
-                          let val = parseFloat(e.target.value);
-                          if (isNaN(val) || val < minimumOrder) {
-                            val = minimumOrder;
+                      <div className="flex items-center gap-2 mt-1">
+                        <Input
+                          id={`estimated-${store.id}`}
+                          type="text"
+                          inputMode="numeric"
+                          min={minimumOrder}
+                          step="5"
+                          value={
+                            selectedStore?.estimatedTotal !== undefined && selectedStore?.estimatedTotal !== ''
+                              ? Number(selectedStore.estimatedTotal).toFixed(2)
+                              : ''
                           }
-                          // Round to 2 digits
-                          val = Math.round(val * 100) / 100;
-                          handleEstimatedTotalChange(store.id, val);
-                        }}
-                        placeholder={`Minimum $${minimumOrder}`}
-                        className={`mt-1 text-base px-2 py-1 rounded border focus:outline-primary ${selectedStore?.estimatedTotal < minimumOrder ? 'border-red-500 bg-red-50' : 'border-green-500 bg-green-50'}`}
-                      />
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/[^0-9.]/g, '');
+                            handleEstimatedTotalChange(store.id, val);
+                          }}
+                          onBlur={(e) => {
+                            let val = parseFloat(e.target.value);
+                            if (isNaN(val) || val < minimumOrder) {
+                              val = minimumOrder;
+                            }
+                            // Round to 2 digits
+                            val = Math.round(val * 100) / 100;
+                            handleEstimatedTotalChange(store.id, val);
+                          }}
+                          onFocus={(e) => {
+                            // Move cursor just before decimal if value has decimal
+                            const val = e.target.value;
+                            const decimalIdx = val.indexOf('.');
+                            if (decimalIdx > 0) {
+                              e.target.setSelectionRange(decimalIdx, decimalIdx);
+                            } else {
+                              e.target.setSelectionRange(val.length, val.length);
+                            }
+                            // Make cursor bigger and brighter
+                            e.target.style.caretColor = '#22c55e'; // Tailwind green-500
+                            e.target.style.caretWidth = '3px';
+                          }}
+                          placeholder={`Minimum $${minimumOrder}`}
+                          className={`text-base px-2 py-1 rounded border focus:outline-primary focus:ring-2 focus:ring-primary/40 bg-white ${selectedStore?.estimatedTotal < minimumOrder ? 'border-red-500 bg-red-50' : 'border-green-500 bg-green-50'} focus:caret-green-500`}
+                        />
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          className="px-2 py-1 text-xs"
+                          onClick={() => {
+                            let current = parseFloat(selectedStore?.estimatedTotal) || minimumOrder;
+                            let newVal = Math.max(minimumOrder, current - 5);
+                            handleEstimatedTotalChange(store.id, newVal);
+                          }}
+                        >
+                          ◀
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          className="px-2 py-1 text-xs"
+                          onClick={() => {
+                            let current = parseFloat(selectedStore?.estimatedTotal) || minimumOrder;
+                            let newVal = current + 5;
+                            handleEstimatedTotalChange(store.id, newVal);
+                          }}
+                        >
+                          ▶
+                        </Button>
+                      </div>
                       {selectedStore?.estimatedTotal < minimumOrder && (
                         <span className="text-xs text-red-500">Minimum order: ${minimumOrder}</span>
                       )}

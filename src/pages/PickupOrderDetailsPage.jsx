@@ -268,6 +268,9 @@ const PickupOrderDetailsPage = () => {
               <Badge className={getPaymentStatusColor(order.payment_status)}>
                 <CreditCard />&nbsp; {order.payment_status.charAt(0).toUpperCase() + order.payment_status.slice(1)}
               </Badge>
+              {order.payment_status === 'pending' && (
+                <span className="text-xs text-red-500 block mt-1">Payment is pending. Please contact support.</span>
+              )}
               <Badge className={getStatusColor(order.status)}>
                 <Info />&nbsp; {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
               </Badge>

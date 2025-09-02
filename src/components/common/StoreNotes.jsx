@@ -45,7 +45,8 @@ const StoreNotes = ({
         .select('pickup_order_id,notes,created_at,pickup_orders!inner(user_id)')
         .eq('store_id', storeId)
         .eq('pickup_orders.user_id', user.id)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(3);
       if (!error && data) {
         const notesArr = data.filter(n => n.notes).map(n => ({
             noteId: n.pickup_order_id,
@@ -185,148 +186,122 @@ const StoreNotes = ({
                   setShowOldNotes(false);
                 }}
               >
-                <span className="font-mono font-semibold text-blue-700">Order #{n.noteId.slice(0,6).toUpperCase()}</span>
+                <span className="font-mono font-semibold text-green-700">Order #{n.noteId.slice(0,6).toUpperCase()}</span>
                 <span className="ml-auto text-xs text-gray-500 font-medium">{new Date(n.date).toLocaleDateString()}</span>
               </button>
             ))}
           </div>
         </div>
       )}
-      <Label className="block mb-1 text-sm font-medium flex items-center gap-1">
-        Popular Items
-      </Label>
-      {suggestedItems.length > maxItems && (
-        <div className="mb-2">
-          <input
-            type="search"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Search store items..."
-            className="border rounded px-2 py-1 w-full text-sm"
-          />
-        </div>
-      )}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-2">
-        {allItems.map(item => {
-          const qty = getItemQty(item.name);
-          const price = item.price ? Number(item.price) : DEFAULT_PRICE;
+      <Label htmlFor={`notes-${storeId}`} className="text-sm font-medium mb-1">Shopping List</Label>
+      <div className="relative flex items-center gap-2 mb-2">
+        <input
+          type="text"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Type to search or add items..."
+          className="border rounded px-3 py-2 w-full text-base"
+          autoComplete="off"
+        />
+        <button
+          type="button"
+          className="bg-green-400 hover:bg-blue-600 text-white px-4 py-2 rounded text-sm font-semibold whitespace-nowrap"
+          style={{ position: 'relative', right: 0 }}
+          onClick={() => {
+            if (search.trim() && !customItems.includes(search.trim())) {
+              setCustomItems([...customItems, search.trim()]);
+              setCustomItemName('');
+              setSearch('');
+              setCustomItemPrices(prices => ({ ...prices, [search.trim()]: DEFAULT_PRICE }));
+              // Add to notes
+              let newNotes = notes || '';
+              const regex = new RegExp(`^${search.trim()} >> (\\d+)$`, 'm');
+              if (!regex.test(newNotes)) {
+                newNotes = newNotes ? `${newNotes}\n${search.trim()} >> 1` : `${search.trim()} >> 1`;
+                onNotesChange(storeId, newNotes);
+              }
+            }
+          }}
+        >Add</button>
+        {/* Show suggestions only when typing */}
+        {search.length > 0 && filteredItems.length > 0 && (
+          <div className="absolute z-10 bg-white border rounded shadow w-full left-0" style={{ top: '110%' }}>
+            {filteredItems.map(item => (
+              <button
+                key={item.name}
+                type="button"
+                className="flex justify-between items-center w-full text-left px-3 py-2 hover:bg-primary/10 text-xs"
+                onClick={() => {
+                  setCustomItems([...customItems, item.name]);
+                  setCustomItemName('');
+                  setSearch('');
+                  setCustomItemPrices(prices => ({ ...prices, [item.name]: item.price || DEFAULT_PRICE }));
+                  // Add to notes
+                  let newNotes = notes || '';
+                  const regex = new RegExp(`^${item.name} >> (\\d+)$`, 'm');
+                  if (!regex.test(newNotes)) {
+                    newNotes = newNotes ? `${newNotes}\n${item.name} >> 1` : `${item.name} >> 1`;
+                    onNotesChange(storeId, newNotes);
+                  }
+                }}
+              >
+                <span>{item.name}</span>
+                {/* Only show price if available */}
+                {item.price ? (
+                  <span className="ml-2 text-gray-400 text-xs">A${item.price}</span>
+                ) : null}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Selected items as interactive pills */}
+      <div className="flex flex-wrap gap-2 mt-2">
+        {customItems.map(name => {
+          const qty = getItemQty(name);
+          const price = customItemPrices[name];
           return (
-            <div
-              key={item.name}
-              className={`relative border rounded px-3 py-3 shadow-sm min-h-[90px] min-w-[220px] max-w-full overflow-hidden transition-all flex flex-col justify-between
-                ${isItemInNotes(item.name) ? 'bg-green-50 border-green-400 ring-2 ring-green-300' : item.custom ? 'bg-blue-50 border-blue-300' : 'bg-white'}
-              `}
-            >
-              {/* Top row: Title */}
-              <div className="flex items-center min-h-[28px]">
-                <span className="text-base font-semibold line-clamp-2 break-all">{item.name}</span>
-              </div>
-              {/* Bottom row: Info icon (if any) left, qty right */}
-              <div className="flex flex-row items-end justify-between mt-2">
-                <div className="flex items-center">
-                  {!item.custom && (
-                    <span className="text-xs font-semibold text-right min-w-[40px] ml-2">A${price} &nbsp;</span>
-                  )}
-                  {item.image_url || item.description ? (
-                    <span className="mr-2 cursor-pointer flex items-center">
-                      <button
-                        type="button"
-                        aria-label="Show info"
-                        tabIndex={0}
-                        onClick={e => {
-                          e.stopPropagation();
-                          setInfoOpen(item.name);
-                        }}
-                        className="focus:outline-none"
-                      >
-                        <Info className="w-5 h-5 text-primary" />
-                      </button>
-                      <Dialog open={infoOpen === item.name} onOpenChange={open => setInfoOpen(open ? item.name : null)}>
-                        <DialogContent className="max-w-xs p-0 overflow-hidden">
-                          <DialogHeader className="p-4 pb-0">
-                            <DialogTitle className="text-lg font-bold mb-2 flex items-center gap-2">
-                              {item.image_url && (
-                                <img src={item.image_url} alt={item.name} className="w-10 h-10 object-cover rounded mr-2 border border-gray-200" />
-                              )}
-                              {item.name}
-                            </DialogTitle>
-                          </DialogHeader>
-                          <DialogDescription asChild>
-                            <span className="block px-4 pb-4 text-sm text-gray-700">
-                              {item.description && <span>{item.description}</span>}
-                            </span>
-                          </DialogDescription>
-                        </DialogContent>
-                      </Dialog>
-                    </span>
-                  ) : null}
-                  {item.custom && (
-                    <button
-                      type="button"
-                      className="text-xs text-red-500 hover:underline ml-1"
-                      onClick={() => handleRemoveCustomItem(item.name)}
-                    >Remove</button>
-                  )}
-                </div>
-                <div className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    className="h-7 w-7 flex items-center justify-center rounded bg-[#34d399] hover:bg-[#27694a] text-white border"
-                    disabled={qty <= 0}
-                    onClick={() => handleItemQtyChange(item, Math.max(0, qty - 1))}
-                  >
-                    <span className="font-bold text-lg">-</span>
-                  </button>
-                  <input
-                    type="number"
-                    min={0}
-                    value={qty}
-                    onChange={e => handleItemQtyChange(item, Math.max(0, parseInt(e.target.value) || 0))}
-                    className="w-10 text-xs border rounded px-1 py-1 focus:outline-primary text-center appearance-none"
-                    style={{ WebkitAppearance: 'none', MozAppearance: 'textfield' }}
-                  />
-                  <button
-                    type="button"
-                    className="h-7 w-7 flex items-center justify-center rounded bg-[#34d399] hover:bg-[#27694a] text-white border"
-                    onClick={() => handleItemQtyChange(item, qty + 1)}
-                  >
-                    <span className="font-bold text-lg">+</span>
-                  </button>
-                </div>
-              </div>
+            <div key={name} className="flex items-center bg-green-100 border border-green-300 rounded-full px-3 py-1 text-xs font-medium shadow">
+              <span>{name}</span>
+              {price && suggestedItems.some(item => item.name === name && item.price) ? (
+                <span className="ml-2 text-gray-400 text-xs">A${price}</span>
+              ) : null}
+              <button
+                type="button"
+                className="ml-2 px-2 py-0.5 rounded bg-white text-black border border-gray-300"
+                onClick={() => handleItemQtyChange({ name }, Math.max(0, qty - 1))}
+              >-</button>
+              <span className="mx-1">{qty}</span>
+              <button
+                type="button"
+                className="px-2 py-0.5 rounded bg-green-500 text-white"
+                onClick={() => handleItemQtyChange({ name }, qty + 1)}
+              >+</button>
+              <button
+                type="button"
+                className="ml-2 text-red-500 hover:underline flex items-center"
+                onClick={() => handleRemoveCustomItem(name)}
+                aria-label="Remove"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
             </div>
           );
         })}
       </div>
-      {/* Add custom item UI */}
-      <div className="flex gap-2 mt-2">
-        <input
-          type="text"
-          value={customItemName}
-          onChange={e => setCustomItemName(e.target.value)}
-          placeholder="Type item name and press Add..."
-          className="border rounded px-2 py-1 text-xs flex-1"
-          onKeyDown={e => { if (e.key === 'Enter') handleAddCustomItem(); }}
-        />
-        <button
-          type="button"
-          className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs font-semibold"
-          onClick={handleAddCustomItem}
-        >Add</button>
-      </div>
-      <div className="mt-2">
-        <Label htmlFor={`notes-${storeId}`} className="text-sm font-medium">Shopping List / Notes</Label>
-      </div>
-       {/* Quick options for notes */}
-      <div className="flex flex-wrap gap-2 mb-2">
-        {["Find specials and better price options", "Replace out of stock items", "Call if unavailable", "Add organic options", "No plastic bags"].map((opt, idx) => (
+      
+      {/* Instructions from component - fix add logic */}
+      <h1>Instructions</h1>
+      <div className="mt-2 flex flex-wrap gap-2">
+        {["Find specials and better price options", "Replace out of stock items", "Call if unavailable", "Keep it under budget", "No plastic bags"].map((opt, idx) => (
           <button
             key={idx}
             type="button"
             className="border rounded px-2 py-1 text-xs bg-gray-50 hover:bg-primary/10"
             onClick={() => {
               if (notes && !notes.includes(opt)) {
-                onNotesChange(storeId, notes + '\n' + opt);
+                onNotesChange(storeId, notes ? notes + '\n' + opt : opt);
               } else if (!notes) {
                 onNotesChange(storeId, opt);
               }
@@ -336,13 +311,16 @@ const StoreNotes = ({
           </button>
         ))}
       </div>
+
+      {/* Main notes textarea remains for extra instructions */}
+      <h1>Summary / Notes</h1>
       <Textarea
         id={`notes-${storeId}`}
         value={notes || ''}
         onChange={e => onNotesChange(storeId, e.target.value)}
-        placeholder="Add your shopping list or special instructions..."
+        placeholder="..."
         rows={3}
-        className="mt-1 text-base px-2 py-1 rounded border focus:outline-primary bg-yellow-50 border-yellow-300"
+        className="mt-1 text-base px-2 py-1 rounded border focus:outline-primary bg-green-50 border-green-800"
       />
     </div>
   );
