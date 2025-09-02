@@ -64,7 +64,7 @@ const HomePage = () => {
             .from('products')
             .select(`*, categories ( id, name )`)
             .eq('featured', true)
-            .limit(20);
+            .limit(25);
           if (error) throw error;
           productsData = data || [];
           setQueryCache('featuredProducts', productsData);
@@ -74,7 +74,7 @@ const HomePage = () => {
             .from('categories')
             .select('*')
             .order('priority',{ ascending: false })
-            .limit(7);
+            .limit(6);
           if (error) throw error;
           categoriesData = data || [];
           setQueryCache('categories_home', categoriesData);
