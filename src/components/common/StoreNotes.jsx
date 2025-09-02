@@ -262,30 +262,36 @@ const StoreNotes = ({
           const qty = getItemQty(name);
           const price = customItemPrices[name];
           return (
-            <div key={name} className="flex items-center bg-green-100 border border-green-300 rounded-full px-3 py-1 text-xs font-medium shadow">
-              <span>{name}</span>
-              {price && suggestedItems.some(item => item.name === name && item.price) ? (
-                <span className="ml-2 text-gray-400 text-xs">A${price}</span>
-              ) : null}
-              <button
-                type="button"
-                className="ml-2 px-2 py-0.5 rounded bg-white text-black border border-gray-300"
-                onClick={() => handleItemQtyChange({ name }, Math.max(0, qty - 1))}
-              >-</button>
-              <span className="mx-1">{qty}</span>
-              <button
-                type="button"
-                className="px-2 py-0.5 rounded bg-green-500 text-white"
-                onClick={() => handleItemQtyChange({ name }, qty + 1)}
-              >+</button>
-              <button
-                type="button"
-                className="ml-2 text-red-500 hover:underline flex items-center"
-                onClick={() => handleRemoveCustomItem(name)}
-                aria-label="Remove"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-              </button>
+            <div
+              key={name}
+              className="flex flex-col sm:flex-row items-start sm:items-center bg-green-100 border border-green-300 rounded-md px-2 py-1 text-xs font-medium shadow min-w-[140px] sm:min-w-[180px] max-w-full"
+              style={{ wordBreak: 'break-word' }}
+            >
+              <span className="flex-1 font-semibold text-left w-full sm:w-auto mb-1 sm:mb-0" style={{ minWidth: '100px', fontSize: '1em' }}>{name}</span>
+              <div className="flex flex-row items-center justify-end w-full sm:w-auto gap-1">
+                {price && suggestedItems.some(item => item.name === name && item.price) ? (
+                  <span className="ml-2 text-gray-400 text-xs">A${price}</span>
+                ) : null}
+                <button
+                  type="button"
+                  className="px-2 py-0.5 rounded bg-white text-black border border-gray-300"
+                  onClick={() => handleItemQtyChange({ name }, Math.max(0, qty - 1))}
+                >-</button>
+                <span className="mx-1">{qty}</span>
+                <button
+                  type="button"
+                  className="px-2 py-0.5 rounded bg-green-500 text-white"
+                  onClick={() => handleItemQtyChange({ name }, qty + 1)}
+                >+</button>
+                <button
+                  type="button"
+                  className="ml-2 text-red-500 hover:underline flex items-center"
+                  onClick={() => handleRemoveCustomItem(name)}
+                  aria-label="Remove"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+              </div>
             </div>
           );
         })}
