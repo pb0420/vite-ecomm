@@ -118,6 +118,10 @@ const ProductPage = () => {
             alt={product.name} 
             className="object-contain mx-auto max-h-[240px]"
             src={product.image_url || "https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/product-placeholder.webp"} 
+            onError={e => {
+              e.target.onerror = null;
+              e.target.src = "https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/product-placeholder.webp";
+            }}
             style={{ display: 'block', margin: '0 auto', maxWidth: '100%' }}
           />
         </motion.div>
@@ -133,6 +137,10 @@ const ProductPage = () => {
               src={product.image_url || "https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/product-placeholder.webp"}
               alt={product.name}
               className="max-w-[90vw] max-h-[80vh] rounded-lg shadow-lg border-2 border-white"
+              onError={e => {
+                e.target.onerror = null;
+                e.target.src = "https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/product-placeholder.webp";
+              }}
               style={{ background: '#fff' }}
               onClick={e => e.stopPropagation()}
             />

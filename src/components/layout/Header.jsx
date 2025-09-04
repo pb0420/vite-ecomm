@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { ShoppingCart, Menu, X, User, LogOut, Package,UserRound , Home} from 'lucide-react';
+import { ShoppingCart, Menu, X, User, LogOut, Package,UserRound , Home, ArrowRight} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
@@ -133,11 +133,9 @@ const Header = () => {
                   >
                     <UserRound className="w-4 h-4" />
                     <span>
-                      {user.name?.split(' ')
-                        .map(word => word[0])
-                        .join('')
-                        .toUpperCase()
-                        .slice(0, 4)
+                      {user.name
+                        ? user.name.split(' ').map(word => word[0]).join('').toUpperCase().slice(0, 4)
+                        : <ArrowRight />
                       }
                     </span>
                   </Button>

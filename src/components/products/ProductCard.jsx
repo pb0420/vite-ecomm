@@ -38,6 +38,10 @@ const ProductCard = ({ product }) => {
             alt={product.name}
             className="w-4/5 h-4/5 object-contain mx-auto"
             src={product.image_url || "https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/product-placeholder.webp"} 
+            onError={e => {
+              e.target.onerror = null;
+              e.target.src = "https://bcbxcnxutotjzmdjeyde.supabase.co/storage/v1/object/public/groceroo_images/assets/product-placeholder.webp";
+            }}
           />
           
           {product.featured && (

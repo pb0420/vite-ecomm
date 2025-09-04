@@ -226,6 +226,17 @@ const AdminProductsTab = ({ openDeleteDialog }) => {
               <DialogHeader>
                 <DialogTitle>{editingProduct ? 'Edit Product' : 'Add New Product'}</DialogTitle>
               </DialogHeader>
+              {editingProduct && editingProduct.image_url && (
+                <div className="mb-4 flex items-center gap-2">
+                  <img src={editingProduct.image_url} alt="Product" className="w-16 h-16 object-cover rounded border" />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-red-600 border-red-300 hover:bg-red-50"
+                    onClick={() => setEditingProduct({ ...editingProduct, image_url: '' })}
+                  >Remove Image</Button>
+                </div>
+              )}
               <ProductForm
                 key={editingProduct ? editingProduct.id : 'new'} // Add key to force re-render
                 product={editingProduct}

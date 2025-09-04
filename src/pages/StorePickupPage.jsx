@@ -703,7 +703,7 @@ const StorePickupPage = () => {
                 </button>
                   </CardTitle>
                   <CardDescription>
-                    Alcohol products would require a physical ID verification upon delivery (Must be over 21). No tobacco products allowed.
+                    No alcohol or tobacco products.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
