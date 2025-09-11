@@ -109,7 +109,7 @@ const CategoryPage = () => {
         className="mb-8"
       >
         <div
-          className="relative h-48 overflow-hidden rounded-lg bg-muted mb-4"
+          className="relative h-32 overflow-hidden rounded-lg bg-muted mb-4" // reduced height from h-48 to h-32
           style={category?.icon_url ? {
             backgroundImage: `url(${category.icon_url})`,
             backgroundRepeat: 'repeat',
@@ -118,12 +118,12 @@ const CategoryPage = () => {
           } : {}}
         >
           {/* Tint overlay */}
-          <div className="absolute inset-0 bg-[#3CB371] opacity-90"></div>
+          <div className="absolute inset-0 bg-[#3CB371] opacity-80"></div> {/* reduced opacity for lighter tint */}
           {/* Gradient overlay for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-          <div className="absolute bottom-0 left-0 p-6">
-            <h1 className="text-3xl font-bold text-white">{category.name}</h1>
-            <p className="mt-2 text-white/90">{category.description}</p>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div> {/* lighter gradient */}
+          <div className="absolute bottom-0 left-0 p-4"> {/* reduced padding for smaller height */}
+            <h1 className="text-2xl font-bold text-white">{category.name}</h1> {/* smaller text */}
+            <p className="mt-2 text-white/90 text-base">{category.description}</p> {/* smaller text */}
           </div>
         </div>
       </motion.div>

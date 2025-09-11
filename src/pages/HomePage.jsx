@@ -74,7 +74,7 @@ const HomePage = () => {
             .from('categories')
             .select('*')
             .order('priority',{ ascending: false })
-            .limit(6);
+            .limit(7);
           if (error) throw error;
           categoriesData = data || [];
           setQueryCache('categories_home', categoriesData);
