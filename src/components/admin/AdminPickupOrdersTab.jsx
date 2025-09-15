@@ -375,10 +375,11 @@ const AdminPickupOrdersTab = () => {
     if (error) {
       toast({ variant: 'destructive', title: 'Upload failed', description: error.message });
       return;
+    }else{
+      const imageUrl = await supabase.storage.from('bills').getPublicUrl(fileName);
+      setBillForm(prev => ({ ...prev, image: imageUrl.data.publicUrl }));
+      setBillImageFile(file);
     }
-    const imageUrl = supabase.storage.from('bills').getPublicUrl(fileName).publicUrl;
-    setBillForm(prev => ({ ...prev, image: imageUrl }));
-    setBillImageFile(file);
   };
 
   const handleSaveBill = async () => {
@@ -664,9 +665,11 @@ const AdminPickupOrdersTab = () => {
                                       {storeOrder.notes && (
                                         <div className="mt-2">
                                           <p className="text-sm font-medium">Shopping List:</p>
-                                          <p className="text-sm text-muted-foreground bg-muted p-2 rounded mt-1">
-                                            {storeOrder.notes}
-                                          </p>
+                                          <Textarea
+                                            value={storeOrder.notes}
+                                            disabled
+                                            className="text-sm text-muted-foreground bg-muted p-2 rounded mt-1 resize-none min-h-[48px]"
+                                          />
                                         </div>
                                       )}
                                     </div>
@@ -762,7 +765,16 @@ const AdminPickupOrdersTab = () => {
                                 </Button>
                               ))}
                               {selectedOrder?.bills && selectedOrder.bills.length > 0 && selectedOrder.bills.map((bill, idx) => (
-                                <Button key={bill.id || idx} variant="destructive" className="ml-2" onClick={() => handleRemoveBill(bill.id)}>
+                                <Button
+                                  key={bill.id || idx}
+                                  variant="destructive"
+                                  className="ml-2"
+                                  onClick={() => {
+                                    if (window.confirm('Are you sure you want to remove this bill? This action cannot be undone.')) {
+                                      handleRemoveBill(bill.id);
+                                    }
+                                  }}
+                                >
                                   Remove Bill #{bill.id ? bill.id.slice(0,6).toUpperCase() : idx+1}
                                 </Button>
                               ))}

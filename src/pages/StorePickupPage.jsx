@@ -1093,7 +1093,7 @@ const StorePickupPage = () => {
                           />
                           {formErrors.deliveryNotes && <p className="text-xs text-destructive">{formErrors.deliveryNotes}</p>}
                           <div className="text-xs text-muted-foreground mt-1">
-                            <span className="font-medium text-red-600">Note:</span> The final amount may change after shopping, and you may be required to pay the difference before delivery.
+                            <span className="font-medium text-red-600">Note:</span> The final amount may change after shopping, and you may be required to pay the difference before delivery. A small order fee may apply if total is below the store minimum amount.
                           </div>
                         </div>
 
